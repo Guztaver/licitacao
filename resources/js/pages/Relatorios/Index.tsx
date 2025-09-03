@@ -3,21 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
-import {
-    BarChart3,
-    Calendar,
-    Download,
-    FileBarChart,
-    FileText,
-    Filter,
-    PieChart,
-    TrendingUp,
-} from 'lucide-react';
-import { FormEventHandler, useState } from 'react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { BarChart3, Building, Calendar, CheckCircle, FileBarChart, FileText, PieChart, TrendingUp, type LucideIcon } from 'lucide-react';
+import { useId, useState, type FormEventHandler } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -36,10 +26,30 @@ interface RelatorioFiltros {
     formato: string;
 }
 
-export default function RelatoriosIndex() {
+interface RelatoriosIndexProps {
+    stats: {
+        requisicoes_este_mes: number;
+        aprovadas: number;
+        pendentes: number;
+        rejeitadas: number;
+        concretizadas: number;
+        valor_total_mes: number;
+    };
+    emitentes: Array<{ id: number; nome: string; sigla: string }>;
+    fornecedores: Array<{ id: number; razao_social: string; cnpj: string }>;
+}
+
+export default function RelatoriosIndex({ stats, emitentes = [], fornecedores = [] }: RelatoriosIndexProps) {
     const [relatorioSelecionado, setRelatorioSelecionado] = useState<string>('');
 
-    const { data, setData, post, processing } = useForm<RelatorioFiltros>({
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        }).format(value);
+    };
+
+    const { data, setData, processing } = useForm<RelatorioFiltros>({
         tipo_relatorio: '',
         data_inicio: '',
         data_fim: '',
@@ -51,12 +61,37 @@ export default function RelatoriosIndex() {
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        post('/relatorios/gerar', {
-            preserveScroll: true,
-        });
+
+        // Navigate to the appropriate report page based on report type
+        const reportRoutes: Record<string, string> = {
+            requisicoes_periodo: '/relatorios/requisicoes',
+            requisicoes_status: '/relatorios/requisicoes',
+            emitentes_ranking: '/relatorios/requisicoes',
+            fornecedores_ranking: '/relatorios/fornecedores',
+            valores_mensais: '/relatorios/requisicoes',
+            aprovacoes_tempo: '/relatorios/requisicoes',
+        };
+
+        const route = reportRoutes[data.tipo_relatorio] || '/relatorios/requisicoes';
+
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (data.data_inicio) params.append('data_inicio', data.data_inicio);
+        if (data.data_fim) params.append('data_fim', data.data_fim);
+        if (data.emitente_id) params.append('emitente_id', data.emitente_id);
+        if (data.fornecedor_id) params.append('fornecedor_id', data.fornecedor_id);
+        if (data.status) params.append('status', data.status);
+
+        const url = `${route}${params.toString() ? '?' + params.toString() : ''}`;
+        window.location.href = url;
     };
 
-    const tiposRelatorio = [
+    const tiposRelatorio: Array<{
+        id: string;
+        nome: string;
+        descricao: string;
+        icon: LucideIcon;
+    }> = [
         {
             id: 'requisicoes_periodo',
             nome: 'Requisições por Período',
@@ -101,6 +136,9 @@ export default function RelatoriosIndex() {
         { value: 'csv', label: 'CSV' },
     ];
 
+    const dataInicioId = useId();
+    const dataFimId = useId();
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Relatórios" />
@@ -109,15 +147,13 @@ export default function RelatoriosIndex() {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Relatórios</h1>
-                        <p className="text-gray-600 dark:text-gray-400">
-                            Gere relatórios personalizados sobre requisições e licitações
-                        </p>
+                        <p className="text-gray-600 dark:text-gray-400">Gere relatórios personalizados sobre requisições e licitações</p>
                     </div>
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-3">
                     {/* Seleção de Relatório */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="space-y-6 lg:col-span-2">
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center">
@@ -129,9 +165,10 @@ export default function RelatoriosIndex() {
                             <CardContent>
                                 <div className="grid gap-4 md:grid-cols-2">
                                     {tiposRelatorio.map((tipo) => (
-                                        <div
+                                        <button
                                             key={tipo.id}
-                                            className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                                            type="button"
+                                            className={`cursor-pointer rounded-lg border p-4 text-left transition-colors ${
                                                 data.tipo_relatorio === tipo.id
                                                     ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
                                                     : 'border-gray-200 hover:border-gray-300 dark:border-gray-700'
@@ -142,17 +179,13 @@ export default function RelatoriosIndex() {
                                             }}
                                         >
                                             <div className="flex items-start space-x-3">
-                                                <tipo.icon className="h-6 w-6 text-blue-600 mt-1" />
+                                                <tipo.icon className="mt-1 h-6 w-6 text-blue-600" />
                                                 <div>
-                                                    <h3 className="font-medium text-gray-900 dark:text-gray-100">
-                                                        {tipo.nome}
-                                                    </h3>
-                                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                                        {tipo.descricao}
-                                                    </p>
+                                                    <h3 className="font-medium text-gray-900 dark:text-gray-100">{tipo.nome}</h3>
+                                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{tipo.descricao}</p>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </button>
                                     ))}
                                 </div>
                             </CardContent>
@@ -173,18 +206,18 @@ export default function RelatoriosIndex() {
                                         {/* Período */}
                                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
-                                                <Label htmlFor="data_inicio">Data de Início</Label>
+                                                <Label htmlFor={dataInicioId}>Data de Início</Label>
                                                 <Input
-                                                    id="data_inicio"
+                                                    id={dataInicioId}
                                                     type="date"
                                                     value={data.data_inicio}
                                                     onChange={(e) => setData('data_inicio', e.target.value)}
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="data_fim">Data de Fim</Label>
+                                                <Label htmlFor={dataFimId}>Data de Fim</Label>
                                                 <Input
-                                                    id="data_fim"
+                                                    id={dataFimId}
                                                     type="date"
                                                     value={data.data_fim}
                                                     onChange={(e) => setData('data_fim', e.target.value)}
@@ -193,40 +226,37 @@ export default function RelatoriosIndex() {
                                         </div>
 
                                         {/* Emitente e Fornecedor */}
-                                        {(relatorioSelecionado === 'requisicoes_periodo' ||
-                                          relatorioSelecionado === 'requisicoes_status') && (
+                                        {(relatorioSelecionado === 'requisicoes_periodo' || relatorioSelecionado === 'requisicoes_status') && (
                                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                                 <div className="space-y-2">
                                                     <Label htmlFor="emitente_id">Emitente</Label>
-                                                    <Select
-                                                        value={data.emitente_id}
-                                                        onValueChange={(value) => setData('emitente_id', value)}
-                                                    >
+                                                    <Select value={data.emitente_id} onValueChange={(value) => setData('emitente_id', value)}>
                                                         <SelectTrigger>
                                                             <SelectValue placeholder="Todos os emitentes" />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectItem value="">Todos os emitentes</SelectItem>
-                                                            <SelectItem value="1">SECOM</SelectItem>
-                                                            <SelectItem value="2">SEMEC</SelectItem>
-                                                            <SelectItem value="3">SESAU</SelectItem>
+                                                            {emitentes.map((emitente) => (
+                                                                <SelectItem key={emitente.id} value={emitente.id.toString()}>
+                                                                    {emitente.nome} ({emitente.sigla})
+                                                                </SelectItem>
+                                                            ))}
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
                                                 <div className="space-y-2">
                                                     <Label htmlFor="fornecedor_id">Fornecedor</Label>
-                                                    <Select
-                                                        value={data.fornecedor_id}
-                                                        onValueChange={(value) => setData('fornecedor_id', value)}
-                                                    >
+                                                    <Select value={data.fornecedor_id} onValueChange={(value) => setData('fornecedor_id', value)}>
                                                         <SelectTrigger>
                                                             <SelectValue placeholder="Todos os fornecedores" />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectItem value="">Todos os fornecedores</SelectItem>
-                                                            <SelectItem value="1">Empresa A Ltda</SelectItem>
-                                                            <SelectItem value="2">Fornecedor B SA</SelectItem>
-                                                            <SelectItem value="3">Comercial C</SelectItem>
+                                                            {fornecedores.map((fornecedor) => (
+                                                                <SelectItem key={fornecedor.id} value={fornecedor.id.toString()}>
+                                                                    {fornecedor.razao_social}
+                                                                </SelectItem>
+                                                            ))}
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
@@ -234,22 +264,19 @@ export default function RelatoriosIndex() {
                                         )}
 
                                         {/* Status */}
-                                        {(relatorioSelecionado === 'requisicoes_periodo' ||
-                                          relatorioSelecionado === 'aprovacoes_tempo') && (
+                                        {(relatorioSelecionado === 'requisicoes_periodo' || relatorioSelecionado === 'aprovacoes_tempo') && (
                                             <div className="space-y-2">
                                                 <Label htmlFor="status">Status</Label>
-                                                <Select
-                                                    value={data.status}
-                                                    onValueChange={(value) => setData('status', value)}
-                                                >
+                                                <Select value={data.status} onValueChange={(value) => setData('status', value)}>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Todos os status" />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectItem value="">Todos os status</SelectItem>
                                                         <SelectItem value="pendente">Pendente</SelectItem>
-                                                        <SelectItem value="aprovado">Aprovado</SelectItem>
-                                                        <SelectItem value="rejeitado">Rejeitado</SelectItem>
+                                                        <SelectItem value="autorizada">Autorizada</SelectItem>
+                                                        <SelectItem value="concretizada">Concretizada</SelectItem>
+                                                        <SelectItem value="cancelada">Cancelada</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
@@ -258,10 +285,7 @@ export default function RelatoriosIndex() {
                                         {/* Formato */}
                                         <div className="space-y-2">
                                             <Label htmlFor="formato">Formato de Saída</Label>
-                                            <Select
-                                                value={data.formato}
-                                                onValueChange={(value) => setData('formato', value)}
-                                            >
+                                            <Select value={data.formato} onValueChange={(value) => setData('formato', value)}>
                                                 <SelectTrigger>
                                                     <SelectValue />
                                                 </SelectTrigger>
@@ -295,25 +319,31 @@ export default function RelatoriosIndex() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="text-center">
-                                    <div className="text-2xl font-bold text-blue-600">156</div>
+                                    <div className="text-2xl font-bold text-blue-600">{stats.requisicoes_este_mes}</div>
                                     <div className="text-sm text-gray-500">Requisições este mês</div>
                                 </div>
                                 <div className="border-t pt-4">
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-green-600">89</div>
-                                        <div className="text-sm text-gray-500">Aprovadas</div>
+                                        <div className="text-2xl font-bold text-green-600">{stats.concretizadas}</div>
+                                        <div className="text-sm text-gray-500">Concretizadas</div>
                                     </div>
                                 </div>
                                 <div className="border-t pt-4">
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-yellow-600">52</div>
+                                        <div className="text-2xl font-bold text-yellow-600">{stats.pendentes}</div>
                                         <div className="text-sm text-gray-500">Pendentes</div>
                                     </div>
                                 </div>
                                 <div className="border-t pt-4">
                                     <div className="text-center">
-                                        <div className="text-2xl font-bold text-red-600">15</div>
-                                        <div className="text-sm text-gray-500">Rejeitadas</div>
+                                        <div className="text-2xl font-bold text-red-600">{stats.rejeitadas}</div>
+                                        <div className="text-sm text-gray-500">Canceladas</div>
+                                    </div>
+                                </div>
+                                <div className="border-t pt-4">
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-purple-600">{formatCurrency(stats.valor_total_mes)}</div>
+                                        <div className="text-sm text-gray-500">Valor total</div>
                                     </div>
                                 </div>
                             </CardContent>
@@ -321,32 +351,38 @@ export default function RelatoriosIndex() {
 
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-lg">Relatórios Recentes</CardTitle>
+                                <CardTitle className="text-lg">Relatórios Disponíveis</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 <div className="text-sm">
-                                    <div className="font-medium">Requisições Janeiro 2024</div>
-                                    <div className="text-gray-500">Gerado em 15/01/2024</div>
-                                    <Button variant="outline" size="sm" className="mt-1">
-                                        <Download className="mr-1 h-3 w-3" />
-                                        Baixar
-                                    </Button>
+                                    <div className="font-medium">Requisições</div>
+                                    <div className="text-gray-500">Relatório detalhado de requisições</div>
+                                    <Link href="/relatorios/requisicoes">
+                                        <Button variant="outline" size="sm" className="mt-1">
+                                            <FileText className="mr-1 h-3 w-3" />
+                                            Acessar
+                                        </Button>
+                                    </Link>
                                 </div>
-                                <div className="text-sm border-t pt-3">
-                                    <div className="font-medium">Ranking Emitentes</div>
-                                    <div className="text-gray-500">Gerado em 10/01/2024</div>
-                                    <Button variant="outline" size="sm" className="mt-1">
-                                        <Download className="mr-1 h-3 w-3" />
-                                        Baixar
-                                    </Button>
+                                <div className="border-t pt-3 text-sm">
+                                    <div className="font-medium">Fornecedores</div>
+                                    <div className="text-gray-500">Análise de desempenho de fornecedores</div>
+                                    <Link href="/relatorios/fornecedores">
+                                        <Button variant="outline" size="sm" className="mt-1">
+                                            <Building className="mr-1 h-3 w-3" />
+                                            Acessar
+                                        </Button>
+                                    </Link>
                                 </div>
-                                <div className="text-sm border-t pt-3">
-                                    <div className="font-medium">Valores Dezembro</div>
-                                    <div className="text-gray-500">Gerado em 05/01/2024</div>
-                                    <Button variant="outline" size="sm" className="mt-1">
-                                        <Download className="mr-1 h-3 w-3" />
-                                        Baixar
-                                    </Button>
+                                <div className="border-t pt-3 text-sm">
+                                    <div className="font-medium">Conferências</div>
+                                    <div className="text-gray-500">Relatório de conferências realizadas</div>
+                                    <Link href="/relatorios/conferencias">
+                                        <Button variant="outline" size="sm" className="mt-1">
+                                            <CheckCircle className="mr-1 h-3 w-3" />
+                                            Acessar
+                                        </Button>
+                                    </Link>
                                 </div>
                             </CardContent>
                         </Card>
@@ -364,8 +400,7 @@ export default function RelatoriosIndex() {
                                                 • Use filtros de período para análises específicas
                                                 <br />
                                                 • Relatórios em Excel permitem análises avançadas
-                                                <br />
-                                                • CSV é ideal para importação em outros sistemas
+                                                <br />• CSV é ideal para importação em outros sistemas
                                             </p>
                                         </div>
                                     </div>

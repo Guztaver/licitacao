@@ -16,7 +16,33 @@ class RelatorioController extends Controller
      */
     public function index(): Response
     {
-        return Inertia::render('Relatorios/Index');
+        // Get statistics for quick stats card
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+
+        $requisicoesEsteMes = Requisicao::ativa()
+            ->whereMonth('data_recebimento', $currentMonth)
+            ->whereYear('data_recebimento', $currentYear)
+            ->get();
+
+        $stats = [
+            'requisicoes_este_mes' => $requisicoesEsteMes->count(),
+            'aprovadas' => $requisicoesEsteMes->where('status', 'autorizada')->count(),
+            'pendentes' => $requisicoesEsteMes->where('status', 'pendente')->count(),
+            'rejeitadas' => $requisicoesEsteMes->where('status', 'cancelada')->count(),
+            'concretizadas' => $requisicoesEsteMes->where('status', 'concretizada')->count(),
+            'valor_total_mes' => $requisicoesEsteMes->where('status', 'concretizada')->sum('valor_final') ?? 0,
+        ];
+
+        // Get emitentes and fornecedores for dropdowns
+        $emitentes = \App\Models\Emitente::orderBy('nome')->get(['id', 'nome', 'sigla']);
+        $fornecedores = \App\Models\Fornecedor::where('status', true)->orderBy('razao_social')->get(['id', 'razao_social', 'cnpj']);
+
+        return Inertia::render('Relatorios/Index', [
+            'stats' => $stats,
+            'emitentes' => $emitentes,
+            'fornecedores' => $fornecedores,
+        ]);
     }
 
     /**
@@ -32,7 +58,7 @@ class RelatorioController extends Controller
                  'fornecedor_id' => 'nullable|exists:fornecedores,id',
              ]);
 
-             $query = Requisicao::ativa()
+             $query = Requisicao::query()->where('status', '!=', 'excluida')
                  ->with(['emitente', 'destinatario', 'fornecedor', 'usuarioCriacao']);
 
              // Apply filters
@@ -83,7 +109,7 @@ class RelatorioController extends Controller
                      'id' => $requisicao->id,
                      'numero_completo' => $requisicao->numero_completo,
                      'solicitante' => $requisicao->solicitante,
-                     'data_recebimento' => $requisicao->data_recebimento?->format('d/m/Y'),
+                     'data_recebimento' => $requisicao->data_recebimento->format('d/m/Y'),
                      'status' => $requisicao->status,
                      'status_display' => $requisicao->status_display,
                      'valor_final' => $requisicao->valor_final,
@@ -100,10 +126,16 @@ class RelatorioController extends Controller
                  ]
              );
 
+             // Get emitentes and fornecedores for dropdowns
+             $emitentes = \App\Models\Emitente::orderBy('nome')->get(['id', 'nome', 'sigla']);
+             $fornecedores = \App\Models\Fornecedor::where('status', true)->orderBy('razao_social')->get(['id', 'razao_social']);
+
              return Inertia::render('Relatorios/Requisicoes', [
                  'requisicoes' => $requisicoesList,
                  'stats' => $stats,
                  'filters' => $request->only(['data_inicio', 'data_fim', 'status', 'emitente_id', 'fornecedor_id']),
+                 'emitentes' => $emitentes,
+                 'fornecedores' => $fornecedores,
              ]);
          }
 
@@ -122,9 +154,9 @@ class RelatorioController extends Controller
 
              // Apply status filter
              if ($request->filled('status')) {
-                 if ($request->status) {
-                     $query->ativo();
-                 } else {
+                 if ($request->status === '1') {
+                     $query->where('status', true);
+                 } elseif ($request->status === '0') {
                      $query->where('status', false);
                  }
              }
@@ -136,11 +168,11 @@ class RelatorioController extends Controller
                  $requisicoesQuery = $fornecedor->requisicoes()->where('status', 'concretizada');
 
                  if ($request->filled('data_inicio')) {
-                     $requisicoesQuery->whereDate('data_concretizacao', '>=', $request->data_inicio);
+                     $requisicoesQuery->whereDate('data_recebimento', '>=', $request->data_inicio);
                  }
 
                  if ($request->filled('data_fim')) {
-                     $requisicoesQuery->whereDate('data_concretizacao', '<=', $request->data_fim);
+                     $requisicoesQuery->whereDate('data_recebimento', '<=', $request->data_fim);
                  }
 
                  $requisicoes = $requisicoesQuery->get();
@@ -239,10 +271,14 @@ class RelatorioController extends Controller
                  'created_at' => $conferencia->created_at->format('d/m/Y H:i'),
              ]);
 
+             // Get fornecedores for dropdown
+             $fornecedores = \App\Models\Fornecedor::where('status', true)->orderBy('razao_social')->get(['id', 'razao_social']);
+
              return Inertia::render('Relatorios/Conferencias', [
                  'conferencias' => $conferenciasList,
                  'stats' => $stats,
                  'filters' => $request->only(['data_inicio', 'data_fim', 'fornecedor_id']),
+                 'fornecedores' => $fornecedores,
              ]);
          }
 }
