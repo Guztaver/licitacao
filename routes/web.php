@@ -48,6 +48,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('relatorios/requisicoes', [RelatorioController::class, 'requisicoes'])->name('relatorios.requisicoes');
     Route::get('relatorios/fornecedores', [RelatorioController::class, 'fornecedores'])->name('relatorios.fornecedores');
     Route::get('relatorios/conferencias', [RelatorioController::class, 'conferencias'])->name('relatorios.conferencias');
+    Route::get('relatorios/requisicoes/export', [RelatorioController::class, 'exportRequisicoes'])->name('relatorios.requisicoes.export');
+    Route::get('relatorios/fornecedores/export', [RelatorioController::class, 'exportFornecedores'])->name('relatorios.fornecedores.export');
+    Route::get('relatorios/conferencias/export', [RelatorioController::class, 'exportConferencias'])->name('relatorios.conferencias.export');
 });
 
 require __DIR__.'/settings.php';

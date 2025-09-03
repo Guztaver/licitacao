@@ -5,8 +5,20 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { BarChart3, Building, Calendar, CheckCircle, FileBarChart, FileText, PieChart, TrendingUp, type LucideIcon } from 'lucide-react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import {
+    BarChart3,
+    Building,
+    Calendar,
+    CheckCircle,
+    Download,
+    FileBarChart,
+    FileText,
+    Filter,
+    PieChart,
+    TrendingUp,
+    type LucideIcon,
+} from 'lucide-react';
 import { useId, useState, type FormEventHandler } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -53,14 +65,19 @@ export default function RelatoriosIndex({ stats, emitentes = [], fornecedores = 
         tipo_relatorio: '',
         data_inicio: '',
         data_fim: '',
-        emitente_id: '',
-        fornecedor_id: '',
-        status: '',
-        formato: 'pdf',
+        emitente_id: 'all',
+        fornecedor_id: 'all',
+        status: 'all',
+        formato: 'csv',
     });
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
+
+        if (!data.tipo_relatorio) {
+            alert('Por favor, selecione um tipo de relatório.');
+            return;
+        }
 
         // Navigate to the appropriate report page based on report type
         const reportRoutes: Record<string, string> = {
@@ -72,18 +89,18 @@ export default function RelatoriosIndex({ stats, emitentes = [], fornecedores = 
             aprovacoes_tempo: '/relatorios/requisicoes',
         };
 
-        const route = reportRoutes[data.tipo_relatorio] || '/relatorios/requisicoes';
+        const routePath = reportRoutes[data.tipo_relatorio] || '/relatorios/requisicoes';
 
-        // Build query parameters
-        const params = new URLSearchParams();
-        if (data.data_inicio) params.append('data_inicio', data.data_inicio);
-        if (data.data_fim) params.append('data_fim', data.data_fim);
-        if (data.emitente_id) params.append('emitente_id', data.emitente_id);
-        if (data.fornecedor_id) params.append('fornecedor_id', data.fornecedor_id);
-        if (data.status) params.append('status', data.status);
+        // Build query parameters object
+        const params: Record<string, string> = {};
+        if (data.data_inicio) params.data_inicio = data.data_inicio;
+        if (data.data_fim) params.data_fim = data.data_fim;
+        if (data.emitente_id && data.emitente_id !== 'all') params.emitente_id = data.emitente_id;
+        if (data.fornecedor_id && data.fornecedor_id !== 'all') params.fornecedor_id = data.fornecedor_id;
+        if (data.status && data.status !== 'all') params.status = data.status;
 
-        const url = `${route}${params.toString() ? '?' + params.toString() : ''}`;
-        window.location.href = url;
+        // Use Inertia router for proper SPA navigation
+        router.get(routePath, params);
     };
 
     const tiposRelatorio: Array<{
@@ -113,7 +130,7 @@ export default function RelatoriosIndex({ stats, emitentes = [], fornecedores = 
         {
             id: 'fornecedores_ranking',
             nome: 'Ranking de Fornecedores',
-            descricao: 'Fornecedores mais solicitados em requisições',
+            descricao: 'Fornecedores com mais requisições concretizadas',
             icon: PieChart,
         },
         {
@@ -131,10 +148,48 @@ export default function RelatoriosIndex({ stats, emitentes = [], fornecedores = 
     ];
 
     const formatosDisponiveis = [
-        { value: 'pdf', label: 'PDF' },
-        { value: 'excel', label: 'Excel (XLSX)' },
         { value: 'csv', label: 'CSV' },
+        { value: 'excel', label: 'Excel (XLSX)' },
+        { value: 'pdf', label: 'PDF' },
     ];
+
+    const handleExportReport = () => {
+        if (!data.tipo_relatorio) {
+            alert('Por favor, selecione um tipo de relatório.');
+            return;
+        }
+
+        // Map report types to export routes
+        const exportRoutes: Record<string, string> = {
+            requisicoes_periodo: '/relatorios/requisicoes/export',
+            requisicoes_status: '/relatorios/requisicoes/export',
+            emitentes_ranking: '/relatorios/requisicoes/export',
+            fornecedores_ranking: '/relatorios/fornecedores/export',
+            valores_mensais: '/relatorios/requisicoes/export',
+            aprovacoes_tempo: '/relatorios/requisicoes/export',
+        };
+
+        const exportRoutePath = exportRoutes[data.tipo_relatorio];
+
+        if (!exportRoutePath) {
+            alert('Export não disponível para este tipo de relatório.');
+            return;
+        }
+
+        // Build query parameters object for export
+        const params: Record<string, string> = {
+            formato: data.formato,
+        };
+        if (data.data_inicio) params.data_inicio = data.data_inicio;
+        if (data.data_fim) params.data_fim = data.data_fim;
+        if (data.emitente_id && data.emitente_id !== 'all') params.emitente_id = data.emitente_id;
+        if (data.fornecedor_id && data.fornecedor_id !== 'all') params.fornecedor_id = data.fornecedor_id;
+        if (data.status && data.status !== 'all') params.status = data.status;
+
+        // Use window.location for file downloads
+        const queryString = new URLSearchParams(params).toString();
+        window.location.href = `${exportRoutePath}?${queryString}`;
+    };
 
     const dataInicioId = useId();
     const dataFimId = useId();
@@ -225,46 +280,59 @@ export default function RelatoriosIndex({ stats, emitentes = [], fornecedores = 
                                             </div>
                                         </div>
 
-                                        {/* Emitente e Fornecedor */}
-                                        {(relatorioSelecionado === 'requisicoes_periodo' || relatorioSelecionado === 'requisicoes_status') && (
-                                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="emitente_id">Emitente</Label>
-                                                    <Select value={data.emitente_id} onValueChange={(value) => setData('emitente_id', value)}>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Todos os emitentes" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="">Todos os emitentes</SelectItem>
-                                                            {emitentes.map((emitente) => (
-                                                                <SelectItem key={emitente.id} value={emitente.id.toString()}>
-                                                                    {emitente.nome} ({emitente.sigla})
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="fornecedor_id">Fornecedor</Label>
-                                                    <Select value={data.fornecedor_id} onValueChange={(value) => setData('fornecedor_id', value)}>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Todos os fornecedores" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="">Todos os fornecedores</SelectItem>
-                                                            {fornecedores.map((fornecedor) => (
-                                                                <SelectItem key={fornecedor.id} value={fornecedor.id.toString()}>
-                                                                    {fornecedor.razao_social}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
+                                        {/* Emitente - show for requisicoes reports */}
+                                        {(relatorioSelecionado === 'requisicoes_periodo' ||
+                                            relatorioSelecionado === 'requisicoes_status' ||
+                                            relatorioSelecionado === 'emitentes_ranking' ||
+                                            relatorioSelecionado === 'valores_mensais' ||
+                                            relatorioSelecionado === 'aprovacoes_tempo') && (
+                                            <div className="space-y-2">
+                                                <Label htmlFor="emitente_id">Emitente</Label>
+                                                <Select value={data.emitente_id} onValueChange={(value) => setData('emitente_id', value)}>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Todos os emitentes" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="all">Todos os emitentes</SelectItem>
+                                                        {emitentes.map((emitente) => (
+                                                            <SelectItem key={emitente.id} value={emitente.id.toString()}>
+                                                                {emitente.nome} ({emitente.sigla})
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
                                             </div>
                                         )}
 
-                                        {/* Status */}
-                                        {(relatorioSelecionado === 'requisicoes_periodo' || relatorioSelecionado === 'aprovacoes_tempo') && (
+                                        {/* Fornecedor - show for requisicoes and fornecedores reports */}
+                                        {(relatorioSelecionado === 'requisicoes_periodo' ||
+                                            relatorioSelecionado === 'requisicoes_status' ||
+                                            relatorioSelecionado === 'fornecedores_ranking' ||
+                                            relatorioSelecionado === 'valores_mensais' ||
+                                            relatorioSelecionado === 'aprovacoes_tempo') && (
+                                            <div className="space-y-2">
+                                                <Label htmlFor="fornecedor_id">Fornecedor</Label>
+                                                <Select value={data.fornecedor_id} onValueChange={(value) => setData('fornecedor_id', value)}>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Todos os fornecedores" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="all">Todos os fornecedores</SelectItem>
+                                                        {fornecedores.map((fornecedor) => (
+                                                            <SelectItem key={fornecedor.id} value={fornecedor.id.toString()}>
+                                                                {fornecedor.razao_social}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        )}
+
+                                        {/* Status - show for requisicoes reports */}
+                                        {(relatorioSelecionado === 'requisicoes_periodo' ||
+                                            relatorioSelecionado === 'requisicoes_status' ||
+                                            relatorioSelecionado === 'aprovacoes_tempo' ||
+                                            relatorioSelecionado === 'valores_mensais') && (
                                             <div className="space-y-2">
                                                 <Label htmlFor="status">Status</Label>
                                                 <Select value={data.status} onValueChange={(value) => setData('status', value)}>
@@ -272,7 +340,7 @@ export default function RelatoriosIndex({ stats, emitentes = [], fornecedores = 
                                                         <SelectValue placeholder="Todos os status" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="">Todos os status</SelectItem>
+                                                        <SelectItem value="all">Todos os status</SelectItem>
                                                         <SelectItem value="pendente">Pendente</SelectItem>
                                                         <SelectItem value="autorizada">Autorizada</SelectItem>
                                                         <SelectItem value="concretizada">Concretizada</SelectItem>
@@ -300,9 +368,13 @@ export default function RelatoriosIndex({ stats, emitentes = [], fornecedores = 
                                         </div>
 
                                         <div className="flex justify-end space-x-2 pt-4">
-                                            <Button type="submit" disabled={processing}>
+                                            <Button type="submit" disabled={processing} variant="outline">
+                                                <FileText className="mr-2 h-4 w-4" />
+                                                {processing ? 'Carregando...' : 'Ver Relatório'}
+                                            </Button>
+                                            <Button type="button" onClick={handleExportReport} disabled={processing}>
                                                 <Download className="mr-2 h-4 w-4" />
-                                                {processing ? 'Gerando...' : 'Gerar Relatório'}
+                                                {processing ? 'Exportando...' : 'Exportar'}
                                             </Button>
                                         </div>
                                     </form>
@@ -397,9 +469,11 @@ export default function RelatoriosIndex({ stats, emitentes = [], fornecedores = 
                                         <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">Dicas</h3>
                                         <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
                                             <p>
-                                                • Use filtros de período para análises específicas
+                                                • Selecione um tipo de relatório para filtrar os dados
                                                 <br />
-                                                • Relatórios em Excel permitem análises avançadas
+                                                • Use "Ver Relatório" para visualizar na tela
+                                                <br />
+                                                • Use "Exportar" para baixar o arquivo
                                                 <br />• CSV é ideal para importação em outros sistemas
                                             </p>
                                         </div>
