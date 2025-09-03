@@ -1,0 +1,457 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Requisicao;
+use App\Models\Emitente;
+use App\Models\Destinatario;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
+use Inertia\Response;
+use Illuminate\Support\Facades\Storage;
+
+class RequisicaoController extends Controller
+{
+    /**
+     * Display a listing of the requisições.
+     */
+    public function index(Request $request): Response
+    {
+        $query = Requisicao::query()->where('status', '!=', 'excluida')
+            ->with(['emitente', 'destinatario', 'fornecedor', 'usuarioCriacao']);
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('numero', 'like', "%{$request->search}%")
+                  ->orWhere('numero_completo', 'like', "%{$request->search}%")
+                  ->orWhere('solicitante', 'like', "%{$request->search}%")
+                  ->orWhere('descricao', 'like', "%{$request->search}%");
+            });
+        }
+
+        // Status filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Emitente filter
+        if ($request->filled('emitente_id')) {
+            $query->where('emitente_id', $request->emitente_id);
+        }
+
+        // Date range filter
+        if ($request->filled('data_inicio')) {
+            $query->whereDate('data_recebimento', '>=', $request->data_inicio);
+        }
+
+        if ($request->filled('data_fim')) {
+            $query->whereDate('data_recebimento', '<=', $request->data_fim);
+        }
+
+        $requisicoesPaginated = $query
+            ->orderBy('created_at', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        $requisicoesPaginated->getCollection()->transform(function ($requisicao) {
+            return [
+                'id' => $requisicao->id,
+                'numero' => $requisicao->numero,
+                'numero_completo' => $requisicao->numero_completo,
+                'solicitante' => $requisicao->solicitante,
+                'numero_oficio' => $requisicao->numero_oficio,
+                'data_recebimento' => $requisicao->data_recebimento->format('d/m/Y'),
+                'descricao' => $requisicao->descricao,
+                'status' => $requisicao->status,
+                'status_display' => $requisicao->status_display,
+                'status_color' => $requisicao->status_color,
+                'valor_final' => $requisicao->valor_final,
+                'numero_pedido_real' => $requisicao->numero_pedido_real,
+                'data_concretizacao' => $requisicao->data_concretizacao ? $requisicao->data_concretizacao->format('d/m/Y') : null,
+                'pode_editar' => $requisicao->podeEditar(),
+                'pode_concretizar' => $requisicao->podeConcretizar(),
+                'pode_excluir' => $requisicao->podeExcluir(),
+                'emitente' => $requisicao->emitente ? [
+                    'id' => $requisicao->emitente->id,
+                    'nome' => $requisicao->emitente->nome,
+                    'sigla' => $requisicao->emitente->sigla,
+                ] : null,
+                'destinatario' => $requisicao->destinatario ? [
+                    'id' => $requisicao->destinatario->id,
+                    'nome' => $requisicao->destinatario->nome,
+                    'sigla' => $requisicao->destinatario->sigla,
+                ] : null,
+                'fornecedor' => $requisicao->fornecedor ? [
+                    'id' => $requisicao->fornecedor->id,
+                    'razao_social' => $requisicao->fornecedor->razao_social,
+                    'cnpj_formatado' => $requisicao->fornecedor->cnpj_formatado,
+                ] : null,
+                'usuario_criacao' => $requisicao->usuarioCriacao ? [
+                    'name' => $requisicao->usuarioCriacao->name,
+                ] : null,
+                'created_at' => $requisicao->created_at->format('d/m/Y H:i'),
+            ];
+        });
+
+        $emitentes = Emitente::query()->orderBy('nome')->get(['id', 'nome', 'sigla']);
+
+        return Inertia::render('Requisicoes/Index', [
+            'requisicoes' => $requisicoesPaginated,
+            'emitentes' => $emitentes,
+            'filters' => $request->only(['search', 'status', 'emitente_id', 'data_inicio', 'data_fim']),
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new requisição.
+     */
+    public function create(): Response
+    {
+        $emitentes = Emitente::query()->orderBy('nome')->get(['id', 'nome', 'sigla']);
+        $destinatarios = Destinatario::query()->orderBy('nome')->get(['id', 'nome', 'sigla']);
+
+        return Inertia::render('Requisicoes/Create', [
+            'emitentes' => $emitentes,
+            'destinatarios' => $destinatarios,
+            'proximo_numero' => Requisicao::gerarProximoNumero(),
+        ]);
+    }
+
+    /**
+     * Store a newly created requisição in storage.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'numero' => 'required|string|unique:requisicoes,numero',
+            'emitente_id' => 'required|exists:emitentes,id',
+            'destinatario_id' => 'required|exists:destinatarios,id',
+            'solicitante' => 'required|string|max:255',
+            'numero_oficio' => 'nullable|string|max:100',
+            'data_recebimento' => 'required|date',
+            'descricao' => 'required|string',
+            'anexo' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+        ]);
+
+        $validated['status'] = 'autorizada';
+        $validated['usuario_criacao_id'] = $request->user()->id;
+
+        // Handle file upload
+        if ($request->hasFile('anexo')) {
+            $validated['anexo'] = $request->file('anexo')->store('requisicoes/anexos', 'public');
+        }
+
+        // Load emitente to generate complete number before saving
+        $emitente = Emitente::find($validated['emitente_id']);
+        if (!$emitente) {
+            return back()->withErrors(['emitente_id' => 'Emitente não encontrado.']);
+        }
+        $validated['numero_completo'] = $validated['numero'] . '/' . $emitente->sigla;
+
+        $requisicao = new Requisicao($validated);
+        $requisicao->save();
+
+        return redirect()->route('requisicoes.show', $requisicao)
+            ->with('success', 'Requisição criada com sucesso!');
+    }
+
+    /**
+     * Display the specified requisição.
+     */
+    public function show(Requisicao $requisicao): Response
+    {
+        $requisicao->load(['emitente', 'destinatario', 'fornecedor', 'usuarioCriacao', 'usuarioConcretizacao', 'usuarioExclusao']);
+
+        $requisicaoData = [
+            'id' => $requisicao->id,
+            'numero' => $requisicao->numero,
+            'numero_completo' => $requisicao->numero_completo,
+            'solicitante' => $requisicao->solicitante,
+            'numero_oficio' => $requisicao->numero_oficio,
+            'data_recebimento' => $requisicao->data_recebimento ? $requisicao->data_recebimento->format('d/m/Y') : null,
+            'descricao' => $requisicao->descricao,
+            'anexo' => $requisicao->anexo,
+            'status' => $requisicao->status,
+            'status_display' => $requisicao->status_display,
+            'status_color' => $requisicao->status_color,
+            'numero_pedido_real' => $requisicao->numero_pedido_real,
+            'valor_final' => $requisicao->valor_final,
+            'data_concretizacao' => $requisicao->data_concretizacao ? $requisicao->data_concretizacao->format('d/m/Y H:i') : null,
+            'data_exclusao' => $requisicao->data_exclusao ? $requisicao->data_exclusao->format('d/m/Y H:i') : null,
+            'motivo_exclusao' => $requisicao->motivo_exclusao,
+            'pode_editar' => $requisicao->podeEditar(),
+            'pode_concretizar' => $requisicao->podeConcretizar(),
+            'pode_excluir' => $requisicao->podeExcluir(),
+            'created_at' => $requisicao->created_at->format('d/m/Y H:i'),
+            'updated_at' => $requisicao->updated_at->format('d/m/Y H:i'),
+        ];
+
+        $relations = [
+            'emitente' => $requisicao->emitente ? [
+                'id' => $requisicao->emitente->id,
+                'nome' => $requisicao->emitente->nome,
+                'sigla' => $requisicao->emitente->sigla,
+                'endereco' => $requisicao->emitente->endereco,
+                'telefone' => $requisicao->emitente->telefone,
+                'email' => $requisicao->emitente->email,
+            ] : null,
+            'destinatario' => $requisicao->destinatario ? [
+                'id' => $requisicao->destinatario->id,
+                'nome' => $requisicao->destinatario->nome,
+                'sigla' => $requisicao->destinatario->sigla,
+                'endereco' => $requisicao->destinatario->endereco,
+                'telefone' => $requisicao->destinatario->telefone,
+                'email' => $requisicao->destinatario->email,
+            ] : null,
+            'fornecedor' => $requisicao->fornecedor ? [
+                'id' => $requisicao->fornecedor->id,
+                'razao_social' => $requisicao->fornecedor->razao_social,
+                'cnpj' => $requisicao->fornecedor->cnpj,
+                'cnpj_formatado' => $requisicao->fornecedor->cnpj_formatado,
+                'telefone' => $requisicao->fornecedor->telefone,
+                'telefone_formatado' => $requisicao->fornecedor->telefone_formatado,
+                'email' => $requisicao->fornecedor->email,
+                'endereco_completo' => $requisicao->fornecedor->endereco_completo,
+            ] : null,
+            'usuario_criacao' => $requisicao->usuarioCriacao ? [
+                'name' => $requisicao->usuarioCriacao->name,
+                'email' => $requisicao->usuarioCriacao->email,
+            ] : null,
+            'usuario_concretizacao' => $requisicao->usuarioConcretizacao ? [
+                'name' => $requisicao->usuarioConcretizacao->name,
+                'email' => $requisicao->usuarioConcretizacao->email,
+            ] : null,
+            'usuario_exclusao' => $requisicao->usuarioExclusao ? [
+                'name' => $requisicao->usuarioExclusao->name,
+                'email' => $requisicao->usuarioExclusao->email,
+            ] : null,
+        ];
+
+        return Inertia::render('Requisicoes/Show', [
+            'requisicao' => $requisicaoData,
+            'relations' => $relations,
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified requisição.
+     */
+    public function edit(Requisicao $requisicao): Response|RedirectResponse
+    {
+        // Check if requisicao can be edited
+        if (!in_array($requisicao->status, ['autorizada'])) {
+            return redirect()->route('requisicoes.show', $requisicao)
+                ->with('error', 'Esta requisição não pode ser editada.');
+        }
+
+        $emitentes = Emitente::query()->orderBy('nome')->get(['id', 'nome', 'sigla']);
+        $destinatarios = Destinatario::query()->orderBy('nome')->get(['id', 'nome', 'sigla']);
+
+        return Inertia::render('Requisicoes/Edit', [
+            'requisicao' => [
+                'id' => $requisicao->id,
+                'numero' => $requisicao->numero,
+                'emitente_id' => $requisicao->emitente_id,
+                'destinatario_id' => $requisicao->destinatario_id,
+                'solicitante' => $requisicao->solicitante,
+                'numero_oficio' => $requisicao->numero_oficio,
+                'data_recebimento' => $requisicao->data_recebimento ? $requisicao->data_recebimento->format('Y-m-d') : null,
+                'descricao' => $requisicao->descricao,
+                'anexo' => $requisicao->anexo,
+            ],
+            'emitentes' => $emitentes,
+            'destinatarios' => $destinatarios,
+        ]);
+    }
+
+    /**
+     * Update the specified requisição in storage.
+     */
+    public function update(Request $request, Requisicao $requisicao): RedirectResponse
+    {
+        if (!$requisicao->podeEditar()) {
+            return redirect()->route('requisicoes.show', $requisicao)
+                ->with('error', 'Esta requisição não pode ser editada.');
+        }
+
+        $validated = $request->validate([
+            'numero' => 'required|string|unique:requisicoes,numero,' . $requisicao->id,
+            'emitente_id' => 'required|exists:emitentes,id',
+            'destinatario_id' => 'required|exists:destinatarios,id',
+            'solicitante' => 'required|string|max:255',
+            'numero_oficio' => 'nullable|string|max:100',
+            'data_recebimento' => 'required|date',
+            'descricao' => 'required|string',
+            'anexo' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+        ]);
+
+        // Handle file upload
+        if ($request->hasFile('anexo')) {
+            // Delete old file if exists
+            if ($requisicao->anexo) {
+                \Storage::disk('public')->delete($requisicao->anexo);
+            }
+            $validated['anexo'] = $request->file('anexo')->store('requisicoes/anexos', 'public');
+        }
+
+        $requisicao->update($validated);
+
+        // Update complete number if emitente changed
+        if ($requisicao->wasChanged('emitente_id')) {
+            $requisicao->update([
+                'numero_completo' => $requisicao->gerarNumeroCompleto(),
+            ]);
+        }
+
+        return redirect()->route('requisicoes.show', $requisicao)
+            ->with('success', 'Requisição atualizada com sucesso!');
+    }
+
+    /**
+     * Concretizar requisição.
+     */
+    public function concretizar(Request $request, Requisicao $requisicao): RedirectResponse
+    {
+        if (!$requisicao->podeConcretizar()) {
+            return redirect()->back()
+                ->with('error', 'Esta requisição não pode ser concretizada.');
+        }
+
+        $validated = $request->validate([
+            'fornecedor_id' => 'required|exists:fornecedores,id',
+            'numero_pedido_real' => 'required|string|max:100',
+            'valor_final' => 'required|numeric|min:0',
+        ]);
+
+        $requisicao->concretizar($validated, $request->user());
+
+        return redirect()->route('requisicoes.show', $requisicao)
+            ->with('success', 'Requisição concretizada com sucesso!');
+    }
+
+    /**
+     * Remove the specified requisição from storage (logical delete).
+     */
+    public function destroy(Request $request, Requisicao $requisicao): RedirectResponse
+    {
+        if (!$requisicao->podeExcluir()) {
+            return redirect()->back()
+                ->with('error', 'Esta requisição não pode ser excluída.');
+        }
+
+        $validated = $request->validate([
+            'motivo_exclusao' => 'required|string|max:500',
+        ]);
+
+        $requisicao->excluirLogicamente($validated['motivo_exclusao'], $request->user());
+
+        return redirect()->route('requisicoes.index')
+            ->with('success', 'Requisição excluída com sucesso!');
+    }
+
+    /**
+     * Show deleted requisições.
+     */
+    public function excluidas(Request $request): Response
+    {
+        $query = Requisicao::query()->where('status', 'excluida')
+            ->with(['emitente', 'destinatario', 'fornecedor', 'usuarioExclusao']);
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('numero', 'like', "%{$request->search}%")
+                  ->orWhere('numero_completo', 'like', "%{$request->search}%")
+                  ->orWhere('solicitante', 'like', "%{$request->search}%");
+            });
+        }
+
+        $requisicoes = $query
+            ->orderBy('data_exclusao', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        $requisicoes->getCollection()->transform(function ($requisicao) {
+            return [
+                'id' => $requisicao->id,
+                'numero_completo' => $requisicao->numero_completo,
+                'solicitante' => $requisicao->solicitante,
+                'data_recebimento' => $requisicao->data_recebimento->format('d/m/Y'),
+                'data_exclusao' => $requisicao->data_exclusao->format('d/m/Y H:i'),
+                'motivo_exclusao' => $requisicao->motivo_exclusao,
+                'emitente' => $requisicao->emitente ? [
+                    'nome' => $requisicao->emitente->nome,
+                    'sigla' => $requisicao->emitente->sigla,
+                ] : null,
+                'usuario_exclusao' => $requisicao->usuarioExclusao ? [
+                    'name' => $requisicao->usuarioExclusao->name,
+                ] : null,
+            ];
+        });
+
+        return Inertia::render('Requisicoes/Excluidas', [
+            'requisicoes' => $requisicoes,
+            'filters' => $request->only(['search']),
+        ]);
+    }
+
+    /**
+     * Generate PDF for requisição.
+     */
+    public function pdf(Requisicao $requisicao): \Illuminate\Http\JsonResponse
+    {
+        // This would typically use a PDF generation library like DomPDF or TCPDF
+        return response()->json([
+            'message' => 'PDF generation would be implemented here',
+            'requisicao_id' => $requisicao->id,
+        ]);
+    }
+
+    /**
+     * Download anexo.
+     */
+    public function anexo(Requisicao $requisicao): \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        if (!$requisicao->anexo) {
+            return redirect()->back()
+                ->with('error', 'Esta requisição não possui anexo.');
+        }
+
+        if (!Storage::disk('public')->exists($requisicao->anexo)) {
+            return redirect()->back()
+                ->with('error', 'Arquivo não encontrado.');
+        }
+
+        $filename = basename($requisicao->anexo);
+        return Storage::disk('public')->download($requisicao->anexo, $filename);
+    }
+
+    /**
+     * Export requisições to Excel/CSV.
+     */
+    public function export(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $query = Requisicao::query()->where('status', '!=', 'excluida')->with(['emitente', 'destinatario', 'fornecedor']);
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('data_inicio')) {
+            $query->whereDate('data_recebimento', '>=', $request->data_inicio);
+        }
+
+        if ($request->filled('data_fim')) {
+            $query->whereDate('data_recebimento', '<=', $request->data_fim);
+        }
+
+        $requisicoes = $query->orderBy('created_at', 'desc')->get();
+
+        return response()->json([
+            'message' => 'Export functionality would be implemented here',
+            'count' => $requisicoes->count(),
+        ]);
+    }
+}
