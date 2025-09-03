@@ -1,11 +1,16 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { requisicoes } from '@/routes';
 import type { BreadcrumbItem, Destinatario, Emitente, Fornecedor, User } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, CheckCircle, Download, Edit, Trash2 } from 'lucide-react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { ArrowLeft, CheckCircle, Download, Edit, Trash2, X } from 'lucide-react';
+import { useId, useState } from 'react';
 
 interface ShowRequisicao {
     id: number;
@@ -27,6 +32,7 @@ interface ShowRequisicao {
     pode_editar?: boolean;
     pode_concretizar?: boolean;
     pode_excluir?: boolean;
+    pode_cancelar?: boolean;
     created_at: string;
     updated_at: string;
 }
@@ -46,9 +52,28 @@ interface ShowRelations {
 interface RequisicaoShowProps {
     requisicao: ShowRequisicao;
     relations: ShowRelations;
+    fornecedores?: Fornecedor[];
 }
 
-export default function RequisicaoShow({ requisicao, relations }: RequisicaoShowProps) {
+interface ConcretizarForm {
+    fornecedor_id: string;
+    numero_pedido_real: string;
+    valor_final: string;
+}
+
+interface CancelarForm {
+    motivo_cancelamento: string;
+}
+
+export default function RequisicaoShow({ requisicao, relations, fornecedores = [] }: RequisicaoShowProps) {
+    const [showConcretizarModal, setShowConcretizarModal] = useState(false);
+    const [showCancelarModal, setShowCancelarModal] = useState(false);
+
+    // Generate unique IDs for form elements
+    const fornecedorSelectId = useId();
+    const numeroPedidoId = useId();
+    const valorFinalId = useId();
+    const motivoCancelamentoId = useId();
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Requisições',
@@ -75,10 +100,66 @@ export default function RequisicaoShow({ requisicao, relations }: RequisicaoShow
         }
     };
 
+    const {
+        data: concretizarData,
+        setData: setConcretizarData,
+        post: postConcretizar,
+        processing: processingConcretizar,
+        errors: concretizarErrors,
+        reset: resetConcretizar,
+    } = useForm<ConcretizarForm>({
+        fornecedor_id: relations.fornecedor?.id?.toString() || '',
+        numero_pedido_real: '',
+        valor_final: '',
+    });
+
+    const {
+        data: cancelarData,
+        setData: setCancelarData,
+        post: postCancelar,
+        processing: processingCancelar,
+        errors: cancelarErrors,
+        reset: resetCancelar,
+    } = useForm<CancelarForm>({
+        motivo_cancelamento: '',
+    });
+
     const handleConcretizar = () => {
-        if (confirm('Tem certeza que deseja concretizar esta requisição?')) {
-            router.post(requisicoes.concretizar(requisicao.id));
-        }
+        setShowConcretizarModal(true);
+    };
+
+    const handleCancelar = () => {
+        setShowCancelarModal(true);
+    };
+
+    const handleConcretizarSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        postConcretizar(requisicoes.concretizar(requisicao.id), {
+            onSuccess: () => {
+                setShowConcretizarModal(false);
+                resetConcretizar();
+            },
+        });
+    };
+
+    const handleConcretizarCancel = () => {
+        setShowConcretizarModal(false);
+        resetConcretizar();
+    };
+
+    const handleCancelarSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        postCancelar(requisicoes.cancelar(requisicao.id), {
+            onSuccess: () => {
+                setShowCancelarModal(false);
+                resetCancelar();
+            },
+        });
+    };
+
+    const handleCancelarCancel = () => {
+        setShowCancelarModal(false);
+        resetCancelar();
     };
 
     const handleExcluir = () => {
@@ -129,6 +210,13 @@ export default function RequisicaoShow({ requisicao, relations }: RequisicaoShow
                                     Editar
                                 </Button>
                             </Link>
+                        )}
+
+                        {requisicao.pode_cancelar && (
+                            <Button onClick={handleCancelar} variant="outline">
+                                <X className="mr-2 h-4 w-4" />
+                                Cancelar
+                            </Button>
                         )}
 
                         {requisicao.pode_concretizar && (
@@ -364,6 +452,35 @@ export default function RequisicaoShow({ requisicao, relations }: RequisicaoShow
                             </Card>
                         )}
 
+                        {/* Informações de Cancelamento */}
+                        {requisicao.status === 'cancelada' && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Informações de Cancelamento</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {requisicao.data_exclusao && (
+                                        <div>
+                                            <p className="text-sm font-medium text-muted-foreground">Data de Cancelamento</p>
+                                            <p className="text-sm">{requisicao.data_exclusao}</p>
+                                        </div>
+                                    )}
+                                    {requisicao.motivo_exclusao && (
+                                        <div>
+                                            <p className="text-sm font-medium text-muted-foreground">Motivo do Cancelamento</p>
+                                            <p className="text-sm">{requisicao.motivo_exclusao}</p>
+                                        </div>
+                                    )}
+                                    {relations.usuario_exclusao && (
+                                        <div>
+                                            <p className="text-sm font-medium text-muted-foreground">Cancelada por</p>
+                                            <p className="text-sm">{relations.usuario_exclusao.name}</p>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        )}
+
                         {/* Informações de Exclusão */}
                         {requisicao.status === 'excluida' && (
                             <Card>
@@ -421,6 +538,106 @@ export default function RequisicaoShow({ requisicao, relations }: RequisicaoShow
                         </Card>
                     </div>
                 </div>
+
+                {/* Concretizar Modal */}
+                <Dialog open={showConcretizarModal} onOpenChange={setShowConcretizarModal}>
+                    <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                            <DialogTitle>Concretizar Requisição</DialogTitle>
+                            <DialogDescription>Preencha as informações para concretizar a requisição {requisicao.numero_completo}.</DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={handleConcretizarSubmit} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor={fornecedorSelectId}>Fornecedor *</Label>
+                                <Select value={concretizarData.fornecedor_id} onValueChange={(value) => setConcretizarData('fornecedor_id', value)}>
+                                    <SelectTrigger className={concretizarErrors.fornecedor_id ? 'border-red-500' : ''}>
+                                        <SelectValue placeholder="Selecione o fornecedor" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {fornecedores.map((fornecedor) => (
+                                            <SelectItem key={fornecedor.id} value={fornecedor.id.toString()}>
+                                                {fornecedor.razao_social}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {concretizarErrors.fornecedor_id && <p className="text-sm text-red-500">{concretizarErrors.fornecedor_id}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor={numeroPedidoId}>Número do Pedido Real *</Label>
+                                <Input
+                                    id={numeroPedidoId}
+                                    value={concretizarData.numero_pedido_real}
+                                    onChange={(e) => setConcretizarData('numero_pedido_real', e.target.value)}
+                                    placeholder="Ex: PED-2024-001"
+                                    className={concretizarErrors.numero_pedido_real ? 'border-red-500' : ''}
+                                />
+                                {concretizarErrors.numero_pedido_real && (
+                                    <p className="text-sm text-red-500">{concretizarErrors.numero_pedido_real}</p>
+                                )}
+                            </div>
+                            <DialogFooter>
+                                <Button type="button" variant="outline" onClick={handleConcretizarCancel}>
+                                    Cancelar
+                                </Button>
+                                <Button type="submit" disabled={processingConcretizar}>
+                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                    {processingConcretizar ? 'Concretizando...' : 'Concretizar'}
+                                </Button>
+                            </DialogFooter>
+
+                            <div className="space-y-2">
+                                <Label htmlFor={valorFinalId}>Valor Final (R$) *</Label>
+                                <Input
+                                    id={valorFinalId}
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={concretizarData.valor_final}
+                                    onChange={(e) => setConcretizarData('valor_final', e.target.value)}
+                                    placeholder="0,00"
+                                    className={concretizarErrors.valor_final ? 'border-red-500' : ''}
+                                />
+                                {concretizarErrors.valor_final && <p className="text-sm text-red-500">{concretizarErrors.valor_final}</p>}
+                            </div>
+                        </form>
+                    </DialogContent>
+                </Dialog>
+
+                {/* Cancelar Modal */}
+                <Dialog open={showCancelarModal} onOpenChange={setShowCancelarModal}>
+                    <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                            <DialogTitle>Cancelar Requisição</DialogTitle>
+                            <DialogDescription>Informe o motivo para cancelar a requisição {requisicao.numero_completo}.</DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={handleCancelarSubmit} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor={motivoCancelamentoId}>Motivo do Cancelamento *</Label>
+                                <textarea
+                                    id={motivoCancelamentoId}
+                                    value={cancelarData.motivo_cancelamento}
+                                    onChange={(e) => setCancelarData('motivo_cancelamento', e.target.value)}
+                                    placeholder="Descreva o motivo do cancelamento..."
+                                    className={`flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${cancelarErrors.motivo_cancelamento ? 'border-red-500' : ''}`}
+                                    required
+                                />
+                                {cancelarErrors.motivo_cancelamento && <p className="text-sm text-red-500">{cancelarErrors.motivo_cancelamento}</p>}
+                            </div>
+
+                            <DialogFooter>
+                                <Button type="button" variant="outline" onClick={handleCancelarCancel}>
+                                    Voltar
+                                </Button>
+                                <Button type="submit" variant="destructive" disabled={processingCancelar}>
+                                    <X className="mr-2 h-4 w-4" />
+                                    {processingCancelar ? 'Cancelando...' : 'Cancelar Requisição'}
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </DialogContent>
+                </Dialog>
             </div>
         </AppLayout>
     );

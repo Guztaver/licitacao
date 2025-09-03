@@ -368,4 +368,111 @@ class ConferenciaController extends Controller
         return redirect()->route('conferencias.index')
             ->with('success', 'Conferência excluída com sucesso!');
     }
+
+    /**
+     * Store a new pedido manual for the conference.
+     */
+    public function storePedidoManual(Request $request, $fornecedorId, $periodo): \Illuminate\Http\RedirectResponse
+    {
+        $validated = $request->validate([
+            'descricao' => 'required|string|max:500',
+            'valor' => 'required|numeric|min:0',
+            'numero_pedido' => 'nullable|string|max:100',
+            'data_pedido' => 'required|date',
+            'observacoes' => 'required|string|max:1000',
+        ]);
+
+        $fornecedor = \App\Models\Fornecedor::findOrFail($fornecedorId);
+
+        $pedidoManual = new \App\Models\PedidoManual($validated);
+        $pedidoManual->fornecedor_id = $fornecedor->id;
+        $pedidoManual->save();
+
+        return redirect()->route('conferencias.fornecedor', [$fornecedorId, $periodo])
+            ->with('success', 'Pedido manual adicionado com sucesso!');
+    }
+
+    /**
+     * Delete a pedido manual from the conference.
+     */
+    public function destroyPedidoManual(Request $request, $fornecedorId, $periodo, $pedidoId): \Illuminate\Http\RedirectResponse
+    {
+        $pedidoManual = \App\Models\PedidoManual::findOrFail($pedidoId);
+
+        // Verify the pedido belongs to the correct fornecedor
+        if ($pedidoManual->fornecedor_id != $fornecedorId) {
+            return redirect()->route('conferencias.fornecedor', [$fornecedorId, $periodo])
+                ->with('error', 'Pedido manual não encontrado.');
+        }
+
+        $pedidoManual->delete();
+
+        return redirect()->route('conferencias.fornecedor', [$fornecedorId, $periodo])
+            ->with('success', 'Pedido manual excluído com sucesso!');
+    }
+
+    /**
+     * Finalize the conference for a fornecedor and period.
+     */
+    public function finalizarConferencia(Request $request, $fornecedorId, $periodo): \Illuminate\Http\RedirectResponse
+    {
+        $fornecedor = \App\Models\Fornecedor::findOrFail($fornecedorId);
+
+        // Parse period (e.g., "2024-01" for January 2024)
+        $periodoData = explode('-', $periodo);
+        if (count($periodoData) !== 2) {
+            return redirect()->route('conferencias.index')
+                ->with('error', 'Período inválido.');
+        }
+
+        $ano = (int) $periodoData[0];
+        $mes = (int) $periodoData[1];
+
+        // Create first and last day of the month
+        $periodo_inicio = \Carbon\Carbon::create($ano, $mes, 1);
+        $periodo_fim = $periodo_inicio->copy()->endOfMonth();
+
+        // Check if conference already exists for this fornecedor and period
+        $existingConferencia = Conferencia::where('fornecedor_id', $fornecedorId)
+            ->where('periodo_inicio', $periodo_inicio)
+            ->where('periodo_fim', $periodo_fim)
+            ->first();
+
+        if ($existingConferencia) {
+            return redirect()->route('conferencias.show', $existingConferencia)
+                ->with('info', 'Conferência já foi finalizada anteriormente.');
+        }
+
+        // Calculate totals
+        $totalRequisicoes = $fornecedor->requisicoes()
+            ->concretizada()
+            ->whereYear('data_concretizacao', $ano)
+            ->whereMonth('data_concretizacao', $mes)
+            ->sum('valor_final') ?? 0;
+
+        $totalPedidosManuais = $fornecedor->pedidosManuais()
+            ->whereYear('data_pedido', $ano)
+            ->whereMonth('data_pedido', $mes)
+            ->sum('valor') ?? 0;
+
+        $totalGeral = $totalRequisicoes + $totalPedidosManuais;
+
+        // Create the conference record
+        $conferencia = new Conferencia([
+            'fornecedor_id' => $fornecedor->id,
+            'periodo_inicio' => $periodo_inicio,
+            'periodo_fim' => $periodo_fim,
+            'total_requisicoes' => $totalRequisicoes,
+            'total_pedidos_manuais' => $totalPedidosManuais,
+            'total_geral' => $totalGeral,
+            'status' => 'finalizada',
+            'usuario_criacao_id' => auth()->id(),
+            'observacoes' => 'Conferência finalizada através do módulo de conferência detalhada.',
+        ]);
+
+        $conferencia->save();
+
+        return redirect()->route('conferencias.show', $conferencia)
+            ->with('success', 'Conferência finalizada com sucesso!');
+    }
 }

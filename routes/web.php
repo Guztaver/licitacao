@@ -29,11 +29,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('requisicoes/{requisicao}/pdf', [RequisicaoController::class, 'pdf'])->name('requisicoes.pdf');
     Route::get('requisicoes/{requisicao}/anexo', [RequisicaoController::class, 'anexo'])->name('requisicoes.anexo');
     Route::post('requisicoes/{requisicao}/concretizar', [RequisicaoController::class, 'concretizar'])->name('requisicoes.concretizar');
+    Route::post('requisicoes/{requisicao}/cancelar', [RequisicaoController::class, 'cancelar'])->name('requisicoes.cancelar');
 
     // Conferências routes
     Route::resource('conferencias', ConferenciaController::class);
     Route::get('conferencias-export', [ConferenciaController::class, 'export'])->name('conferencias.export');
     Route::get('conferencias/fornecedor/{fornecedor}/{periodo}', [ConferenciaController::class, 'fornecedor'])->name('conferencias.fornecedor');
+    Route::post('conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais', [ConferenciaController::class, 'storePedidoManual'])->name('conferencias.pedidos-manuais.store');
+    Route::delete('conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}', [ConferenciaController::class, 'destroyPedidoManual'])->name('conferencias.pedidos-manuais.destroy');
+    Route::post('conferencias/fornecedor/{fornecedor}/{periodo}/finalizar', [ConferenciaController::class, 'finalizarConferencia'])->name('conferencias.finalizar');
 
     // Emitentes routes
     Route::resource('emitentes', EmitenteController::class);

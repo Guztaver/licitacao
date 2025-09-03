@@ -326,7 +326,7 @@ export default function FornecedoresIndex({ fornecedores: fornecedoresPaginated,
                                                 <TableCell>{getStatusBadge(fornecedor.status)}</TableCell>
                                                 <TableCell>
                                                     <div className="text-sm">
-                                                        <span className="font-medium">{fornecedor.requisicoes_count || 0}</span>
+                                                        <span>{fornecedor.requisicoes_count || 0}</span>
                                                         {fornecedor.conferencias_count && fornecedor.conferencias_count > 0 && (
                                                             <p className="text-gray-500">{fornecedor.conferencias_count} conferências</p>
                                                         )}

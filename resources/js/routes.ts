@@ -27,6 +27,7 @@ export const requisicoes = {
     update: (id: number) => `/requisicoes/${id}`,
     destroy: (id: number) => `/requisicoes/${id}`,
     concretizar: (id: number) => `/requisicoes/${id}/concretizar`,
+    cancelar: (id: number) => `/requisicoes/${id}/cancelar`,
     export: () => '/requisicoes-export',
     excluidas: () => '/requisicoes-excluidas',
     pdf: (id: number) => `/requisicoes/${id}/pdf`,

@@ -197,6 +197,7 @@ class RequisicaoController extends Controller
             'pode_editar' => $requisicao->podeEditar(),
             'pode_concretizar' => $requisicao->podeConcretizar(),
             'pode_excluir' => $requisicao->podeExcluir(),
+            'pode_cancelar' => $requisicao->podeCancelar(),
             'created_at' => $requisicao->created_at->format('d/m/Y H:i'),
             'updated_at' => $requisicao->updated_at->format('d/m/Y H:i'),
         ];
@@ -242,9 +243,16 @@ class RequisicaoController extends Controller
             ] : null,
         ];
 
+        // Get fornecedores for concretizar modal
+        $fornecedores = \App\Models\Fornecedor::query()
+            ->where('status', true)
+            ->orderBy('razao_social')
+            ->get(['id', 'razao_social']);
+
         return Inertia::render('Requisicoes/Show', [
             'requisicao' => $requisicaoData,
             'relations' => $relations,
+            'fornecedores' => $fornecedores,
         ]);
     }
 
@@ -362,6 +370,26 @@ class RequisicaoController extends Controller
 
         return redirect()->route('requisicoes.index')
             ->with('success', 'Requisição excluída com sucesso!');
+    }
+
+    /**
+     * Cancel the specified requisição.
+     */
+    public function cancelar(Request $request, Requisicao $requisicao): RedirectResponse
+    {
+        if (! $requisicao->podeCancelar()) {
+            return redirect()->back()
+                ->with('error', 'Esta requisição não pode ser cancelada.');
+        }
+
+        $validated = $request->validate([
+            'motivo_cancelamento' => 'required|string|max:500',
+        ]);
+
+        $requisicao->cancelar($validated['motivo_cancelamento'], $request->user());
+
+        return redirect()->route('requisicoes.show', $requisicao)
+            ->with('success', 'Requisição cancelada com sucesso!');
     }
 
     /**

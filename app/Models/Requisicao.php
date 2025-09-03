@@ -176,6 +176,14 @@ class Requisicao extends Model
     }
 
     /**
+     * Check if requisicao can be cancelled.
+     */
+    public function podeCancelar(): bool
+    {
+        return $this->status === 'autorizada';
+    }
+
+    /**
      * Concretizar requisição.
      *
      * @param  array<string, mixed>  $dados
@@ -189,6 +197,19 @@ class Requisicao extends Model
             'valor_final' => $dados['valor_final'],
             'data_concretizacao' => now(),
             'usuario_concretizacao_id' => $usuario->id,
+        ]);
+    }
+
+    /**
+     * Cancelar requisição.
+     */
+    public function cancelar(string $motivo, User $usuario): void
+    {
+        $this->update([
+            'status' => 'cancelada',
+            'data_exclusao' => now(),
+            'usuario_exclusao_id' => $usuario->id,
+            'motivo_exclusao' => $motivo,
         ]);
     }
 

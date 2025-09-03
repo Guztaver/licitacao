@@ -144,6 +144,33 @@ export default function ConferenciaCreate({ fornecedores }: CreateProps) {
                                     selecionado no momento da criação da conferência.
                                 </p>
                             </div>
+
+                            {/* Alternative: Detailed Conference Workflow */}
+                            <div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
+                                <h4 className="font-medium text-green-900 dark:text-green-100">Conferência Detalhada</h4>
+                                <p className="mb-3 text-sm text-green-700 dark:text-green-300">
+                                    Para adicionar valores manualmente e fazer conferência detalhada, acesse diretamente a conferência por fornecedor.
+                                </p>
+                                <div className="space-y-2">
+                                    <p className="text-xs font-medium text-green-600 dark:text-green-400">Exemplos de acesso direto:</p>
+                                    <div className="space-y-1 text-xs text-green-600 dark:text-green-400">
+                                        <p>
+                                            • Janeiro 2024:{' '}
+                                            <code className="rounded bg-green-100 px-1 dark:bg-green-800">/conferencias/fornecedor/1/2024-01</code>
+                                        </p>
+                                        <p>
+                                            • Dezembro 2023:{' '}
+                                            <code className="rounded bg-green-100 px-1 dark:bg-green-800">/conferencias/fornecedor/2/2023-12</code>
+                                        </p>
+                                        <p>
+                                            Formato:{' '}
+                                            <code className="rounded bg-green-100 px-1 dark:bg-green-800">
+                                                /conferencias/fornecedor/[ID]/[ANO-MES]
+                                            </code>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
 
