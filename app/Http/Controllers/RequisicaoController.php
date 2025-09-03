@@ -463,7 +463,7 @@ class RequisicaoController extends Controller
         $filename = 'requisicoes_' . now()->format('Y-m-d_H-i-s') . '.csv';
 
         $headers = [
-            'Content-Type' => 'text/csv',
+            'Content-Type' => 'text/csv; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
             'Expires' => '0',
@@ -490,7 +490,7 @@ class RequisicaoController extends Controller
                 'Observações',
                 'Data Criação',
                 'Data Atualização'
-            ]);
+            ], ';', '"', '\\');
 
             foreach ($requisicoes as $requisicao) {
                 fputcsv($file, [
@@ -500,13 +500,13 @@ class RequisicaoController extends Controller
                     $requisicao->fornecedor?->razao_social ?? '',
                     $requisicao->objeto,
                     ucfirst($requisicao->status),
-                    number_format($requisicao->valor_total, 2, ',', '.'),
+                    'R$ ' . number_format($requisicao->valor_total ?? 0, 2, ',', '.'),
                     $requisicao->data_recebimento?->format('d/m/Y') ?? '',
                     $requisicao->data_vencimento?->format('d/m/Y') ?? '',
                     $requisicao->observacoes ?? '',
                     $requisicao->created_at->format('d/m/Y H:i'),
                     $requisicao->updated_at->format('d/m/Y H:i')
-                ]);
+                ], ';', '"', '\\');
             }
 
             fclose($file);

@@ -284,7 +284,7 @@ class FornecedorController extends Controller
         $filename = 'fornecedores_' . now()->format('Y-m-d_H-i-s') . '.csv';
 
         $headers = [
-            'Content-Type' => 'text/csv',
+            'Content-Type' => 'text/csv; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
             'Expires' => '0',
@@ -307,7 +307,7 @@ class FornecedorController extends Controller
                 'Status',
                 'Data Criação',
                 'Data Atualização'
-            ]);
+            ], ';', '"', '\\');
 
             foreach ($fornecedores as $fornecedor) {
                 fputcsv($file, [
@@ -319,7 +319,7 @@ class FornecedorController extends Controller
                     $fornecedor->status ? 'Ativo' : 'Inativo',
                     $fornecedor->created_at->format('d/m/Y H:i'),
                     $fornecedor->updated_at->format('d/m/Y H:i')
-                ]);
+                ], ';', '"', '\\');
             }
 
             fclose($file);

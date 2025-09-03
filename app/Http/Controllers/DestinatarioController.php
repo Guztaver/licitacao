@@ -213,7 +213,7 @@ class DestinatarioController extends Controller
         $filename = 'destinatarios_' . now()->format('Y-m-d_H-i-s') . '.csv';
 
         $headers = [
-            'Content-Type' => 'text/csv',
+            'Content-Type' => 'text/csv; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
             'Expires' => '0',
@@ -232,7 +232,7 @@ class DestinatarioController extends Controller
                 'Sigla',
                 'Data Criação',
                 'Data Atualização'
-            ]);
+            ], ';', '"', '\\');
 
             foreach ($destinatarios as $destinatario) {
                 fputcsv($file, [
@@ -240,7 +240,7 @@ class DestinatarioController extends Controller
                     $destinatario->sigla ?? '',
                     $destinatario->created_at->format('d/m/Y H:i'),
                     $destinatario->updated_at->format('d/m/Y H:i')
-                ]);
+                ], ';', '"', '\\');
             }
 
             fclose($file);
