@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Emitente;
 use App\Models\Destinatario;
+use App\Models\Emitente;
 use App\Models\Requisicao;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -28,7 +28,7 @@ class RequisicaoAnexoTest extends TestCase
             'sigla' => 'SEDUC',
             'endereco' => 'Rua Test, 123',
             'telefone' => '(11) 99999-9999',
-            'email' => 'seduc@test.com'
+            'email' => 'seduc@test.com',
         ]);
 
         // Create test destinatario
@@ -37,7 +37,7 @@ class RequisicaoAnexoTest extends TestCase
             'sigla' => 'DCOMP',
             'endereco' => 'Av. Test, 456',
             'telefone' => '(11) 88888-8888',
-            'email' => 'compras@test.com'
+            'email' => 'compras@test.com',
         ]);
     }
 
@@ -61,7 +61,7 @@ class RequisicaoAnexoTest extends TestCase
             'descricao' => 'Teste de anexo',
             'anexo' => $file->store('requisicoes/anexos', 'public'),
             'status' => 'autorizada',
-            'usuario_criacao_id' => $this->user->id
+            'usuario_criacao_id' => $this->user->id,
         ]);
 
         // Test the download route
@@ -89,7 +89,7 @@ class RequisicaoAnexoTest extends TestCase
             'descricao' => 'Teste sem anexo',
             'anexo' => null,
             'status' => 'autorizada',
-            'usuario_criacao_id' => $this->user->id
+            'usuario_criacao_id' => $this->user->id,
         ]);
 
         // Test the download route should redirect back with error
@@ -116,7 +116,7 @@ class RequisicaoAnexoTest extends TestCase
             'descricao' => 'Teste com anexo inexistente',
             'anexo' => 'requisicoes/anexos/inexistente.pdf',
             'status' => 'autorizada',
-            'usuario_criacao_id' => $this->user->id
+            'usuario_criacao_id' => $this->user->id,
         ]);
 
         // Test the download route should redirect back with error
@@ -146,7 +146,7 @@ class RequisicaoAnexoTest extends TestCase
             'descricao' => 'Teste de exibição de anexo',
             'anexo' => $file->store('requisicoes/anexos', 'public'),
             'status' => 'autorizada',
-            'usuario_criacao_id' => $this->user->id
+            'usuario_criacao_id' => $this->user->id,
         ]);
 
         $response = $this->get(route('requisicoes.show', $requisicao->id));
@@ -171,7 +171,7 @@ class RequisicaoAnexoTest extends TestCase
             'descricao' => 'Teste sem anexo na exibição',
             'anexo' => null,
             'status' => 'autorizada',
-            'usuario_criacao_id' => $this->user->id
+            'usuario_criacao_id' => $this->user->id,
         ]);
 
         $response = $this->get(route('requisicoes.show', $requisicao->id));

@@ -37,17 +37,24 @@ interface DestinatariosIndexProps {
         links: PaginationLink[];
         meta: PaginationMeta;
     };
+    stats: {
+        total_destinatarios: number;
+        com_requisicoes: number;
+        total_requisicoes: number;
+        sem_atividade: number;
+    };
     filters: {
         search?: string;
     };
 }
 
-export default function DestinatariosIndex({ destinatarios: destinatariosPaginated, filters }: DestinatariosIndexProps) {
+export default function DestinatariosIndex({ destinatarios: destinatariosPaginated, stats, filters }: DestinatariosIndexProps) {
     // Add safety checks for data
     const safeDestinatarios = destinatariosPaginated || { data: [], links: [], meta: { total: 0, from: 0, to: 0, last_page: 1, current_page: 1 } };
     const safeData = safeDestinatarios.data || [];
     const safeLinks = safeDestinatarios.links || [];
     const safeMeta = safeDestinatarios.meta || { total: 0, from: 0, to: 0, last_page: 1, current_page: 1 };
+    const safeStats = stats || { total_destinatarios: 0, com_requisicoes: 0, total_requisicoes: 0, sem_atividade: 0 };
 
     const { data, setData, get, processing } = useForm({
         search: filters?.search || '',
@@ -60,6 +67,9 @@ export default function DestinatariosIndex({ destinatarios: destinatariosPaginat
             replace: true,
         });
     };
+
+    const isFiltered = data.search !== '';
+    const hasResults = safeData.length > 0;
 
     const handleReset = () => {
         setData({
@@ -86,7 +96,7 @@ export default function DestinatariosIndex({ destinatarios: destinatariosPaginat
                             variant="outline"
                             onClick={() => {
                                 const params = new URLSearchParams(filters as Record<string, string>);
-                                window.location.href = `/destinatarios-export?${params.toString()}`;
+                                window.location.href = `${destinatarios.export()}?${params.toString()}`;
                             }}
                         >
                             <FileDown className="mr-2 h-4 w-4" />
@@ -97,37 +107,48 @@ export default function DestinatariosIndex({ destinatarios: destinatariosPaginat
                 </div>
 
                 {/* Statistics Cards */}
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total</CardTitle>
+                            <CardTitle className="text-sm font-medium">Total Destinatários</CardTitle>
                             <MapPin className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{safeMeta.total}</div>
-                            <p className="text-xs text-muted-foreground">destinatários cadastrados</p>
+                            <div className="text-2xl font-bold">{safeStats.total_destinatarios}</div>
+                            <p className="text-xs text-muted-foreground">{isFiltered ? 'nos resultados filtrados' : 'cadastrados no sistema'}</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Com Requisições</CardTitle>
-                            <MapPin className="h-4 w-4 text-muted-foreground" />
+                            <MapPin className="h-4 w-4 text-green-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{safeData.filter((d) => d.requisicoes_count && d.requisicoes_count > 0).length}</div>
-                            <p className="text-xs text-muted-foreground">com atividade</p>
+                            <div className="text-2xl font-bold text-green-600">{safeStats.com_requisicoes}</div>
+                            <p className="text-xs text-muted-foreground">destinatários ativos</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Requisições Total</CardTitle>
-                            <MapPin className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium">Total Requisições</CardTitle>
+                            <MapPin className="h-4 w-4 text-blue-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{safeData.reduce((acc, d) => acc + (d.requisicoes_count || 0), 0)}</div>
+                            <div className="text-2xl font-bold text-blue-600">{safeStats.total_requisicoes}</div>
                             <p className="text-xs text-muted-foreground">requisições recebidas</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Sem Atividade</CardTitle>
+                            <MapPin className="h-4 w-4 text-amber-600" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-amber-600">{safeStats.sem_atividade}</div>
+                            <p className="text-xs text-muted-foreground">sem requisições</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -169,7 +190,16 @@ export default function DestinatariosIndex({ destinatarios: destinatariosPaginat
                     <CardHeader>
                         <CardTitle className="text-lg">Lista de Destinatários</CardTitle>
                         <CardDescription>
-                            Mostrando {destinatariosPaginated.data.length} de {destinatariosPaginated.meta?.total || 0} destinatários
+                            {isFiltered ? (
+                                <>
+                                    Mostrando {safeMeta.from || 0} a {safeMeta.to || 0} de {safeStats.total_destinatarios} destinatários encontrados
+                                    {safeStats.total_destinatarios === 0 && ' (nenhum resultado encontrado)'}
+                                </>
+                            ) : (
+                                <>
+                                    Mostrando {safeMeta.from || 0} a {safeMeta.to || 0} de {safeMeta.total || 0} destinatários
+                                </>
+                            )}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>

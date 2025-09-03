@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Emitente;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,9 +21,20 @@ class EmitenteController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('nome', 'like', "%{$request->search}%")
-                  ->orWhere('sigla', 'like', "%{$request->search}%");
+                    ->orWhere('sigla', 'like', "%{$request->search}%");
             });
         }
+
+        // Calculate statistics for the complete filtered dataset (before pagination)
+        $statsQuery = clone $query;
+        $allEmitentes = $statsQuery->withCount('requisicoes')->get();
+
+        $stats = [
+            'total_emitentes' => $allEmitentes->count(),
+            'com_requisicoes' => $allEmitentes->filter(fn ($emitente) => $emitente->requisicoes_count > 0)->count(),
+            'total_requisicoes' => $allEmitentes->sum('requisicoes_count'),
+            'sem_atividade' => $allEmitentes->filter(fn ($emitente) => $emitente->requisicoes_count === 0)->count(),
+        ];
 
         $emitentesPaginated = $query
             ->withCount('requisicoes')
@@ -31,21 +42,21 @@ class EmitenteController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $emitentesPaginated->getCollection()->transform(function ($emitente) {
-            return [
-                'id' => $emitente->id,
-                'nome' => $emitente->nome,
-                'sigla' => $emitente->sigla,
-                'endereco' => $emitente->endereco,
-                'telefone' => $emitente->telefone,
-                'email' => $emitente->email,
-                'requisicoes_count' => $emitente->requisicoes_count,
-                'created_at' => $emitente->created_at->format('d/m/Y'),
-            ];
-        });
+        $emitentesPaginated->getCollection()->transform(fn ($emitente) => [
+            'id' => $emitente->id,
+            'nome' => $emitente->nome,
+            'sigla' => $emitente->sigla,
+            'endereco' => $emitente->endereco,
+            'telefone' => $emitente->telefone,
+            'email' => $emitente->email,
+            'requisicoes_count' => $emitente->requisicoes_count,
+            'created_at' => $emitente->created_at->format('d/m/Y'),
+        ]
+        );
 
         return Inertia::render('Emitentes/Index', [
             'emitentes' => $emitentesPaginated,
+            'stats' => $stats,
             'filters' => $request->only(['search']),
         ]);
     }
@@ -88,7 +99,7 @@ class EmitenteController extends Controller
                 $query->ativa()->orderBy('created_at', 'desc')->limit(10);
             },
             'requisicoes.destinatario',
-            'requisicoes.fornecedor'
+            'requisicoes.fornecedor',
         ]);
 
         $emitenteData = [
@@ -102,25 +113,24 @@ class EmitenteController extends Controller
             'updated_at' => $emitente->updated_at->format('d/m/Y H:i'),
         ];
 
-        $requisicoes = $emitente->requisicoes->map(function ($requisicao) {
-            return [
-                'id' => $requisicao->id,
-                'numero_completo' => $requisicao->numero_completo,
-                'solicitante' => $requisicao->solicitante,
-                'status' => $requisicao->status,
-                'status_display' => $requisicao->status_display,
-                'status_color' => $requisicao->status_color,
-                'valor_final' => $requisicao->valor_final,
-                'data_recebimento' => $requisicao->data_recebimento->format('d/m/Y'),
-                'destinatario' => $requisicao->destinatario ? [
-                    'nome' => $requisicao->destinatario->nome,
-                    'sigla' => $requisicao->destinatario->sigla,
-                ] : null,
-                'fornecedor' => $requisicao->fornecedor ? [
-                    'razao_social' => $requisicao->fornecedor->razao_social,
-                ] : null,
-            ];
-        });
+        $requisicoes = $emitente->requisicoes->map(fn ($requisicao) => [
+            'id' => $requisicao->id,
+            'numero_completo' => $requisicao->numero_completo,
+            'solicitante' => $requisicao->solicitante,
+            'status' => $requisicao->status,
+            'status_display' => $requisicao->status_display,
+            'status_color' => $requisicao->status_color,
+            'valor_final' => $requisicao->valor_final,
+            'data_recebimento' => $requisicao->data_recebimento->format('d/m/Y'),
+            'destinatario' => $requisicao->destinatario ? [
+                'nome' => $requisicao->destinatario->nome,
+                'sigla' => $requisicao->destinatario->sigla,
+            ] : null,
+            'fornecedor' => $requisicao->fornecedor ? [
+                'razao_social' => $requisicao->fornecedor->razao_social,
+            ] : null,
+        ]
+        );
 
         // Statistics
         $stats = [
@@ -165,7 +175,7 @@ class EmitenteController extends Controller
     {
         $validated = $request->validate([
             'nome' => 'required|string|max:255',
-            'sigla' => 'required|string|max:20|unique:emitentes,sigla,' . $emitente->id,
+            'sigla' => 'required|string|max:20|unique:emitentes,sigla,'.$emitente->id,
             'endereco' => 'nullable|string|max:500',
             'telefone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
@@ -197,30 +207,30 @@ class EmitenteController extends Controller
     /**
      * Export emitentes to CSV.
      */
-    public function export(Request $request)
+    public function export(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $query = Emitente::query();
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('nome', 'like', "%{$request->search}%")
-                  ->orWhere('sigla', 'like', "%{$request->search}%");
+                    ->orWhere('sigla', 'like', "%{$request->search}%");
             });
         }
 
         $emitentes = $query->orderBy('nome')->get();
 
-        $filename = 'emitentes_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        $filename = 'emitentes_'.now()->format('Y-m-d_H-i-s').'.csv';
 
         $headers = [
             'Content-Type' => 'text/csv; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
             'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
             'Expires' => '0',
             'Pragma' => 'public',
         ];
 
-        $callback = function() use ($emitentes) {
+        $callback = function () use ($emitentes) {
             $file = fopen('php://output', 'w');
 
             // Add UTF-8 BOM for proper Excel handling
@@ -234,7 +244,7 @@ class EmitenteController extends Controller
                 'Telefone',
                 'Email',
                 'Data Criação',
-                'Data Atualização'
+                'Data Atualização',
             ], ';', '"', '\\');
 
             foreach ($emitentes as $emitente) {
@@ -245,7 +255,7 @@ class EmitenteController extends Controller
                     $emitente->telefone ?? '',
                     $emitente->email ?? '',
                     $emitente->created_at->format('d/m/Y H:i'),
-                    $emitente->updated_at->format('d/m/Y H:i')
+                    $emitente->updated_at->format('d/m/Y H:i'),
                 ], ';', '"', '\\');
             }
 

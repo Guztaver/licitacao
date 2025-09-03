@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Emitente;
 use App\Models\Destinatario;
+use App\Models\Emitente;
 use App\Models\Requisicao;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -28,7 +28,7 @@ class RequisicaoCreationTest extends TestCase
             'sigla' => 'SEDUC',
             'endereco' => 'Rua Test, 123',
             'telefone' => '(11) 99999-9999',
-            'email' => 'seduc@test.com'
+            'email' => 'seduc@test.com',
         ]);
 
         // Create test destinatario
@@ -37,7 +37,7 @@ class RequisicaoCreationTest extends TestCase
             'sigla' => 'DCOMP',
             'endereco' => 'Av. Test, 456',
             'telefone' => '(11) 88888-8888',
-            'email' => 'compras@test.com'
+            'email' => 'compras@test.com',
         ]);
     }
 
@@ -55,7 +55,7 @@ class RequisicaoCreationTest extends TestCase
             'numero_oficio' => 'OF-001/2025',
             'data_recebimento' => '2025-01-15',
             'descricao' => 'Solicitação de material escolar para o ano letivo',
-            'anexo' => UploadedFile::fake()->create('documento.pdf', 100)
+            'anexo' => UploadedFile::fake()->create('documento.pdf', 100),
         ];
 
         $response = $this->post(route('requisicoes.store'), $requisicaoData);
@@ -72,7 +72,7 @@ class RequisicaoCreationTest extends TestCase
             'destinatario_id' => $this->destinatario->id,
             'solicitante' => 'João Silva',
             'status' => 'autorizada',
-            'usuario_criacao_id' => $this->user->id
+            'usuario_criacao_id' => $this->user->id,
         ]);
 
         // Assert file was stored
@@ -91,7 +91,7 @@ class RequisicaoCreationTest extends TestCase
             'destinatario_id' => $this->destinatario->id,
             'solicitante' => 'Maria Santos',
             'data_recebimento' => '2025-01-15',
-            'descricao' => 'Teste de geração do número completo'
+            'descricao' => 'Teste de geração do número completo',
         ];
 
         $response = $this->post(route('requisicoes.store'), $requisicaoData);
@@ -112,7 +112,7 @@ class RequisicaoCreationTest extends TestCase
             'destinatario_id' => $this->destinatario->id,
             'solicitante' => 'Test User',
             'data_recebimento' => '2025-01-15',
-            'descricao' => 'Test description'
+            'descricao' => 'Test description',
         ];
 
         $response = $this->post(route('requisicoes.store'), $requisicaoData);
@@ -135,7 +135,7 @@ class RequisicaoCreationTest extends TestCase
             'data_recebimento' => '2025-01-15',
             'descricao' => 'First requisicao',
             'status' => 'autorizada',
-            'usuario_criacao_id' => $this->user->id
+            'usuario_criacao_id' => $this->user->id,
         ]);
 
         // Try to create second requisicao with same numero
@@ -145,7 +145,7 @@ class RequisicaoCreationTest extends TestCase
             'destinatario_id' => $this->destinatario->id,
             'solicitante' => 'Second User',
             'data_recebimento' => '2025-01-15',
-            'descricao' => 'Second requisicao'
+            'descricao' => 'Second requisicao',
         ];
 
         $response = $this->post(route('requisicoes.store'), $requisicaoData);

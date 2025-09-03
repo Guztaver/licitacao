@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
 
 class Fornecedor extends Model
 {
@@ -63,9 +63,6 @@ class Fornecedor extends Model
 
     /**
      * Scope a query to only include active fornecedores.
-     *
-     * @param Builder $query
-     * @return Builder
      */
     public function scopeAtivo(Builder $query): Builder
     {
@@ -74,16 +71,12 @@ class Fornecedor extends Model
 
     /**
      * Scope a query to search by name or CNPJ.
-     *
-     * @param Builder $query
-     * @param string $search
-     * @return Builder
      */
     public function scopeSearch(Builder $query, string $search): Builder
     {
         return $query->where(function ($q) use ($search) {
             $q->where('razao_social', 'like', "%{$search}%")
-              ->orWhere('cnpj', 'like', "%{$search}%");
+                ->orWhere('cnpj', 'like', "%{$search}%");
         });
     }
 
@@ -99,10 +92,10 @@ class Fornecedor extends Model
         $cnpj = preg_replace('/\D/', '', $this->cnpj);
 
         if (strlen($cnpj) === 14) {
-            return substr($cnpj, 0, 2) . '.' .
-                   substr($cnpj, 2, 3) . '.' .
-                   substr($cnpj, 5, 3) . '/' .
-                   substr($cnpj, 8, 4) . '-' .
+            return substr($cnpj, 0, 2).'.'.
+                   substr($cnpj, 2, 3).'.'.
+                   substr($cnpj, 5, 3).'/'.
+                   substr($cnpj, 8, 4).'-'.
                    substr($cnpj, 12, 2);
         }
 
@@ -137,12 +130,12 @@ class Fornecedor extends Model
         $telefone = preg_replace('/\D/', '', $this->telefone);
 
         if (strlen($telefone) === 11) {
-            return '(' . substr($telefone, 0, 2) . ') ' .
-                   substr($telefone, 2, 5) . '-' .
+            return '('.substr($telefone, 0, 2).') '.
+                   substr($telefone, 2, 5).'-'.
                    substr($telefone, 7, 4);
         } elseif (strlen($telefone) === 10) {
-            return '(' . substr($telefone, 0, 2) . ') ' .
-                   substr($telefone, 2, 4) . '-' .
+            return '('.substr($telefone, 0, 2).') '.
+                   substr($telefone, 2, 4).'-'.
                    substr($telefone, 6, 4);
         }
 
@@ -158,7 +151,7 @@ class Fornecedor extends Model
             $this->endereco,
             $this->cidade,
             $this->estado,
-            $this->cep
+            $this->cep,
         ]);
 
         return implode(', ', $parts);
@@ -180,8 +173,8 @@ class Fornecedor extends Model
     public function getTotalRequisicoes(): float
     {
         return $this->requisicoes()
-                    ->where('status', 'concretizada')
-                    ->sum('valor_final') ?? 0;
+            ->where('status', 'concretizada')
+            ->sum('valor_final') ?? 0;
     }
 
     /**

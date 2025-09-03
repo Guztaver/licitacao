@@ -7,7 +7,7 @@ import AppLayout from '@/layouts/app-layout';
 import { requisicoes } from '@/routes';
 import type { BreadcrumbItem, Emitente, Requisicao } from '@/types';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { FileDown, FileText, Plus, Search } from 'lucide-react';
+import { CheckCircle, Clock, DollarSign, FileDown, FileText, Plus, Search, X } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -38,6 +38,13 @@ interface RequisicoesIndexProps {
         meta: PaginationMeta;
     };
     emitentes: Emitente[];
+    stats: {
+        total_requisicoes: number;
+        autorizadas: number;
+        concretizadas: number;
+        canceladas: number;
+        valor_total: number;
+    };
     filters: {
         search?: string;
         status?: string;
@@ -47,13 +54,14 @@ interface RequisicoesIndexProps {
     };
 }
 
-export default function RequisicoesIndex({ requisicoes: requisicoesPaginated, emitentes, filters }: RequisicoesIndexProps) {
+export default function RequisicoesIndex({ requisicoes: requisicoesPaginated, emitentes, stats, filters }: RequisicoesIndexProps) {
     // Add safety checks for data
     const safeRequisicoes = requisicoesPaginated || { data: [], links: [], meta: { total: 0, from: 0, to: 0, last_page: 1, current_page: 1 } };
     const safeData = safeRequisicoes.data || [];
     const safeLinks = safeRequisicoes.links || [];
     const safeMeta = safeRequisicoes.meta || { total: 0, from: 0, to: 0, last_page: 1, current_page: 1 };
     const safeEmitentes = emitentes || [];
+    const safeStats = stats || { total_requisicoes: 0, autorizadas: 0, concretizadas: 0, canceladas: 0, valor_total: 0 };
 
     const { data, setData, get, processing } = useForm({
         search: filters?.search || '',
@@ -86,7 +94,7 @@ export default function RequisicoesIndex({ requisicoes: requisicoesPaginated, em
     };
 
     const formatCurrency = (value: number | null) => {
-        if (!value) return '-';
+        if (value === null || value === undefined) return '-';
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
             currency: 'BRL',
@@ -132,55 +140,166 @@ export default function RequisicoesIndex({ requisicoes: requisicoesPaginated, em
                 </div>
 
                 {/* Statistics Cards */}
-                <div className="grid gap-4 md:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Total</CardTitle>
                             <FileText className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{safeMeta.total}</div>
-                            <p className="text-xs text-muted-foreground">requisições cadastradas</p>
+                            <div className="text-2xl font-bold">{safeStats.total_requisicoes}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {data.search || data.status || data.emitente_id || data.data_inicio || data.data_fim
+                                    ? 'encontradas com filtros'
+                                    : 'requisições cadastradas'}
+                            </p>
+                            {safeData.length > 0 && safeMeta.total !== safeStats.total_requisicoes && (
+                                <p className="mt-1 text-xs text-gray-400">
+                                    Mostrando {safeData.length} de {safeMeta.total} na página
+                                </p>
+                            )}
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Autorizadas</CardTitle>
-                            <FileText className="h-4 w-4 text-muted-foreground" />
+                            <Clock className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{requisicoesPaginated.data.filter((r) => r.status === 'autorizada').length}</div>
-                            <p className="text-xs text-muted-foreground">aguardando processamento</p>
+                            <div className="text-2xl font-bold">{safeStats.autorizadas}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {data.search || data.status || data.emitente_id || data.data_inicio || data.data_fim
+                                    ? 'autorizadas nos resultados'
+                                    : 'aguardando processamento'}
+                            </p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Concretizadas</CardTitle>
-                            <FileText className="h-4 w-4 text-muted-foreground" />
+                            <CheckCircle className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{requisicoesPaginated.data.filter((r) => r.status === 'concretizada').length}</div>
-                            <p className="text-xs text-muted-foreground">finalizadas</p>
+                            <div className="text-2xl font-bold">{safeStats.concretizadas}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {data.search || data.status || data.emitente_id || data.data_inicio || data.data_fim
+                                    ? 'concretizadas nos resultados'
+                                    : 'finalizadas'}
+                            </p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Valor Total</CardTitle>
-                            <FileText className="h-4 w-4 text-muted-foreground" />
+                            <DollarSign className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">
-                                {formatCurrency(
-                                    safeData.filter((r) => r.status === 'concretizada').reduce((acc, r) => acc + (r.valor_final || 0), 0),
-                                )}
-                            </div>
-                            <p className="text-xs text-muted-foreground">valor concretizado</p>
+                            <div className="text-2xl font-bold">{formatCurrency(safeStats.valor_total)}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {data.search || data.status || data.emitente_id || data.data_inicio || data.data_fim
+                                    ? 'valor dos resultados'
+                                    : 'valor concretizado'}
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Canceladas</CardTitle>
+                            <X className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{safeStats.canceladas}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {data.search || data.status || data.emitente_id || data.data_inicio || data.data_fim
+                                    ? 'canceladas nos resultados'
+                                    : 'canceladas no sistema'}
+                            </p>
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Filter Summary */}
+                {(data.search || data.status || data.emitente_id || data.data_inicio || data.data_fim) && safeStats.total_requisicoes > 0 && (
+                    <div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-sm font-medium text-green-800 dark:text-green-200">Filtros aplicados</h3>
+                                <p className="mt-1 text-sm text-green-700 dark:text-green-300">
+                                    Mostrando {safeStats.total_requisicoes} requisições que correspondem aos critérios de busca
+                                </p>
+                            </div>
+                            <Button variant="outline" size="sm" onClick={handleReset}>
+                                Limpar Filtros
+                            </Button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Empty State Message */}
+                {safeStats.total_requisicoes === 0 && (data.search || data.status || data.emitente_id || data.data_inicio || data.data_fim) && (
+                    <div className="rounded-lg bg-yellow-50 p-4 dark:bg-yellow-900/20">
+                        <div className="flex">
+                            <div className="ml-3">
+                                <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Nenhuma requisição encontrada</h3>
+                                <p className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
+                                    Não foram encontradas requisições que correspondam aos filtros aplicados. Tente ajustar os critérios de busca.
+                                </p>
+                                <div className="mt-3">
+                                    <Button variant="outline" size="sm" onClick={handleReset}>
+                                        Limpar Filtros
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Low Data Notice */}
+                {safeStats.total_requisicoes > 0 &&
+                    safeStats.concretizadas === 0 &&
+                    !data.search &&
+                    !data.status &&
+                    !data.emitente_id &&
+                    !data.data_inicio &&
+                    !data.data_fim && (
+                        <div className="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
+                            <div className="flex">
+                                <div className="ml-3">
+                                    <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">Requisições sem concretização</h3>
+                                    <p className="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                                        Existem {safeStats.total_requisicoes} requisições cadastradas, sendo {safeStats.autorizadas} autorizadas, mas
+                                        nenhuma foi concretizada ainda. Para gerar valor movimentado, concretize algumas requisições autorizadas.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                {/* No Data Notice */}
+                {safeStats.total_requisicoes === 0 && !data.search && !data.status && !data.emitente_id && !data.data_inicio && !data.data_fim && (
+                    <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900/20">
+                        <div className="flex">
+                            <div className="ml-3">
+                                <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">Nenhuma requisição cadastrada</h3>
+                                <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                                    Não há requisições no sistema ainda. Clique em "Nova Requisição" para começar.
+                                </p>
+                                <div className="mt-3">
+                                    <Button asChild>
+                                        <Link href={requisicoes.create()}>
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Nova Requisição
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Filters */}
                 <Card>

@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Requisicao;
-use App\Models\Emitente;
 use App\Models\Destinatario;
-
-use Illuminate\Http\Request;
+use App\Models\Emitente;
+use App\Models\Requisicao;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Facades\Storage;
 
 class RequisicaoController extends Controller
 {
@@ -26,9 +25,9 @@ class RequisicaoController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('numero', 'like', "%{$request->search}%")
-                  ->orWhere('numero_completo', 'like', "%{$request->search}%")
-                  ->orWhere('solicitante', 'like', "%{$request->search}%")
-                  ->orWhere('descricao', 'like', "%{$request->search}%");
+                    ->orWhere('numero_completo', 'like', "%{$request->search}%")
+                    ->orWhere('solicitante', 'like', "%{$request->search}%")
+                    ->orWhere('descricao', 'like', "%{$request->search}%");
             });
         }
 
@@ -50,6 +49,18 @@ class RequisicaoController extends Controller
         if ($request->filled('data_fim')) {
             $query->whereDate('data_recebimento', '<=', $request->data_fim);
         }
+
+        // Calculate statistics for the complete filtered dataset (before pagination)
+        $statsQuery = clone $query;
+        $allRequisicoes = $statsQuery->get();
+
+        $stats = [
+            'total_requisicoes' => $allRequisicoes->count(),
+            'autorizadas' => $allRequisicoes->where('status', 'autorizada')->count(),
+            'concretizadas' => $allRequisicoes->where('status', 'concretizada')->count(),
+            'canceladas' => $allRequisicoes->where('status', 'cancelada')->count(),
+            'valor_total' => $allRequisicoes->where('status', 'concretizada')->sum('valor_final') ?? 0,
+        ];
 
         $requisicoesPaginated = $query
             ->orderBy('created_at', 'desc')
@@ -101,6 +112,7 @@ class RequisicaoController extends Controller
         return Inertia::render('Requisicoes/Index', [
             'requisicoes' => $requisicoesPaginated,
             'emitentes' => $emitentes,
+            'stats' => $stats,
             'filters' => $request->only(['search', 'status', 'emitente_id', 'data_inicio', 'data_fim']),
         ]);
     }
@@ -146,10 +158,10 @@ class RequisicaoController extends Controller
 
         // Load emitente to generate complete number before saving
         $emitente = Emitente::find($validated['emitente_id']);
-        if (!$emitente) {
+        if (! $emitente) {
             return back()->withErrors(['emitente_id' => 'Emitente não encontrado.']);
         }
-        $validated['numero_completo'] = $validated['numero'] . '/' . $emitente->sigla;
+        $validated['numero_completo'] = $validated['numero'].'/'.$emitente->sigla;
 
         $requisicao = new Requisicao($validated);
         $requisicao->save();
@@ -242,7 +254,7 @@ class RequisicaoController extends Controller
     public function edit(Requisicao $requisicao): Response|RedirectResponse
     {
         // Check if requisicao can be edited
-        if (!in_array($requisicao->status, ['autorizada'])) {
+        if (! in_array($requisicao->status, ['autorizada'])) {
             return redirect()->route('requisicoes.show', $requisicao)
                 ->with('error', 'Esta requisição não pode ser editada.');
         }
@@ -272,13 +284,13 @@ class RequisicaoController extends Controller
      */
     public function update(Request $request, Requisicao $requisicao): RedirectResponse
     {
-        if (!$requisicao->podeEditar()) {
+        if (! $requisicao->podeEditar()) {
             return redirect()->route('requisicoes.show', $requisicao)
                 ->with('error', 'Esta requisição não pode ser editada.');
         }
 
         $validated = $request->validate([
-            'numero' => 'required|string|unique:requisicoes,numero,' . $requisicao->id,
+            'numero' => 'required|string|unique:requisicoes,numero,'.$requisicao->id,
             'emitente_id' => 'required|exists:emitentes,id',
             'destinatario_id' => 'required|exists:destinatarios,id',
             'solicitante' => 'required|string|max:255',
@@ -315,7 +327,7 @@ class RequisicaoController extends Controller
      */
     public function concretizar(Request $request, Requisicao $requisicao): RedirectResponse
     {
-        if (!$requisicao->podeConcretizar()) {
+        if (! $requisicao->podeConcretizar()) {
             return redirect()->back()
                 ->with('error', 'Esta requisição não pode ser concretizada.');
         }
@@ -337,7 +349,7 @@ class RequisicaoController extends Controller
      */
     public function destroy(Request $request, Requisicao $requisicao): RedirectResponse
     {
-        if (!$requisicao->podeExcluir()) {
+        if (! $requisicao->podeExcluir()) {
             return redirect()->back()
                 ->with('error', 'Esta requisição não pode ser excluída.');
         }
@@ -363,8 +375,8 @@ class RequisicaoController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('numero', 'like', "%{$request->search}%")
-                  ->orWhere('numero_completo', 'like', "%{$request->search}%")
-                  ->orWhere('solicitante', 'like', "%{$request->search}%");
+                    ->orWhere('numero_completo', 'like', "%{$request->search}%")
+                    ->orWhere('solicitante', 'like', "%{$request->search}%");
             });
         }
 
@@ -414,17 +426,18 @@ class RequisicaoController extends Controller
      */
     public function anexo(Requisicao $requisicao): \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
     {
-        if (!$requisicao->anexo) {
+        if (! $requisicao->anexo) {
             return redirect()->back()
                 ->with('error', 'Esta requisição não possui anexo.');
         }
 
-        if (!Storage::disk('public')->exists($requisicao->anexo)) {
+        if (! Storage::disk('public')->exists($requisicao->anexo)) {
             return redirect()->back()
                 ->with('error', 'Arquivo não encontrado.');
         }
 
         $filename = basename($requisicao->anexo);
+
         return Storage::disk('public')->download($requisicao->anexo, $filename);
     }
 
@@ -438,7 +451,7 @@ class RequisicaoController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('numero_completo', 'like', "%{$request->search}%")
-                  ->orWhere('objeto', 'like', "%{$request->search}%");
+                    ->orWhere('objeto', 'like', "%{$request->search}%");
             });
         }
 
@@ -460,17 +473,17 @@ class RequisicaoController extends Controller
 
         $requisicoes = $query->orderBy('created_at', 'desc')->get();
 
-        $filename = 'requisicoes_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        $filename = 'requisicoes_'.now()->format('Y-m-d_H-i-s').'.csv';
 
         $headers = [
             'Content-Type' => 'text/csv; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
             'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
             'Expires' => '0',
             'Pragma' => 'public',
         ];
 
-        $callback = function() use ($requisicoes) {
+        $callback = function () use ($requisicoes) {
             $file = fopen('php://output', 'w');
 
             // Add UTF-8 BOM for proper Excel handling
@@ -489,7 +502,7 @@ class RequisicaoController extends Controller
                 'Data Vencimento',
                 'Observações',
                 'Data Criação',
-                'Data Atualização'
+                'Data Atualização',
             ], ';', '"', '\\');
 
             foreach ($requisicoes as $requisicao) {
@@ -500,12 +513,12 @@ class RequisicaoController extends Controller
                     $requisicao->fornecedor?->razao_social ?? '',
                     $requisicao->objeto,
                     ucfirst($requisicao->status),
-                    'R$ ' . number_format($requisicao->valor_total ?? 0, 2, ',', '.'),
+                    'R$ '.number_format($requisicao->valor_total ?? 0, 2, ',', '.'),
                     $requisicao->data_recebimento?->format('d/m/Y') ?? '',
                     $requisicao->data_vencimento?->format('d/m/Y') ?? '',
                     $requisicao->observacoes ?? '',
                     $requisicao->created_at->format('d/m/Y H:i'),
-                    $requisicao->updated_at->format('d/m/Y H:i')
+                    $requisicao->updated_at->format('d/m/Y H:i'),
                 ], ';', '"', '\\');
             }
 

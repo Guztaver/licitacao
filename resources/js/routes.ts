@@ -48,6 +48,7 @@ export const emitentes = {
     create: () => '/emitentes/create',
     show: (id: number) => `/emitentes/${id}`,
     edit: (id: number) => `/emitentes/${id}/edit`,
+    export: () => '/emitentes-export',
 };
 
 export const destinatarios = {
@@ -58,6 +59,7 @@ export const destinatarios = {
     edit: (id: number) => `/destinatarios/${id}/edit`,
     update: (id: number) => `/destinatarios/${id}`,
     destroy: (id: number) => `/destinatarios/${id}`,
+    export: () => '/destinatarios-export',
 };
 
 export const relatorios = {

@@ -37,17 +37,24 @@ interface EmitentesIndexProps {
         links: PaginationLink[];
         meta: PaginationMeta;
     };
+    stats: {
+        total_emitentes: number;
+        com_requisicoes: number;
+        total_requisicoes: number;
+        sem_atividade: number;
+    };
     filters: {
         search?: string;
     };
 }
 
-export default function EmitentesIndex({ emitentes: emitentesPaginated, filters }: EmitentesIndexProps) {
+export default function EmitentesIndex({ emitentes: emitentesPaginated, stats, filters }: EmitentesIndexProps) {
     // Add safety checks for data
     const safeEmitentes = emitentesPaginated || { data: [], links: [], meta: { total: 0, from: 0, to: 0, last_page: 1, current_page: 1 } };
     const safeData = safeEmitentes.data || [];
     const safeLinks = safeEmitentes.links || [];
     const safeMeta = safeEmitentes.meta || { total: 0, from: 0, to: 0, last_page: 1, current_page: 1 };
+    const safeStats = stats || { total_emitentes: 0, com_requisicoes: 0, total_requisicoes: 0, sem_atividade: 0 };
 
     const { data, setData, get, processing } = useForm({
         search: filters?.search || '',
@@ -71,6 +78,9 @@ export default function EmitentesIndex({ emitentes: emitentesPaginated, filters 
         });
     };
 
+    const isFiltered = data.search !== '';
+    const hasResults = safeData.length > 0;
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Emitentes" />
@@ -86,7 +96,7 @@ export default function EmitentesIndex({ emitentes: emitentesPaginated, filters 
                             variant="outline"
                             onClick={() => {
                                 const params = new URLSearchParams(filters as Record<string, string>);
-                                window.location.href = `/emitentes-export?${params.toString()}`;
+                                window.location.href = `${emitentes.export()}?${params.toString()}`;
                             }}
                         >
                             <FileDown className="mr-2 h-4 w-4" />
@@ -97,37 +107,48 @@ export default function EmitentesIndex({ emitentes: emitentesPaginated, filters 
                 </div>
 
                 {/* Statistics Cards */}
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total</CardTitle>
+                            <CardTitle className="text-sm font-medium">Total Emitentes</CardTitle>
                             <Building className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{safeMeta.total}</div>
-                            <p className="text-xs text-muted-foreground">emitentes cadastrados</p>
+                            <div className="text-2xl font-bold">{safeStats.total_emitentes}</div>
+                            <p className="text-xs text-muted-foreground">{isFiltered ? 'nos resultados filtrados' : 'cadastrados no sistema'}</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Com Requisições</CardTitle>
-                            <Building className="h-4 w-4 text-muted-foreground" />
+                            <Building className="h-4 w-4 text-green-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{safeData.filter((e) => e.requisicoes_count && e.requisicoes_count > 0).length}</div>
-                            <p className="text-xs text-muted-foreground">com atividade</p>
+                            <div className="text-2xl font-bold text-green-600">{safeStats.com_requisicoes}</div>
+                            <p className="text-xs text-muted-foreground">emitentes ativos</p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Requisições Total</CardTitle>
-                            <Building className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium">Total Requisições</CardTitle>
+                            <Building className="h-4 w-4 text-blue-600" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{safeData.reduce((acc, e) => acc + (e.requisicoes_count || 0), 0)}</div>
+                            <div className="text-2xl font-bold text-blue-600">{safeStats.total_requisicoes}</div>
                             <p className="text-xs text-muted-foreground">requisições emitidas</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Sem Atividade</CardTitle>
+                            <Building className="h-4 w-4 text-amber-600" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-amber-600">{safeStats.sem_atividade}</div>
+                            <p className="text-xs text-muted-foreground">sem requisições</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -169,7 +190,16 @@ export default function EmitentesIndex({ emitentes: emitentesPaginated, filters 
                     <CardHeader>
                         <CardTitle className="text-lg">Lista de Emitentes</CardTitle>
                         <CardDescription>
-                            Mostrando {emitentesPaginated.data.length} de {emitentesPaginated.meta?.total || 0} emitentes
+                            {isFiltered ? (
+                                <>
+                                    Mostrando {safeMeta.from || 0} a {safeMeta.to || 0} de {safeStats.total_emitentes} emitentes encontrados
+                                    {safeStats.total_emitentes === 0 && ' (nenhum resultado encontrado)'}
+                                </>
+                            ) : (
+                                <>
+                                    Mostrando {safeMeta.from || 0} a {safeMeta.to || 0} de {safeMeta.total || 0} emitentes
+                                </>
+                            )}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -235,16 +265,27 @@ export default function EmitentesIndex({ emitentes: emitentesPaginated, filters 
                                             <TableCell colSpan={4} className="py-8 text-center">
                                                 <div className="flex flex-col items-center space-y-2">
                                                     <Building className="h-8 w-8 text-gray-400" />
-                                                    <p className="text-gray-500">Nenhum emitente encontrado</p>
-                                                    <CreateEmitenteModal
-                                                        trigger={
-                                                            <Button size="sm">
-                                                                <Plus className="mr-2 h-4 w-4" />
-                                                                Adicionar Emitente
+                                                    {isFiltered ? (
+                                                        <>
+                                                            <p className="text-gray-500">Nenhum emitente encontrado com os filtros aplicados</p>
+                                                            <Button variant="outline" size="sm" onClick={handleReset}>
+                                                                Limpar filtros
                                                             </Button>
-                                                        }
-                                                        onSuccess={() => router.reload()}
-                                                    />
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <p className="text-gray-500">Nenhum emitente cadastrado</p>
+                                                            <CreateEmitenteModal
+                                                                trigger={
+                                                                    <Button size="sm">
+                                                                        <Plus className="mr-2 h-4 w-4" />
+                                                                        Adicionar Primeiro Emitente
+                                                                    </Button>
+                                                                }
+                                                                onSuccess={() => router.reload()}
+                                                            />
+                                                        </>
+                                                    )}
                                                 </div>
                                             </TableCell>
                                         </TableRow>
@@ -253,12 +294,26 @@ export default function EmitentesIndex({ emitentes: emitentesPaginated, filters 
                             </Table>
                         </div>
 
+                        {/* Filter Summary */}
+                        {isFiltered && hasResults && (
+                            <div className="border-t px-4 py-3">
+                                <div className="flex items-center justify-between text-sm text-gray-600">
+                                    <div>
+                                        Filtros ativos: <span className="font-medium">"{data.search}"</span>
+                                    </div>
+                                    <Button variant="ghost" size="sm" onClick={handleReset}>
+                                        Limpar filtros
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Pagination */}
-                        {emitentesPaginated.meta?.last_page > 1 && (
+                        {safeMeta.last_page > 1 && (
                             <div className="flex items-center justify-between px-2 py-4">
                                 <div className="text-sm text-gray-700">
-                                    Mostrando {emitentesPaginated.meta?.from || 0} até {emitentesPaginated.meta?.to || 0} de{' '}
-                                    {emitentesPaginated.meta?.total || 0} resultados
+                                    Mostrando {safeMeta.from || 0} até {safeMeta.to || 0} de{' '}
+                                    {isFiltered ? safeStats.total_emitentes : safeMeta.total || 0} resultados
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     {safeLinks.map((link) => (

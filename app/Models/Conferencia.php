@@ -96,10 +96,6 @@ class Conferencia extends Model
     /**
      * Scope a query to only include active conferencias.
      */
-    /**
-     * @param Builder $query
-     * @return Builder
-     */
     public function scopeEmAndamento(Builder $query): Builder
     {
         return $query->where('status', 'em_andamento');
@@ -108,10 +104,6 @@ class Conferencia extends Model
     /**
      * Scope a query to only include finalized conferencias.
      */
-    /**
-     * @param Builder $query
-     * @return Builder
-     */
     public function scopeFinalizada(Builder $query): Builder
     {
         return $query->where('status', 'finalizada');
@@ -119,20 +111,16 @@ class Conferencia extends Model
 
     /**
      * Scope a query for a specific period.
-     * @param Builder $query
-     * @param \DateTime $inicio
-     * @param \DateTime $fim
-     * @return Builder
      */
     public function scopePeriodo(Builder $query, \DateTime $inicio, \DateTime $fim): Builder
     {
         return $query->where(function ($q) use ($inicio, $fim) {
             $q->whereBetween('periodo_inicio', [$inicio, $fim])
-              ->orWhereBetween('periodo_fim', [$inicio, $fim])
-              ->orWhere(function ($q2) use ($inicio, $fim) {
-                  $q2->where('periodo_inicio', '<=', $inicio)
-                     ->where('periodo_fim', '>=', $fim);
-              });
+                ->orWhereBetween('periodo_fim', [$inicio, $fim])
+                ->orWhere(function ($q2) use ($inicio, $fim) {
+                    $q2->where('periodo_inicio', '<=', $inicio)
+                        ->where('periodo_fim', '>=', $fim);
+                });
         });
     }
 
@@ -216,7 +204,8 @@ class Conferencia extends Model
     {
         $inicio = $this->periodo_inicio ? $this->periodo_inicio->format('d/m/Y') : '';
         $fim = $this->periodo_fim ? $this->periodo_fim->format('d/m/Y') : '';
-        return $inicio . ' a ' . $fim;
+
+        return $inicio.' a '.$fim;
     }
 
     /**
@@ -224,7 +213,7 @@ class Conferencia extends Model
      */
     public function getTotalGeralFormatadoAttribute(): string
     {
-        return number_format((float)($this->total_geral ?? 0), 2, ',', '.');
+        return number_format((float) ($this->total_geral ?? 0), 2, ',', '.');
     }
 
     /**
@@ -232,7 +221,7 @@ class Conferencia extends Model
      */
     public function getTotalRequisicoesFormatadoAttribute(): string
     {
-        return number_format((float)($this->total_requisicoes ?? 0), 2, ',', '.');
+        return number_format((float) ($this->total_requisicoes ?? 0), 2, ',', '.');
     }
 
     /**
@@ -240,6 +229,6 @@ class Conferencia extends Model
      */
     public function getTotalPedidosManuaisFormatadoAttribute(): string
     {
-        return number_format((float)($this->total_pedidos_manuais ?? 0), 2, ',', '.');
+        return number_format((float) ($this->total_pedidos_manuais ?? 0), 2, ',', '.');
     }
 }

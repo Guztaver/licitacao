@@ -75,24 +75,22 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get()
-            ->map(function ($requisicao) {
-                return [
-                    'id' => $requisicao->id,
-                    'numero_completo' => $requisicao->numero_completo,
-                    'solicitante' => $requisicao->solicitante,
-                    'status' => $requisicao->status,
-                    'status_display' => $requisicao->status_display,
-                    'status_color' => $requisicao->status_color,
-                    'data_recebimento' => $requisicao->data_recebimento ? $requisicao->data_recebimento->format('d/m/Y') : null,
-                    'emitente' => $requisicao->emitente ? [
-                        'nome' => $requisicao->emitente->nome,
-                        'sigla' => $requisicao->emitente->sigla,
-                    ] : null,
-                    'fornecedor' => $requisicao->fornecedor ? [
-                        'razao_social' => $requisicao->fornecedor->razao_social,
-                    ] : null,
-                ];
-            })
+            ->map(fn ($requisicao) => [
+                'id' => $requisicao->id,
+                'numero_completo' => $requisicao->numero_completo,
+                'solicitante' => $requisicao->solicitante,
+                'status' => $requisicao->status,
+                'status_display' => $requisicao->status_display,
+                'status_color' => $requisicao->status_color,
+                'data_recebimento' => $requisicao->data_recebimento?->format('d/m/Y'),
+                'emitente' => $requisicao->emitente ? [
+                    'nome' => $requisicao->emitente->nome,
+                    'sigla' => $requisicao->emitente->sigla,
+                ] : null,
+                'fornecedor' => $requisicao->fornecedor ? [
+                    'razao_social' => $requisicao->fornecedor->razao_social,
+                ] : null,
+            ])
             ->toArray();
     }
 
@@ -106,24 +104,22 @@ class DashboardController extends Controller
                 'requisicoes as total_requisicoes',
                 'requisicoes as requisicoes_mes_atual' => function ($query) {
                     $query->whereMonth('data_recebimento', now()->month)
-                          ->whereYear('data_recebimento', now()->year);
-                }
+                        ->whereYear('data_recebimento', now()->year);
+                },
             ])
             ->orderBy('requisicoes_mes_atual', 'desc')
             ->limit(5)
             ->get()
-            ->map(function ($fornecedor) {
-                return [
-                    'id' => $fornecedor->id,
-                    'razao_social' => $fornecedor->razao_social,
-                    'cnpj_formatado' => $fornecedor->cnpj_formatado,
-                    'email' => $fornecedor->email,
-                    'telefone_formatado' => $fornecedor->telefone_formatado,
-                    'total_requisicoes' => $fornecedor->total_requisicoes,
-                    'requisicoes_mes_atual' => $fornecedor->requisicoes_mes_atual,
-                    'total_geral' => $fornecedor->getTotalGeral(),
-                ];
-            })
+            ->map(fn ($fornecedor) => [
+                'id' => $fornecedor->id,
+                'razao_social' => $fornecedor->razao_social,
+                'cnpj_formatado' => $fornecedor->cnpj_formatado,
+                'email' => $fornecedor->email,
+                'telefone_formatado' => $fornecedor->telefone_formatado,
+                'total_requisicoes' => $fornecedor->total_requisicoes,
+                'requisicoes_mes_atual' => $fornecedor->requisicoes_mes_atual,
+                'total_geral' => $fornecedor->getTotalGeral(),
+                 ])
             ->toArray();
     }
 
@@ -139,17 +135,15 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get()
-            ->map(function ($conferencia) {
-                return [
-                    'id' => $conferencia->id,
-                    'periodo' => $conferencia->periodo,
-                    'total_geral' => $conferencia->total_geral,
-                    'data_conferencia' => $conferencia->data_conferencia,
-                    'fornecedor' => $conferencia->fornecedor ? [
-                        'razao_social' => $conferencia->fornecedor->razao_social,
-                    ] : null,
-                ];
-            })
+            ->map(fn ($conferencia) => [
+                'id' => $conferencia->id,
+                'periodo' => $conferencia->periodo,
+                'total_geral' => $conferencia->total_geral,
+                'data_conferencia' => $conferencia->data_conferencia,
+                'fornecedor' => $conferencia->fornecedor ? [
+                    'razao_social' => $conferencia->fornecedor->razao_social,
+                ] : null,
+            ])
             ->toArray();
     }
 }

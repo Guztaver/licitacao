@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
 
 class Requisicao extends Model
 {
@@ -104,9 +104,6 @@ class Requisicao extends Model
 
     /**
      * Scope a query to only include active requisições.
-     *
-     * @param Builder $query
-     * @return Builder
      */
     public function scopeAtiva(Builder $query): Builder
     {
@@ -115,9 +112,6 @@ class Requisicao extends Model
 
     /**
      * Scope a query to only include finalized requisições.
-     *
-     * @param Builder $query
-     * @return Builder
      */
     public function scopeConcretizada(Builder $query): Builder
     {
@@ -126,11 +120,6 @@ class Requisicao extends Model
 
     /**
      * Scope a query for a specific period.
-     *
-     * @param Builder $query
-     * @param \DateTime $inicio
-     * @param \DateTime $fim
-     * @return Builder
      */
     public function scopePeriodo(Builder $query, \DateTime $inicio, \DateTime $fim): Builder
     {
@@ -144,7 +133,7 @@ class Requisicao extends Model
     {
         $ultimaRequisicao = self::query()->orderBy('id', 'desc')->first();
 
-        if (!$ultimaRequisicao) {
+        if (! $ultimaRequisicao) {
             return '001';
         }
 
@@ -159,7 +148,7 @@ class Requisicao extends Model
      */
     public function gerarNumeroCompleto(): string
     {
-        return $this->numero . '/' . $this->emitente->sigla;
+        return $this->numero.'/'.$this->emitente->sigla;
     }
 
     /**
@@ -189,9 +178,7 @@ class Requisicao extends Model
     /**
      * Concretizar requisição.
      *
-     * @param array<string, mixed> $dados
-     * @param User $usuario
-     * @return void
+     * @param  array<string, mixed>  $dados
      */
     public function concretizar(array $dados, User $usuario): void
     {

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Destinatario;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,9 +21,20 @@ class DestinatarioController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('nome', 'like', "%{$request->search}%")
-                  ->orWhere('sigla', 'like', "%{$request->search}%");
+                    ->orWhere('sigla', 'like', "%{$request->search}%");
             });
         }
+
+        // Calculate statistics for the complete filtered dataset (before pagination)
+        $statsQuery = clone $query;
+        $allDestinatarios = $statsQuery->withCount('requisicoes')->get();
+
+        $stats = [
+            'total_destinatarios' => $allDestinatarios->count(),
+            'com_requisicoes' => $allDestinatarios->filter(fn ($destinatario) => $destinatario->requisicoes_count > 0)->count(),
+            'total_requisicoes' => $allDestinatarios->sum('requisicoes_count'),
+            'sem_atividade' => $allDestinatarios->filter(fn ($destinatario) => $destinatario->requisicoes_count === 0)->count(),
+        ];
 
         $destinatariosPaginated = $query
             ->withCount('requisicoes')
@@ -31,21 +42,20 @@ class DestinatarioController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $destinatariosPaginated->getCollection()->transform(function ($destinatario) {
-            return [
-                'id' => $destinatario->id,
-                'nome' => $destinatario->nome,
-                'sigla' => $destinatario->sigla,
-                'endereco' => $destinatario->endereco,
-                'telefone' => $destinatario->telefone,
-                'email' => $destinatario->email,
-                'requisicoes_count' => $destinatario->requisicoes_count,
-                'created_at' => $destinatario->created_at->format('d/m/Y'),
-            ];
-        });
+        $destinatariosPaginated->getCollection()->transform(fn ($destinatario) => [
+            'id' => $destinatario->id,
+            'nome' => $destinatario->nome,
+            'sigla' => $destinatario->sigla,
+            'endereco' => $destinatario->endereco,
+            'telefone' => $destinatario->telefone,
+            'email' => $destinatario->email,
+            'requisicoes_count' => $destinatario->requisicoes_count,
+            'created_at' => $destinatario->created_at->format('d/m/Y'),
+        ]);
 
         return Inertia::render('Destinatarios/Index', [
             'destinatarios' => $destinatariosPaginated,
+            'stats' => $stats,
             'filters' => $request->only(['search']),
         ]);
     }
@@ -88,7 +98,7 @@ class DestinatarioController extends Controller
                 $query->where('status', '!=', 'excluida')->orderBy('created_at', 'desc')->limit(10);
             },
             'requisicoes.emitente',
-            'requisicoes.fornecedor'
+            'requisicoes.fornecedor',
         ]);
 
         $destinatarioData = [
@@ -102,25 +112,23 @@ class DestinatarioController extends Controller
             'updated_at' => $destinatario->updated_at->format('d/m/Y H:i'),
         ];
 
-        $requisicoes = $destinatario->requisicoes->map(function ($requisicao) {
-            return [
-                'id' => $requisicao->id,
-                'numero_completo' => $requisicao->numero_completo,
-                'solicitante' => $requisicao->solicitante,
-                'status' => $requisicao->status,
-                'status_display' => $requisicao->status_display,
-                'status_color' => $requisicao->status_color,
-                'valor_final' => $requisicao->valor_final,
-                'data_recebimento' => $requisicao->data_recebimento->format('d/m/Y'),
-                'emitente' => $requisicao->emitente ? [
-                    'nome' => $requisicao->emitente->nome,
-                    'sigla' => $requisicao->emitente->sigla,
-                ] : null,
-                'fornecedor' => $requisicao->fornecedor ? [
-                    'razao_social' => $requisicao->fornecedor->razao_social,
-                ] : null,
-            ];
-        });
+        $requisicoes = $destinatario->requisicoes->map(fn ($requisicao) => [
+            'id' => $requisicao->id,
+            'numero_completo' => $requisicao->numero_completo,
+            'solicitante' => $requisicao->solicitante,
+            'status' => $requisicao->status,
+            'status_display' => $requisicao->status_display,
+            'status_color' => $requisicao->status_color,
+            'valor_final' => $requisicao->valor_final,
+            'data_recebimento' => $requisicao->data_recebimento->format('d/m/Y'),
+            'emitente' => $requisicao->emitente ? [
+                'nome' => $requisicao->emitente->nome,
+                'sigla' => $requisicao->emitente->sigla,
+            ] : null,
+            'fornecedor' => $requisicao->fornecedor ? [
+                'razao_social' => $requisicao->fornecedor->razao_social,
+            ] : null,
+        ]);
 
         // Statistics
         $stats = [
@@ -165,7 +173,7 @@ class DestinatarioController extends Controller
     {
         $validated = $request->validate([
             'nome' => 'required|string|max:255',
-            'sigla' => 'required|string|max:20|unique:destinatarios,sigla,' . $destinatario->id,
+            'sigla' => "required|string|max:20|unique:destinatarios,sigla,{$destinatario->id}",
             'endereco' => 'nullable|string|max:500',
             'telefone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
@@ -197,30 +205,30 @@ class DestinatarioController extends Controller
     /**
      * Export destinatários to CSV.
      */
-    public function export(Request $request)
+    public function export(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $query = Destinatario::query();
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('nome', 'like', "%{$request->search}%")
-                  ->orWhere('sigla', 'like', "%{$request->search}%");
+                    ->orWhere('sigla', 'like', "%{$request->search}%");
             });
         }
 
         $destinatarios = $query->orderBy('nome')->get();
 
-        $filename = 'destinatarios_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        $filename = 'destinatarios_'.now()->format('Y-m-d_H-i-s').'.csv';
 
         $headers = [
             'Content-Type' => 'text/csv; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
             'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
             'Expires' => '0',
             'Pragma' => 'public',
         ];
 
-        $callback = function() use ($destinatarios) {
+        $callback = function () use ($destinatarios) {
             $file = fopen('php://output', 'w');
 
             // Add UTF-8 BOM for proper Excel handling
@@ -231,7 +239,7 @@ class DestinatarioController extends Controller
                 'Nome',
                 'Sigla',
                 'Data Criação',
-                'Data Atualização'
+                'Data Atualização',
             ], ';', '"', '\\');
 
             foreach ($destinatarios as $destinatario) {
@@ -239,7 +247,7 @@ class DestinatarioController extends Controller
                     $destinatario->nome,
                     $destinatario->sigla ?? '',
                     $destinatario->created_at->format('d/m/Y H:i'),
-                    $destinatario->updated_at->format('d/m/Y H:i')
+                    $destinatario->updated_at->format('d/m/Y H:i'),
                 ], ';', '"', '\\');
             }
 

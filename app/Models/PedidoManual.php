@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
 
 class PedidoManual extends Model
 {
@@ -37,15 +37,8 @@ class PedidoManual extends Model
         return $this->belongsTo(Fornecedor::class);
     }
 
-
-
     /**
      * Scope a query for a specific period.
-     *
-     * @param Builder $query
-     * @param \DateTime $inicio
-     * @param \DateTime $fim
-     * @return Builder
      */
     public function scopePeriodo(Builder $query, \DateTime $inicio, \DateTime $fim): Builder
     {
@@ -54,24 +47,18 @@ class PedidoManual extends Model
 
     /**
      * Scope a query for a specific fornecedor.
-     *
-     * @param Builder $query
-     * @param int $fornecedorId
-     * @return Builder
      */
     public function scopeFornecedor(Builder $query, int $fornecedorId): Builder
     {
         return $query->where('fornecedor_id', $fornecedorId);
     }
 
-
-
     /**
      * Get formatted valor.
      */
     public function getValorFormatadoAttribute(): string
     {
-        return 'R$ ' . number_format((float) $this->valor, 2, ',', '.');
+        return 'R$ '.number_format((float) $this->valor, 2, ',', '.');
     }
 
     /**
@@ -88,7 +75,7 @@ class PedidoManual extends Model
     public function getDescricaoCurtaAttribute(): string
     {
         return strlen($this->descricao) > 50
-            ? substr($this->descricao, 0, 50) . '...'
+            ? substr($this->descricao, 0, 50).'...'
             : $this->descricao;
     }
 
@@ -113,6 +100,6 @@ class PedidoManual extends Model
      */
     public function getDisplayTextAttribute(): string
     {
-        return $this->descricao_curta . ' - ' . $this->valor_formatado;
+        return $this->descricao_curta.' - '.$this->valor_formatado;
     }
 }
