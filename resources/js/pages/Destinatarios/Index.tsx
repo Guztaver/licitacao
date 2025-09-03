@@ -265,16 +265,27 @@ export default function DestinatariosIndex({ destinatarios: destinatariosPaginat
                                             <TableCell colSpan={4} className="py-8 text-center">
                                                 <div className="flex flex-col items-center space-y-2">
                                                     <MapPin className="h-8 w-8 text-gray-400" />
-                                                    <p className="text-gray-500">Nenhum destinatário encontrado</p>
-                                                    <CreateDestinatarioModal
-                                                        trigger={
-                                                            <Button size="sm">
-                                                                <Plus className="mr-2 h-4 w-4" />
-                                                                Adicionar Destinatário
+                                                    {isFiltered ? (
+                                                        <>
+                                                            <p className="text-gray-500">Nenhum destinatário encontrado com os filtros aplicados</p>
+                                                            <Button variant="outline" size="sm" onClick={handleReset}>
+                                                                Limpar filtros
                                                             </Button>
-                                                        }
-                                                        onSuccess={() => router.reload()}
-                                                    />
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <p className="text-gray-500">Nenhum destinatário cadastrado</p>
+                                                            <CreateDestinatarioModal
+                                                                trigger={
+                                                                    <Button size="sm">
+                                                                        <Plus className="mr-2 h-4 w-4" />
+                                                                        Adicionar Primeiro Destinatário
+                                                                    </Button>
+                                                                }
+                                                                onSuccess={() => router.reload()}
+                                                            />
+                                                        </>
+                                                    )}
                                                 </div>
                                             </TableCell>
                                         </TableRow>
@@ -283,12 +294,26 @@ export default function DestinatariosIndex({ destinatarios: destinatariosPaginat
                             </Table>
                         </div>
 
+                        {/* Filter Summary */}
+                        {isFiltered && hasResults && (
+                            <div className="border-t px-4 py-3">
+                                <div className="flex items-center justify-between text-sm text-gray-600">
+                                    <div>
+                                        Filtros ativos: <span className="font-medium">"{data.search}"</span>
+                                    </div>
+                                    <Button variant="ghost" size="sm" onClick={handleReset}>
+                                        Limpar filtros
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Pagination */}
-                        {destinatariosPaginated.meta?.last_page > 1 && (
+                        {safeMeta.last_page > 1 && (
                             <div className="flex items-center justify-between px-2 py-4">
                                 <div className="text-sm text-gray-700">
-                                    Mostrando {destinatariosPaginated.meta?.from || 0} até {destinatariosPaginated.meta?.to || 0} de{' '}
-                                    {destinatariosPaginated.meta?.total || 0} resultados
+                                    Mostrando {safeMeta.from || 0} até {safeMeta.to || 0} de{' '}
+                                    {isFiltered ? safeStats.total_destinatarios : safeMeta.total || 0} resultados
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     {safeLinks.map((link) => (

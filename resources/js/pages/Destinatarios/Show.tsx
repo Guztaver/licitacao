@@ -3,21 +3,25 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { destinatarios, requisicoes } from '@/routes';
+import { destinatarios } from '@/routes';
 import type { BreadcrumbItem, Destinatario, Requisicao } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { ArrowLeft, Edit, FileText, Mail, MapPin, Phone, Trash2 } from 'lucide-react';
 
 interface DestinatariosShowProps {
     destinatario: Destinatario & {
-        requisicoes?: Requisicao[];
         requisicoes_count: number;
+    };
+    requisicoes: Requisicao[];
+    stats: {
+        total_requisicoes: number;
+        requisicoes_concretizadas: number;
+        valor_total: number;
+        requisicoes_mes_atual: number;
     };
 }
 
-export default function DestinatariosShow({ destinatario }: DestinatariosShowProps) {
+export default function DestinatariosShow({ destinatario, requisicoes, stats }: DestinatariosShowProps) {
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Destinatários',
@@ -127,18 +131,12 @@ export default function DestinatariosShow({ destinatario }: DestinatariosShowPro
 
                                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                                     <div>
-                                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Data de cadastro</h3>
-                                        <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                            {format(new Date(destinatario.created_at), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                                        </p>
+                                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Criado em</h3>
+                                        <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{destinatario.created_at}</p>
                                     </div>
                                     <div>
                                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Última atualização</h3>
-                                        <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                            {format(new Date(destinatario.updated_at), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", {
-                                                locale: ptBR,
-                                            })}
-                                        </p>
+                                        <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{destinatario.updated_at}</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -149,40 +147,45 @@ export default function DestinatariosShow({ destinatario }: DestinatariosShowPro
                             <CardHeader>
                                 <CardTitle className="flex items-center">
                                     <FileText className="mr-2 h-5 w-5" />
-                                    Requisições Recentes
+                                    Requisições ({stats.total_requisicoes})
                                 </CardTitle>
                                 <CardDescription>Últimas requisições recebidas por este órgão</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                {destinatario.requisicoes && destinatario.requisicoes.length > 0 ? (
+                                {requisicoes && requisicoes.length > 0 ? (
                                     <div className="space-y-4">
                                         <div className="rounded-md border">
                                             <Table>
                                                 <TableHeader>
                                                     <TableRow>
                                                         <TableHead>Número</TableHead>
+                                                        <TableHead>Solicitante</TableHead>
                                                         <TableHead>Data</TableHead>
                                                         <TableHead>Status</TableHead>
                                                         <TableHead>Valor</TableHead>
-                                                        <TableHead>Ações</TableHead>
                                                     </TableRow>
                                                 </TableHeader>
                                                 <TableBody>
-                                                    {destinatario.requisicoes.slice(0, 5).map((requisicao) => {
+                                                    {requisicoes.slice(0, 10).map((requisicao) => {
                                                         const statusConfig = getStatusBadge(requisicao.status);
                                                         return (
                                                             <TableRow key={requisicao.id}>
                                                                 <TableCell>
-                                                                    <Link
-                                                                        href={requisicoes.show(requisicao.id)}
-                                                                        className="font-medium text-blue-600 hover:text-blue-800"
-                                                                    >
-                                                                        {requisicao.numero_completo}
-                                                                    </Link>
+                                                                    <div className="font-medium text-blue-600">{requisicao.numero_completo}</div>
                                                                 </TableCell>
+                                                                <TableCell>{requisicao.solicitante}</TableCell>
                                                                 <TableCell>{requisicao.data_recebimento}</TableCell>
                                                                 <TableCell>
-                                                                    <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
+                                                                    <Badge
+                                                                        variant={statusConfig.variant}
+                                                                        className={
+                                                                            requisicao.status_color
+                                                                                ? `bg-${requisicao.status_color}-100 text-${requisicao.status_color}-800 border-${requisicao.status_color}-200`
+                                                                                : ''
+                                                                        }
+                                                                    >
+                                                                        {requisicao.status_display}
+                                                                    </Badge>
                                                                 </TableCell>
                                                                 <TableCell>
                                                                     {requisicao.valor_final
@@ -192,24 +195,17 @@ export default function DestinatariosShow({ destinatario }: DestinatariosShowPro
                                                                           }).format(Number(requisicao.valor_final))
                                                                         : '-'}
                                                                 </TableCell>
-                                                                <TableCell>
-                                                                    <Link href={requisicoes.show(requisicao.id)}>
-                                                                        <Button variant="outline" size="sm">
-                                                                            Ver
-                                                                        </Button>
-                                                                    </Link>
-                                                                </TableCell>
                                                             </TableRow>
                                                         );
                                                     })}
                                                 </TableBody>
                                             </Table>
                                         </div>
-                                        {emitente.requisicoes_count > 5 && (
+                                        {stats.total_requisicoes > 10 && (
                                             <div className="text-center">
-                                                <Link href={`${requisicoes.index()}?emitente_id=${emitente.id}`}>
+                                                <Link href={`/requisicoes?destinatario_id=${destinatario.id}`}>
                                                     <Button variant="outline" size="sm">
-                                                        Ver todas as requisições ({emitente.requisicoes_count})
+                                                        Ver todas as requisições ({stats.total_requisicoes})
                                                     </Button>
                                                 </Link>
                                             </div>
@@ -234,54 +230,37 @@ export default function DestinatariosShow({ destinatario }: DestinatariosShowPro
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="text-center">
-                                    <div className="text-3xl font-bold text-blue-600">{emitente.requisicoes_count}</div>
+                                    <div className="text-3xl font-bold text-blue-600">{stats.total_requisicoes}</div>
                                     <div className="text-sm text-gray-500">Requisições totais</div>
                                 </div>
 
-                                {emitente.requisicoes && (
-                                    <>
-                                        <div className="border-t pt-4">
-                                            <div className="text-center">
-                                                <div className="text-2xl font-bold text-green-600">
-                                                    {emitente.requisicoes.filter((r) => r.status === 'aprovado').length}
-                                                </div>
-                                                <div className="text-sm text-gray-500">Aprovadas</div>
-                                            </div>
-                                        </div>
+                                <div className="border-t pt-4">
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-green-600">{stats.requisicoes_concretizadas}</div>
+                                        <div className="text-sm text-gray-500">Concretizadas</div>
+                                    </div>
+                                </div>
 
-                                        <div className="border-t pt-4">
-                                            <div className="text-center">
-                                                <div className="text-2xl font-bold text-yellow-600">
-                                                    {destinatario.requisicoes.filter((r) => r.status === 'pendente').length}
-                                                </div>
-                                                <div className="text-sm text-gray-500">Pendentes</div>
-                                            </div>
+                                <div className="border-t pt-4">
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-purple-600">
+                                            {new Intl.NumberFormat('pt-BR', {
+                                                style: 'currency',
+                                                currency: 'BRL',
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0,
+                                            }).format(stats.valor_total)}
                                         </div>
+                                        <div className="text-sm text-gray-500">Valor total</div>
+                                    </div>
+                                </div>
 
-                                        <div className="border-t pt-4">
-                                            <div className="text-center">
-                                                <div className="text-2xl font-bold text-red-600">
-                                                    {destinatario.requisicoes.filter((r) => r.status === 'rejeitado').length}
-                                                </div>
-                                                <div className="text-sm text-gray-500">Rejeitadas</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="border-t pt-4">
-                                            <div className="text-center">
-                                                <div className="text-2xl font-bold text-purple-600">
-                                                    {new Intl.NumberFormat('pt-BR', {
-                                                        style: 'currency',
-                                                        currency: 'BRL',
-                                                        minimumFractionDigits: 0,
-                                                        maximumFractionDigits: 0,
-                                                    }).format(destinatario.requisicoes.reduce((acc, r) => acc + (Number(r.valor_final) || 0), 0))}
-                                                </div>
-                                                <div className="text-sm text-gray-500">Valor total</div>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
+                                <div className="border-t pt-4">
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-amber-600">{stats.requisicoes_mes_atual}</div>
+                                        <div className="text-sm text-gray-500">Este mês</div>
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
 
@@ -297,7 +276,7 @@ export default function DestinatariosShow({ destinatario }: DestinatariosShowPro
                                         Editar destinatário
                                     </Button>
                                 </Link>
-                                <Link href={`${requisicoes.index()}?destinatario_id=${destinatario.id}`}>
+                                <Link href={`/requisicoes?destinatario_id=${destinatario.id}`}>
                                     <Button variant="outline" className="w-full justify-start">
                                         <FileText className="mr-2 h-4 w-4" />
                                         Ver requisições
