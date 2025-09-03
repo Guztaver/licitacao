@@ -30,44 +30,24 @@ interface CreateProps {
 interface FormData {
     fornecedor_id: string;
     periodo: string;
-    data_conferencia: string;
     observacoes: string;
 }
 
 export default function ConferenciaCreate({ fornecedores }: CreateProps) {
     const fornecedorId = useId();
     const periodoId = useId();
-    const dataConferenciaId = useId();
+
     const observacoesId = useId();
 
     const { data, setData, post, processing, errors, reset } = useForm<FormData>({
         fornecedor_id: '',
         periodo: '',
-        data_conferencia: new Date().toISOString().split('T')[0], // Today's date
         observacoes: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(conferencias.index());
-    };
-
-    const generatePeriodo = (date: string) => {
-        if (!date) return '';
-        const dateObj = new Date(date);
-        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-        const year = dateObj.getFullYear();
-        return `${month}/${year}`;
-    };
-
-    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const dateValue = e.target.value;
-        setData('data_conferencia', dateValue);
-
-        // Auto-generate period based on selected date
-        if (dateValue && !data.periodo) {
-            setData('periodo', generatePeriodo(dateValue));
-        }
     };
 
     return (
@@ -123,35 +103,20 @@ export default function ConferenciaCreate({ fornecedores }: CreateProps) {
                                 {errors.fornecedor_id && <p className="text-sm text-red-500">{errors.fornecedor_id}</p>}
                             </div>
 
-                            {/* Período e Data */}
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor={periodoId}>Período *</Label>
-                                    <Input
-                                        id={periodoId}
-                                        type="text"
-                                        value={data.periodo}
-                                        onChange={(e) => setData('periodo', e.target.value)}
-                                        placeholder="Ex: 01/2024"
-                                        required
-                                        className={errors.periodo ? 'border-red-500' : ''}
-                                    />
-                                    {errors.periodo && <p className="text-sm text-red-500">{errors.periodo}</p>}
-                                    <p className="text-xs text-gray-500">Formato: MM/AAAA</p>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor={dataConferenciaId}>Data da Conferência *</Label>
-                                    <Input
-                                        id={dataConferenciaId}
-                                        type="date"
-                                        value={data.data_conferencia}
-                                        onChange={handleDateChange}
-                                        required
-                                        className={errors.data_conferencia ? 'border-red-500' : ''}
-                                    />
-                                    {errors.data_conferencia && <p className="text-sm text-red-500">{errors.data_conferencia}</p>}
-                                </div>
+                            {/* Período */}
+                            <div className="space-y-2">
+                                <Label htmlFor={periodoId}>Período *</Label>
+                                <Input
+                                    id={periodoId}
+                                    type="text"
+                                    value={data.periodo}
+                                    onChange={(e) => setData('periodo', e.target.value)}
+                                    placeholder="Ex: 01/2024"
+                                    required
+                                    className={errors.periodo ? 'border-red-500' : ''}
+                                />
+                                {errors.periodo && <p className="text-sm text-red-500">{errors.periodo}</p>}
+                                <p className="text-xs text-gray-500">Formato: MM/AAAA</p>
                             </div>
 
                             <Separator />

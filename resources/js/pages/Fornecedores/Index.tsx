@@ -38,18 +38,25 @@ interface FornecedoresIndexProps {
         links: PaginationLink[];
         meta: PaginationMeta;
     };
+    stats: {
+        total_fornecedores: number;
+        fornecedores_ativos: number;
+        com_requisicoes: number;
+        valor_total: number;
+    };
     filters: {
         search?: string;
         status?: string;
     };
 }
 
-export default function FornecedoresIndex({ fornecedores: fornecedoresPaginated, filters }: FornecedoresIndexProps) {
+export default function FornecedoresIndex({ fornecedores: fornecedoresPaginated, stats, filters }: FornecedoresIndexProps) {
     // Add safety checks for data
     const safeFornecedores = fornecedoresPaginated || { data: [], links: [], meta: { total: 0, from: 0, to: 0, last_page: 1, current_page: 1 } };
     const safeData = safeFornecedores.data || [];
     const safeLinks = safeFornecedores.links || [];
     const safeMeta = safeFornecedores.meta || { total: 0, from: 0, to: 0, last_page: 1, current_page: 1 };
+    const safeStats = stats || { total_fornecedores: 0, fornecedores_ativos: 0, com_requisicoes: 0, valor_total: 0 };
 
     const { data, setData, get, processing } = useForm({
         search: filters?.search || '',
@@ -139,8 +146,15 @@ export default function FornecedoresIndex({ fornecedores: fornecedoresPaginated,
                             <Users className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{safeMeta.total}</div>
-                            <p className="text-xs text-muted-foreground">fornecedores cadastrados</p>
+                            <div className="text-2xl font-bold">{safeStats.total_fornecedores}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {data.search || data.status ? 'encontrados com filtros' : 'fornecedores cadastrados'}
+                            </p>
+                            {safeData.length > 0 && safeMeta.total !== safeStats.total_fornecedores && (
+                                <p className="mt-1 text-xs text-gray-400">
+                                    Mostrando {safeData.length} de {safeMeta.total} na página
+                                </p>
+                            )}
                         </CardContent>
                     </Card>
 
@@ -150,21 +164,23 @@ export default function FornecedoresIndex({ fornecedores: fornecedoresPaginated,
                             <Building className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{fornecedoresPaginated.data.filter((f) => f.status).length}</div>
-                            <p className="text-xs text-muted-foreground">fornecedores ativos</p>
+                            <div className="text-2xl font-bold">{safeStats.fornecedores_ativos}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {data.search || data.status ? 'ativos nos resultados' : 'fornecedores ativos'}
+                            </p>
                         </CardContent>
                     </Card>
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Com Requisições</CardTitle>
+                            <CardTitle className="text-sm font-medium">Com Movimentação</CardTitle>
                             <Building className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">
-                                {fornecedoresPaginated.data.filter((f) => f.requisicoes_count && f.requisicoes_count > 0).length}
-                            </div>
-                            <p className="text-xs text-muted-foreground">com movimento</p>
+                            <div className="text-2xl font-bold">{safeStats.com_requisicoes}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {data.search || data.status ? 'com requisições nos resultados' : 'possuem requisições/pedidos'}
+                            </p>
                         </CardContent>
                     </Card>
 
@@ -174,11 +190,47 @@ export default function FornecedoresIndex({ fornecedores: fornecedoresPaginated,
                             <Building className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{formatCurrency(safeData.reduce((acc, f) => acc + (f.total_geral || 0), 0))}</div>
-                            <p className="text-xs text-muted-foreground">valor movimentado</p>
+                            <div className="text-2xl font-bold">{formatCurrency(safeStats.valor_total)}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {data.search || data.status ? 'valor dos resultados' : 'requisições concretizadas'}
+                            </p>
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Empty State Message */}
+                {safeStats.total_fornecedores === 0 && (data.search || data.status) && (
+                    <div className="rounded-lg bg-yellow-50 p-4 dark:bg-yellow-900/20">
+                        <div className="flex">
+                            <div className="ml-3">
+                                <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Nenhum fornecedor encontrado</h3>
+                                <p className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
+                                    Não foram encontrados fornecedores que correspondam aos filtros aplicados. Tente ajustar os critérios de busca.
+                                </p>
+                                <div className="mt-3">
+                                    <Button variant="outline" size="sm" onClick={handleReset}>
+                                        Limpar Filtros
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Low Data Notice */}
+                {safeStats.total_fornecedores > 0 && safeStats.com_requisicoes === 0 && !data.search && !data.status && (
+                    <div className="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
+                        <div className="flex">
+                            <div className="ml-3">
+                                <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">Fornecedores sem movimentação</h3>
+                                <p className="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                                    Existem fornecedores cadastrados, mas nenhum possui requisições ou pedidos manuais associados. Para gerar
+                                    movimentação, associe requisições aos fornecedores.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Filters */}
                 <Card>

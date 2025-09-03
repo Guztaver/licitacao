@@ -34,6 +34,21 @@ class FornecedorController extends Controller
             }
         }
 
+        // Calculate statistics for the complete filtered dataset (before pagination)
+        $statsQuery = clone $query;
+        $allFornecedores = $statsQuery->withCount(['requisicoes', 'pedidosManuais', 'conferencias'])->get();
+
+        $stats = [
+            'total_fornecedores' => $allFornecedores->count(),
+            'fornecedores_ativos' => $allFornecedores->where('status', true)->count(),
+            'com_requisicoes' => $allFornecedores->filter(function ($fornecedor) {
+                return $fornecedor->requisicoes_count > 0 || $fornecedor->pedidos_manuais_count > 0;
+            })->count(),
+            'valor_total' => $allFornecedores->sum(function ($fornecedor) {
+                return $fornecedor->getTotalGeral();
+            }),
+        ];
+
         $fornecedoresPaginated = $query
             ->withCount(['requisicoes', 'pedidosManuais', 'conferencias'])
             ->orderBy('razao_social')
@@ -65,6 +80,7 @@ class FornecedorController extends Controller
 
         return Inertia::render('Fornecedores/Index', [
             'fornecedores' => $fornecedoresPaginated,
+            'stats' => $stats,
             'filters' => $request->only(['search', 'status']),
         ]);
     }

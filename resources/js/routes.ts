@@ -38,6 +38,7 @@ export const conferencias = {
     create: () => '/conferencias/create',
     show: (id: number) => `/conferencias/${id}`,
     edit: (id: number) => `/conferencias/${id}/edit`,
+    destroy: (id: number) => `/conferencias/${id}`,
     export: () => '/conferencias-export',
     fornecedor: (fornecedorId: number, periodo: string) => `/conferencias/fornecedor/${fornecedorId}/${periodo}`,
 };

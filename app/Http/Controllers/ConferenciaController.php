@@ -90,17 +90,40 @@ class ConferenciaController extends Controller
     {
         $validated = $request->validate([
             'fornecedor_id' => 'required|exists:fornecedores,id',
-            'periodo' => 'required|string|max:100',
-            'data_conferencia' => 'required|date',
+            'periodo' => 'required|string|max:100|regex:/^\d{2}\/\d{4}$/',
             'observacoes' => 'nullable|string|max:1000',
         ]);
 
         $fornecedor = Fornecedor::query()->findOrFail($request->fornecedor_id);
 
+        // Parse periodo (MM/YYYY) to generate periodo_inicio and periodo_fim
+        $periodo = $validated['periodo'];
+        if (preg_match('/^(\d{2})\/(\d{4})$/', $periodo, $matches)) {
+            $month = intval($matches[1]);
+            $year = intval($matches[2]);
+
+            // Create first day of the month
+            $periodo_inicio = \Carbon\Carbon::create($year, $month, 1);
+            // Create last day of the month
+            $periodo_fim = $periodo_inicio->copy()->endOfMonth();
+        } else {
+            return redirect()->back()
+                ->withErrors(['periodo' => 'Formato de período inválido. Use MM/AAAA (ex: 01/2024)'])
+                ->withInput();
+        }
+
         // Calculate totals
         $validated['total_requisicoes'] = $fornecedor->getTotalRequisicoes();
         $validated['total_pedidos_manuais'] = $fornecedor->getTotalPedidosManuais();
         $validated['total_geral'] = $fornecedor->getTotalGeral();
+
+        // Add the parsed dates and user info
+        $validated['periodo_inicio'] = $periodo_inicio;
+        $validated['periodo_fim'] = $periodo_fim;
+        $validated['usuario_criacao_id'] = auth()->id();
+
+        // Remove the original periodo field as it's not in the database
+        unset($validated['periodo']);
 
         $conferencia = new Conferencia($validated);
         $conferencia->save();
@@ -118,11 +141,15 @@ class ConferenciaController extends Controller
 
         $conferenciaData = [
             'id' => $conferencia->id,
-            'periodo' => $conferencia->periodo,
+            'periodo_inicio' => $conferencia->periodo_inicio->format('d/m/Y'),
+            'periodo_fim' => $conferencia->periodo_fim->format('d/m/Y'),
+            'periodo_display' => $conferencia->periodo_display,
             'total_requisicoes' => $conferencia->total_requisicoes,
             'total_pedidos_manuais' => $conferencia->total_pedidos_manuais,
             'total_geral' => $conferencia->total_geral,
-            'data_conferencia' => $conferencia->data_conferencia,
+            'status' => $conferencia->status,
+            'status_display' => $conferencia->status_display,
+            'status_color' => $conferencia->status_color,
             'observacoes' => $conferencia->observacoes,
             'created_at' => $conferencia->created_at->format('d/m/Y H:i'),
             'updated_at' => $conferencia->updated_at->format('d/m/Y H:i'),
