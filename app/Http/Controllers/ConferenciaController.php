@@ -230,9 +230,9 @@ class ConferenciaController extends Controller
     }
 
     /**
-     * Export conferências to Excel/CSV.
+     * Export conferências to CSV.
      */
-    public function export(Request $request): \Illuminate\Http\JsonResponse
+    public function export(Request $request)
     {
         $query = Conferencia::query()->with('fornecedor');
 
@@ -259,24 +259,55 @@ class ConferenciaController extends Controller
 
         $conferencias = $query->orderBy('created_at', 'desc')->get();
 
-        // This would typically use an Excel export library like Laravel Excel
-        // For now, we'll return a simple response
-        return response()->json([
-            'message' => 'Export functionality would be implemented here',
-            'count' => $conferencias->count(),
-            'data' => $conferencias->map(function ($conferencia) {
-                return [
-                    'id' => $conferencia->id,
-                    'periodo' => $conferencia->periodo,
-                    'fornecedor' => $conferencia->fornecedor?->razao_social,
-                    'total_requisicoes' => $conferencia->total_requisicoes,
-                    'total_pedidos_manuais' => $conferencia->total_pedidos_manuais,
-                    'total_geral' => $conferencia->total_geral,
-                    'data_conferencia' => $conferencia->data_conferencia,
-                    'observacoes' => $conferencia->observacoes,
-                ];
-            }),
-        ]);
+        $filename = 'conferencias_' . now()->format('Y-m-d_H-i-s') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+            'Pragma' => 'public',
+        ];
+
+        $callback = function() use ($conferencias) {
+            $file = fopen('php://output', 'w');
+
+            // Add UTF-8 BOM for proper Excel handling
+            fwrite($file, "\xEF\xBB\xBF");
+
+            // Headers
+            fputcsv($file, [
+                'ID',
+                'Período',
+                'Fornecedor',
+                'Total Requisições',
+                'Total Pedidos Manuais',
+                'Total Geral',
+                'Data Conferência',
+                'Observações',
+                'Data Criação',
+                'Data Atualização'
+            ]);
+
+            foreach ($conferencias as $conferencia) {
+                fputcsv($file, [
+                    $conferencia->id,
+                    $conferencia->periodo,
+                    $conferencia->fornecedor?->razao_social ?? '',
+                    number_format($conferencia->total_requisicoes, 2, ',', '.'),
+                    number_format($conferencia->total_pedidos_manuais, 2, ',', '.'),
+                    number_format($conferencia->total_geral, 2, ',', '.'),
+                    $conferencia->data_conferencia?->format('d/m/Y') ?? '',
+                    $conferencia->observacoes ?? '',
+                    $conferencia->created_at->format('d/m/Y H:i'),
+                    $conferencia->updated_at->format('d/m/Y H:i')
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**

@@ -37,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Emitentes routes
     Route::resource('emitentes', EmitenteController::class);
+    Route::get('emitentes-export', [EmitenteController::class, 'export'])->name('emitentes.export');
 
     // Destinatários routes
     Route::resource('destinatarios', DestinatarioController::class);

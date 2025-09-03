@@ -100,7 +100,13 @@ export default function ConferenciasIndex({ conferencias: conferenciasPaginated,
                         <p className="text-gray-600 dark:text-gray-400">Gerencie as conferências de fornecedores</p>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <Button variant="outline" onClick={() => router.get(conferencias.export(), { ...filters })}>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                const params = new URLSearchParams(filters as Record<string, string>);
+                                window.location.href = `${conferencias.export()}?${params.toString()}`;
+                            }}
+                        >
                             <FileDown className="mr-2 h-4 w-4" />
                             Exportar
                         </Button>

@@ -429,14 +429,25 @@ class RequisicaoController extends Controller
     }
 
     /**
-     * Export requisições to Excel/CSV.
+     * Export requisições to CSV.
      */
-    public function export(Request $request): \Illuminate\Http\JsonResponse
+    public function export(Request $request)
     {
         $query = Requisicao::query()->where('status', '!=', 'excluida')->with(['emitente', 'destinatario', 'fornecedor']);
 
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('numero_completo', 'like', "%{$request->search}%")
+                  ->orWhere('objeto', 'like', "%{$request->search}%");
+            });
+        }
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        }
+
+        if ($request->filled('emitente_id')) {
+            $query->where('emitente_id', $request->emitente_id);
         }
 
         if ($request->filled('data_inicio')) {
@@ -449,9 +460,58 @@ class RequisicaoController extends Controller
 
         $requisicoes = $query->orderBy('created_at', 'desc')->get();
 
-        return response()->json([
-            'message' => 'Export functionality would be implemented here',
-            'count' => $requisicoes->count(),
-        ]);
+        $filename = 'requisicoes_' . now()->format('Y-m-d_H-i-s') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+            'Pragma' => 'public',
+        ];
+
+        $callback = function() use ($requisicoes) {
+            $file = fopen('php://output', 'w');
+
+            // Add UTF-8 BOM for proper Excel handling
+            fwrite($file, "\xEF\xBB\xBF");
+
+            // Headers
+            fputcsv($file, [
+                'Número Completo',
+                'Emitente',
+                'Destinatário',
+                'Fornecedor',
+                'Objeto',
+                'Status',
+                'Valor Total',
+                'Data Recebimento',
+                'Data Vencimento',
+                'Observações',
+                'Data Criação',
+                'Data Atualização'
+            ]);
+
+            foreach ($requisicoes as $requisicao) {
+                fputcsv($file, [
+                    $requisicao->numero_completo,
+                    $requisicao->emitente?->nome ?? '',
+                    $requisicao->destinatario?->nome ?? '',
+                    $requisicao->fornecedor?->razao_social ?? '',
+                    $requisicao->objeto,
+                    ucfirst($requisicao->status),
+                    number_format($requisicao->valor_total, 2, ',', '.'),
+                    $requisicao->data_recebimento?->format('d/m/Y') ?? '',
+                    $requisicao->data_vencimento?->format('d/m/Y') ?? '',
+                    $requisicao->observacoes ?? '',
+                    $requisicao->created_at->format('d/m/Y H:i'),
+                    $requisicao->updated_at->format('d/m/Y H:i')
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

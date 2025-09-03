@@ -195,9 +195,9 @@ class DestinatarioController extends Controller
     }
 
     /**
-     * Export destinatários to Excel/CSV.
+     * Export destinatários to CSV.
      */
-    public function export(Request $request): \Illuminate\Http\JsonResponse
+    public function export(Request $request)
     {
         $query = Destinatario::query();
 
@@ -210,11 +210,42 @@ class DestinatarioController extends Controller
 
         $destinatarios = $query->orderBy('nome')->get();
 
-        // This would typically use an Excel export library like Laravel Excel
-        // For now, we'll return a simple response
-        return response()->json([
-            'message' => 'Export functionality would be implemented here',
-            'count' => $destinatarios->count(),
-        ]);
+        $filename = 'destinatarios_' . now()->format('Y-m-d_H-i-s') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+            'Pragma' => 'public',
+        ];
+
+        $callback = function() use ($destinatarios) {
+            $file = fopen('php://output', 'w');
+
+            // Add UTF-8 BOM for proper Excel handling
+            fwrite($file, "\xEF\xBB\xBF");
+
+            // Headers
+            fputcsv($file, [
+                'Nome',
+                'Sigla',
+                'Data Criação',
+                'Data Atualização'
+            ]);
+
+            foreach ($destinatarios as $destinatario) {
+                fputcsv($file, [
+                    $destinatario->nome,
+                    $destinatario->sigla ?? '',
+                    $destinatario->created_at->format('d/m/Y H:i'),
+                    $destinatario->updated_at->format('d/m/Y H:i')
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

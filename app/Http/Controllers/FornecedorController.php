@@ -258,9 +258,9 @@ class FornecedorController extends Controller
     }
 
     /**
-     * Export fornecedores to Excel/CSV.
+     * Export fornecedores to CSV.
      */
-    public function export(Request $request): \Illuminate\Http\JsonResponse
+    public function export(Request $request)
     {
         $query = Fornecedor::query();
 
@@ -281,12 +281,51 @@ class FornecedorController extends Controller
 
         $fornecedores = $query->orderBy('razao_social')->get();
 
-        // This would typically use an Excel export library like Laravel Excel
-        // For now, we'll return a simple response
-        return response()->json([
-            'message' => 'Export functionality would be implemented here',
-            'count' => $fornecedores->count(),
-        ]);
+        $filename = 'fornecedores_' . now()->format('Y-m-d_H-i-s') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+            'Pragma' => 'public',
+        ];
+
+        $callback = function() use ($fornecedores) {
+            $file = fopen('php://output', 'w');
+
+            // Add UTF-8 BOM for proper Excel handling
+            fwrite($file, "\xEF\xBB\xBF");
+
+            // Headers
+            fputcsv($file, [
+                'Razão Social',
+                'CNPJ',
+                'Email',
+                'Telefone',
+                'Endereço',
+                'Status',
+                'Data Criação',
+                'Data Atualização'
+            ]);
+
+            foreach ($fornecedores as $fornecedor) {
+                fputcsv($file, [
+                    $fornecedor->razao_social,
+                    $fornecedor->cnpj,
+                    $fornecedor->email ?? '',
+                    $fornecedor->telefone ?? '',
+                    $fornecedor->endereco ?? '',
+                    $fornecedor->status ? 'Ativo' : 'Inativo',
+                    $fornecedor->created_at->format('d/m/Y H:i'),
+                    $fornecedor->updated_at->format('d/m/Y H:i')
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**

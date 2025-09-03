@@ -193,4 +193,65 @@ class EmitenteController extends Controller
         return redirect()->route('emitentes.index')
             ->with('success', 'Emitente excluído com sucesso!');
     }
+
+    /**
+     * Export emitentes to CSV.
+     */
+    public function export(Request $request)
+    {
+        $query = Emitente::query();
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nome', 'like', "%{$request->search}%")
+                  ->orWhere('sigla', 'like', "%{$request->search}%");
+            });
+        }
+
+        $emitentes = $query->orderBy('nome')->get();
+
+        $filename = 'emitentes_' . now()->format('Y-m-d_H-i-s') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+            'Pragma' => 'public',
+        ];
+
+        $callback = function() use ($emitentes) {
+            $file = fopen('php://output', 'w');
+
+            // Add UTF-8 BOM for proper Excel handling
+            fwrite($file, "\xEF\xBB\xBF");
+
+            // Headers
+            fputcsv($file, [
+                'Nome',
+                'Sigla',
+                'Endereço',
+                'Telefone',
+                'Email',
+                'Data Criação',
+                'Data Atualização'
+            ]);
+
+            foreach ($emitentes as $emitente) {
+                fputcsv($file, [
+                    $emitente->nome,
+                    $emitente->sigla ?? '',
+                    $emitente->endereco ?? '',
+                    $emitente->telefone ?? '',
+                    $emitente->email ?? '',
+                    $emitente->created_at->format('d/m/Y H:i'),
+                    $emitente->updated_at->format('d/m/Y H:i')
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

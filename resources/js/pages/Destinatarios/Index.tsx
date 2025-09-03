@@ -82,7 +82,13 @@ export default function DestinatariosIndex({ destinatarios: destinatariosPaginat
                         <p className="text-gray-600 dark:text-gray-400">Gerencie os órgãos destinatários de requisições</p>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <Button variant="outline" onClick={() => router.get('/destinatarios-export', { ...filters })}>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                const params = new URLSearchParams(filters as Record<string, string>);
+                                window.location.href = `/destinatarios-export?${params.toString()}`;
+                            }}
+                        >
                             <FileDown className="mr-2 h-4 w-4" />
                             Exportar
                         </Button>

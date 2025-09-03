@@ -112,7 +112,13 @@ export default function RequisicoesIndex({ requisicoes: requisicoesPaginated, em
                         <p className="text-gray-600 dark:text-gray-400">Gerencie as requisições do sistema</p>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <Button variant="outline" onClick={() => router.get(requisicoes.export(), { ...filters })}>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                const params = new URLSearchParams(filters as Record<string, string>);
+                                window.location.href = `${requisicoes.export()}?${params.toString()}`;
+                            }}
+                        >
                             <FileDown className="mr-2 h-4 w-4" />
                             Exportar
                         </Button>
