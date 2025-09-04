@@ -32,7 +32,7 @@ export default function Register() {
 									type="text"
 									required
 									autoFocus
-									tabIndex={1}
+									tabIndex="0"
 									autoComplete="name"
 									name="name"
 									placeholder="Full name"
@@ -46,7 +46,7 @@ export default function Register() {
 									id="email"
 									type="email"
 									required
-									tabIndex={2}
+									tabIndex="0"
 									autoComplete="email"
 									name="email"
 									placeholder="email@example.com"
@@ -60,7 +60,7 @@ export default function Register() {
 									id="password"
 									type="password"
 									required
-									tabIndex={3}
+									tabIndex="0"
 									autoComplete="new-password"
 									name="password"
 									placeholder="Password"
@@ -74,7 +74,7 @@ export default function Register() {
 									id="password_confirmation"
 									type="password"
 									required
-									tabIndex={4}
+									tabIndex="0"
 									autoComplete="new-password"
 									name="password_confirmation"
 									placeholder="Confirm password"
@@ -82,7 +82,7 @@ export default function Register() {
 								<InputError message={errors.password_confirmation} />
 							</div>
 
-							<Button type="submit" className="mt-2 w-full" tabIndex={5}>
+							<Button type="submit" className="mt-2 w-full" tabIndex="0">
 								{processing && (
 									<LoaderCircle className="h-4 w-4 animate-spin" />
 								)}
@@ -92,7 +92,7 @@ export default function Register() {
 
 						<div className="text-center text-sm text-muted-foreground">
 							Already have an account?{" "}
-							<TextLink href={login()} tabIndex={6}>
+							<TextLink href={login()} tabIndex="0">
 								Log in
 							</TextLink>
 						</div>

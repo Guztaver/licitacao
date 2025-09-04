@@ -125,7 +125,7 @@ export default function FornecedoresIndex({
 
 	useEffect(() => {
 		handleAutoSearch();
-	}, [data.search, data.status]);
+	}, [handleAutoSearch]);
 
 	const formatCurrency = (value: number) => {
 		return new Intl.NumberFormat("pt-BR", {
