@@ -1,3 +1,6 @@
+import { Head, Link, useForm } from "@inertiajs/react";
+import { ArrowLeft, MapPin, Save } from "lucide-react";
+import type { FormEventHandler } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -11,9 +14,6 @@ import { Label } from "@/components/ui/label";
 import AppLayout from "@/layouts/app-layout";
 import { destinatarios } from "@/routes";
 import type { BreadcrumbItem, Destinatario } from "@/types";
-import { Head, Link, useForm } from "@inertiajs/react";
-import { ArrowLeft, MapPin, Save } from "lucide-react";
-import type { FormEventHandler } from "react";
 
 interface DestinatariosEditProps {
 	destinatario: Destinatario;

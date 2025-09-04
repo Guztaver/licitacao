@@ -1,3 +1,6 @@
+import { useForm } from "@inertiajs/react";
+import { Building, Plus, Save } from "lucide-react";
+import { type FormEventHandler, type ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -11,9 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { destinatarios } from "@/routes";
-import { useForm } from "@inertiajs/react";
-import { Building, Plus, Save } from "lucide-react";
-import { useState, type FormEventHandler, type ReactNode } from "react";
 
 interface CreateDestinatarioModalProps {
 	trigger?: ReactNode;

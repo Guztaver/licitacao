@@ -1,3 +1,6 @@
+import { useForm } from "@inertiajs/react";
+import { Building, Plus, Save } from "lucide-react";
+import { type FormEventHandler, type ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -11,9 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "@inertiajs/react";
-import { Building, Plus, Save } from "lucide-react";
-import { useState, type FormEventHandler, type ReactNode } from "react";
 
 interface CreateEmitenteModalProps {
 	trigger?: ReactNode;

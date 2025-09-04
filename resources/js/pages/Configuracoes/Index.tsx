@@ -1,3 +1,15 @@
+import { Head, useForm } from "@inertiajs/react";
+import {
+	Bell,
+	Building,
+	Database,
+	FileText,
+	Mail,
+	Save,
+	Settings,
+	Shield,
+} from "lucide-react";
+import type { FormEventHandler } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -19,18 +31,6 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import AppLayout from "@/layouts/app-layout";
 import type { BreadcrumbItem } from "@/types";
-import { Head, useForm } from "@inertiajs/react";
-import {
-	Bell,
-	Building,
-	Database,
-	FileText,
-	Mail,
-	Save,
-	Settings,
-	Shield,
-} from "lucide-react";
-import type { FormEventHandler } from "react";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{

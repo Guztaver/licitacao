@@ -1,3 +1,13 @@
+import { Head, Link, router, useForm } from "@inertiajs/react";
+import {
+	ArrowLeft,
+	CheckCircle,
+	Download,
+	Edit,
+	Trash2,
+	X,
+} from "lucide-react";
+import { useId, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,16 +37,6 @@ import type {
 	Fornecedor,
 	User,
 } from "@/types";
-import { Head, Link, router, useForm } from "@inertiajs/react";
-import {
-	ArrowLeft,
-	CheckCircle,
-	Download,
-	Edit,
-	Trash2,
-	X,
-} from "lucide-react";
-import { useId, useState } from "react";
 
 interface ShowRequisicao {
 	id: number;

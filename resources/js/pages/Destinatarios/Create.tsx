@@ -1,3 +1,6 @@
+import { Head, Link, useForm } from "@inertiajs/react";
+import { ArrowLeft, Building, Save } from "lucide-react";
+import type { FormEventHandler } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -12,9 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import AppLayout from "@/layouts/app-layout";
 import { destinatarios } from "@/routes";
 import type { BreadcrumbItem } from "@/types";
-import { Head, Link, useForm } from "@inertiajs/react";
-import { ArrowLeft, Building, Save } from "lucide-react";
-import type { FormEventHandler } from "react";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{

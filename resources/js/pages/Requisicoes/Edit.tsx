@@ -1,3 +1,7 @@
+import { Head, Link, useForm } from "@inertiajs/react";
+import { ArrowLeft, FileText, Save, Upload } from "lucide-react";
+import type { FormEventHandler } from "react";
+import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -20,10 +24,6 @@ import { Textarea } from "@/components/ui/textarea";
 import AppLayout from "@/layouts/app-layout";
 import { requisicoes } from "@/routes";
 import type { BreadcrumbItem, Destinatario, Emitente } from "@/types";
-import { Head, Link, useForm } from "@inertiajs/react";
-import { ArrowLeft, FileText, Save, Upload } from "lucide-react";
-import type { FormEventHandler } from "react";
-import { useId } from "react";
 
 interface EditRequisicao {
 	id: number;

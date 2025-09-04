@@ -1,3 +1,6 @@
+import { Head, Link, useForm } from "@inertiajs/react";
+import { ArrowLeft, Save, Users } from "lucide-react";
+import type { FormEventHandler } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -12,9 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import AppLayout from "@/layouts/app-layout";
 import { fornecedores } from "@/routes";
 import type { BreadcrumbItem, Fornecedor } from "@/types";
-import { Head, Link, useForm } from "@inertiajs/react";
-import { ArrowLeft, Save, Users } from "lucide-react";
-import type { FormEventHandler } from "react";
 
 interface FornecedoresEditProps {
 	fornecedor: Fornecedor;

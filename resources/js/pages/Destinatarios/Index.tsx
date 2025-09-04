@@ -1,3 +1,6 @@
+import { Head, Link, router, useForm } from "@inertiajs/react";
+import { FileDown, MapPin, Plus, Search } from "lucide-react";
+import type { FormEventHandler } from "react";
 import CreateDestinatarioModal from "@/components/modals/CreateDestinatarioModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,9 +22,6 @@ import {
 import AppLayout from "@/layouts/app-layout";
 import { destinatarios } from "@/routes";
 import type { BreadcrumbItem, Destinatario } from "@/types";
-import { Head, Link, router, useForm } from "@inertiajs/react";
-import { FileDown, MapPin, Plus, Search } from "lucide-react";
-import type { FormEventHandler } from "react";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{

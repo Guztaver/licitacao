@@ -1,3 +1,15 @@
+import { Head, Link, router } from "@inertiajs/react";
+import {
+	ArrowRight,
+	Building,
+	Calendar,
+	CheckSquare,
+	DollarSign,
+	FileText,
+	TrendingUp,
+	Users,
+} from "lucide-react";
+import type react from "react";
 import CreateFornecedorModal from "@/components/modals/CreateFornecedorModal";
 import {
 	Card,
@@ -15,18 +27,6 @@ import type {
 	Fornecedor,
 	Requisicao,
 } from "@/types";
-import { Head, Link, router } from "@inertiajs/react";
-import {
-	ArrowRight,
-	Building,
-	Calendar,
-	CheckSquare,
-	DollarSign,
-	FileText,
-	TrendingUp,
-	Users,
-} from "lucide-react";
-import type react from "react";
 
 // Constants
 const STATUS_COLORS = {

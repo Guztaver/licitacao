@@ -1,3 +1,14 @@
+import { Head, Link, router } from "@inertiajs/react";
+import {
+	ArrowLeft,
+	Building,
+	Edit,
+	FileText,
+	Mail,
+	MapPin,
+	Phone,
+	Trash2,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,17 +29,6 @@ import {
 import AppLayout from "@/layouts/app-layout";
 import { emitentes } from "@/routes";
 import type { BreadcrumbItem, Emitente, Requisicao } from "@/types";
-import { Head, Link, router } from "@inertiajs/react";
-import {
-	ArrowLeft,
-	Building,
-	Edit,
-	FileText,
-	Mail,
-	MapPin,
-	Phone,
-	Trash2,
-} from "lucide-react";
 
 interface EmitentesShowProps {
 	emitente: Emitente & {

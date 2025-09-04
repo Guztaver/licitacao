@@ -1,3 +1,15 @@
+import { Head, Link, useForm } from "@inertiajs/react";
+import {
+	ArrowLeft,
+	Building,
+	DollarSign,
+	Download,
+	Filter,
+	Search,
+	TrendingUp,
+	Users,
+} from "lucide-react";
+import type { FormEventHandler } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,18 +38,6 @@ import {
 } from "@/components/ui/table";
 import AppLayout from "@/layouts/app-layout";
 import type { BreadcrumbItem, Fornecedor } from "@/types";
-import { Head, Link, useForm } from "@inertiajs/react";
-import {
-	ArrowLeft,
-	Building,
-	DollarSign,
-	Download,
-	Filter,
-	Search,
-	TrendingUp,
-	Users,
-} from "lucide-react";
-import type { FormEventHandler } from "react";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{

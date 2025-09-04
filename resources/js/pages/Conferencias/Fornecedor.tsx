@@ -1,3 +1,17 @@
+import { Head, Link, router, useForm } from "@inertiajs/react";
+import {
+	ArrowLeft,
+	Building2,
+	Calendar,
+	CheckCircle,
+	DollarSign,
+	Edit3,
+	FileText,
+	Plus,
+	Save,
+	Trash2,
+} from "lucide-react";
+import { type FormEventHandler, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -20,20 +34,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import AppLayout from "@/layouts/app-layout";
 import type { BreadcrumbItem } from "@/types";
-import { Head, Link, router, useForm } from "@inertiajs/react";
-import {
-	ArrowLeft,
-	Building2,
-	Calendar,
-	CheckCircle,
-	DollarSign,
-	Edit3,
-	FileText,
-	Plus,
-	Save,
-	Trash2,
-} from "lucide-react";
-import { useState, type FormEventHandler } from "react";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{

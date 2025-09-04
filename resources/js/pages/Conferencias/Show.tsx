@@ -1,10 +1,3 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import AppLayout from "@/layouts/app-layout";
-import { conferencias } from "@/routes";
-import type { BreadcrumbItem, Fornecedor } from "@/types";
 import { Head, Link, router } from "@inertiajs/react";
 import {
 	ArrowLeft,
@@ -15,6 +8,13 @@ import {
 	Trash2,
 	User,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import AppLayout from "@/layouts/app-layout";
+import { conferencias } from "@/routes";
+import type { BreadcrumbItem, Fornecedor } from "@/types";
 
 interface ShowConferencia {
 	id: number;

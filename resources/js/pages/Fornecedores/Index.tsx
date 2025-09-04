@@ -1,3 +1,6 @@
+import { Head, Link, router, useForm } from "@inertiajs/react";
+import { Building, FileDown, Plus, Search, Users } from "lucide-react";
+import { type FormEventHandler, useEffect } from "react";
 import CreateFornecedorModal from "@/components/modals/CreateFornecedorModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,9 +23,6 @@ import {
 import AppLayout from "@/layouts/app-layout";
 import { fornecedores } from "@/routes";
 import type { BreadcrumbItem, Fornecedor } from "@/types";
-import { Head, Link, router, useForm } from "@inertiajs/react";
-import { Building, FileDown, Plus, Search, Users } from "lucide-react";
-import { type FormEventHandler, useEffect } from "react";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{

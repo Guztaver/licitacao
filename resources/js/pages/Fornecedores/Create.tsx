@@ -1,3 +1,5 @@
+import { Head, Link, useForm } from "@inertiajs/react";
+import { ArrowLeft, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -10,8 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { fornecedores } from "@/routes";
-import { Head, Link, useForm } from "@inertiajs/react";
-import { ArrowLeft, Save } from "lucide-react";
 
 interface FormData {
 	razao_social: string;

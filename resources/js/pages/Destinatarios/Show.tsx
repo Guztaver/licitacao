@@ -1,3 +1,13 @@
+import { Head, Link, router } from "@inertiajs/react";
+import {
+	ArrowLeft,
+	Edit,
+	FileText,
+	Mail,
+	MapPin,
+	Phone,
+	Trash2,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,16 +28,6 @@ import {
 import AppLayout from "@/layouts/app-layout";
 import { destinatarios } from "@/routes";
 import type { BreadcrumbItem, Destinatario, Requisicao } from "@/types";
-import { Head, Link, router } from "@inertiajs/react";
-import {
-	ArrowLeft,
-	Edit,
-	FileText,
-	Mail,
-	MapPin,
-	Phone,
-	Trash2,
-} from "lucide-react";
 
 interface DestinatariosShowProps {
 	destinatario: Destinatario & {
