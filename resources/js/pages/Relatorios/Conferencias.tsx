@@ -11,6 +11,7 @@ import {
 	TrendingUp,
 } from "lucide-react";
 import type { FormEventHandler } from "react";
+import { useId } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +40,7 @@ import {
 } from "@/components/ui/table";
 import AppLayout from "@/layouts/app-layout";
 import type { BreadcrumbItem, Fornecedor } from "@/types";
+import { formatters, reportUtils } from "@/utils/relatorios/formatters";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
@@ -67,22 +69,21 @@ interface ConferenciaRelatorio {
 	created_at: string;
 }
 
+interface ConferenciaStats {
+	total_conferencias: number;
+	valor_total_geral: number;
+	valor_total_requisicoes: number;
+	valor_total_pedidos_manuais: number;
+	conferencias_por_fornecedor: Record<
+		string,
+		{ count: number; valor_total: number }
+	>;
+	conferencias_por_mes: Record<string, { count: number; valor_total: number }>;
+}
+
 interface RelatorioConferenciasProps {
 	conferencias: ConferenciaRelatorio[];
-	stats: {
-		total_conferencias: number;
-		valor_total_geral: number;
-		valor_total_requisicoes: number;
-		valor_total_pedidos_manuais: number;
-		conferencias_por_fornecedor: Record<
-			string,
-			{ count: number; valor_total: number }
-		>;
-		conferencias_por_mes: Record<
-			string,
-			{ count: number; valor_total: number }
-		>;
-	};
+	stats: ConferenciaStats;
 	filters: {
 		data_inicio?: string;
 		data_fim?: string;
@@ -90,6 +91,397 @@ interface RelatorioConferenciasProps {
 	};
 	fornecedores?: Pick<Fornecedor, "id" | "razao_social">[];
 }
+
+// Component for Statistics Cards
+const StatisticsCards = ({ stats }: { stats: ConferenciaStats }) => (
+	<div className="grid gap-4 md:grid-cols-4">
+		<Card>
+			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+				<CardTitle className="text-sm font-medium">
+					Total Conferências
+				</CardTitle>
+				<CheckCircle className="h-4 w-4 text-muted-foreground" />
+			</CardHeader>
+			<CardContent>
+				<div className="text-2xl font-bold">
+					{formatters.number(stats.total_conferencias, "Nenhuma conferência")}
+				</div>
+				<p className="text-xs text-muted-foreground">
+					{stats.total_conferencias === 0
+						? "Nenhuma conferência realizada"
+						: "conferências realizadas"}
+				</p>
+			</CardContent>
+		</Card>
+
+		<Card>
+			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+				<CardTitle className="text-sm font-medium">Valor Total Geral</CardTitle>
+				<DollarSign className="h-4 w-4 text-green-600" />
+			</CardHeader>
+			<CardContent>
+				<div className="text-2xl font-bold text-green-600">
+					{formatters.currency(stats.valor_total_geral, "Sem valor conferido")}
+				</div>
+				<p className="text-xs text-muted-foreground">
+					{stats.valor_total_geral === 0
+						? "Nenhum valor foi conferido"
+						: "valor total conferido"}
+				</p>
+			</CardContent>
+		</Card>
+
+		<Card>
+			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+				<CardTitle className="text-sm font-medium">Requisições</CardTitle>
+				<BarChart3 className="h-4 w-4 text-blue-800" />
+			</CardHeader>
+			<CardContent>
+				<div className="text-2xl font-bold text-blue-800">
+					{formatters.currency(
+						stats.valor_total_requisicoes,
+						"Sem requisições conferidas",
+					)}
+				</div>
+				<p className="text-xs text-muted-foreground">
+					{stats.valor_total_requisicoes === 0
+						? "Nenhuma requisição conferida"
+						: "valor em requisições"}
+				</p>
+			</CardContent>
+		</Card>
+
+		<Card>
+			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+				<CardTitle className="text-sm font-medium">Pedidos Manuais</CardTitle>
+				<TrendingUp className="h-4 w-4 text-purple-600" />
+			</CardHeader>
+			<CardContent>
+				<div className="text-2xl font-bold text-purple-600">
+					{formatters.currency(
+						stats.valor_total_pedidos_manuais,
+						"Sem pedidos manuais",
+					)}
+				</div>
+				<p className="text-xs text-muted-foreground">
+					{stats.valor_total_pedidos_manuais === 0
+						? "Nenhum pedido manual conferido"
+						: "valor em pedidos manuais"}
+				</p>
+			</CardContent>
+		</Card>
+	</div>
+);
+
+// Component for Filters Card
+const FiltersCard = ({
+	data,
+	setData,
+	processing,
+	fornecedores,
+	onFilter,
+	onReset,
+}: {
+	data: {
+		data_inicio: string;
+		data_fim: string;
+		fornecedor_id: string;
+	};
+	setData: (field: string, value: string) => void;
+	processing: boolean;
+	fornecedores: Pick<Fornecedor, "id" | "razao_social">[];
+	onFilter: FormEventHandler;
+	onReset: () => void;
+}) => {
+	const dataInicioId = useId();
+	const dataFimId = useId();
+
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle className="flex items-center">
+					<Filter className="mr-2 h-5 w-5" />
+					Filtros
+				</CardTitle>
+				<CardDescription>
+					Use os filtros para refinar o relatório de conferências
+				</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<form onSubmit={onFilter} className="space-y-4">
+					<div className="grid gap-4 md:grid-cols-3">
+						<div className="space-y-2">
+							<Label htmlFor={dataInicioId}>Data Início</Label>
+							<Input
+								id={dataInicioId}
+								type="date"
+								value={data.data_inicio}
+								onChange={(e) => setData("data_inicio", e.target.value)}
+							/>
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor={dataFimId}>Data Fim</Label>
+							<Input
+								id={dataFimId}
+								type="date"
+								value={data.data_fim}
+								onChange={(e) => setData("data_fim", e.target.value)}
+							/>
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="fornecedor_id">Fornecedor</Label>
+							<Select
+								value={data.fornecedor_id}
+								onValueChange={(value) => setData("fornecedor_id", value)}
+							>
+								<SelectTrigger>
+									<SelectValue placeholder="Todos os fornecedores" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="">Todos os fornecedores</SelectItem>
+									{fornecedores.map((fornecedor) => (
+										<SelectItem
+											key={fornecedor.id}
+											value={fornecedor.id.toString()}
+										>
+											{fornecedor.razao_social}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+					</div>
+					<div className="flex justify-end space-x-2">
+						<Button type="button" variant="outline" onClick={onReset}>
+							Limpar
+						</Button>
+						<Button type="submit" disabled={processing}>
+							<Search className="mr-2 h-4 w-4" />
+							Filtrar
+						</Button>
+					</div>
+				</form>
+			</CardContent>
+		</Card>
+	);
+};
+
+// Component for Conference Table Row
+const ConferenceTableRow = ({
+	conferencia,
+}: {
+	conferencia: ConferenciaRelatorio;
+}) => (
+	<TableRow key={conferencia.id}>
+		<TableCell>
+			<div className="font-medium">{conferencia.periodo}</div>
+		</TableCell>
+		<TableCell>
+			{conferencia.fornecedor ? (
+				<div>
+					<div className="font-medium">
+						{conferencia.fornecedor.razao_social}
+					</div>
+					<div className="font-mono text-sm text-gray-500">
+						{conferencia.fornecedor.cnpj_formatado}
+					</div>
+				</div>
+			) : (
+				<span className="text-gray-400 italic">Fornecedor não informado</span>
+			)}
+		</TableCell>
+		<TableCell>
+			<div className="flex items-center space-x-2">
+				<Calendar className="h-4 w-4 text-gray-400" />
+				<span>{formatters.date(conferencia.data_conferencia)}</span>
+			</div>
+		</TableCell>
+		<TableCell className="text-right">
+			<span className="font-medium text-blue-800">
+				{formatters.currency(conferencia.total_requisicoes, "Sem valor")}
+			</span>
+		</TableCell>
+		<TableCell className="text-right">
+			<span className="font-medium text-purple-600">
+				{formatters.currency(conferencia.total_pedidos_manuais, "Sem valor")}
+			</span>
+		</TableCell>
+		<TableCell className="text-right">
+			<span className="font-medium text-green-600">
+				{formatters.currency(conferencia.total_geral, "Sem valor")}
+			</span>
+		</TableCell>
+		<TableCell>
+			{conferencia.observacoes ? (
+				<div
+					className="max-w-xs truncate text-sm text-gray-600"
+					title={conferencia.observacoes}
+				>
+					{formatters.truncateText(conferencia.observacoes)}
+				</div>
+			) : (
+				<span className="text-gray-400 italic">Sem observações</span>
+			)}
+		</TableCell>
+	</TableRow>
+);
+
+// Component for Results Table
+const ResultsTable = ({
+	conferencias,
+	stats,
+	hasFilters,
+}: {
+	conferencias: ConferenciaRelatorio[];
+	stats: ConferenciaStats;
+	hasFilters: boolean;
+}) => (
+	<Card>
+		<CardHeader>
+			<CardTitle>Conferências Encontradas</CardTitle>
+			<CardDescription>
+				{formatters.number(stats.total_conferencias, "Nenhuma conferência")}{" "}
+				encontradas (ordenadas por data)
+			</CardDescription>
+		</CardHeader>
+		<CardContent>
+			<div className="rounded-md border">
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead>Período</TableHead>
+							<TableHead>Fornecedor</TableHead>
+							<TableHead>Data Conferência</TableHead>
+							<TableHead className="text-right">Requisições</TableHead>
+							<TableHead className="text-right">Pedidos Manuais</TableHead>
+							<TableHead className="text-right">Total Geral</TableHead>
+							<TableHead>Observações</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{conferencias.length > 0 ? (
+							conferencias.map((conferencia) => (
+								<ConferenceTableRow
+									key={conferencia.id}
+									conferencia={conferencia}
+								/>
+							))
+						) : (
+							<TableRow>
+								<TableCell colSpan={7} className="py-8 text-center">
+									<CheckCircle className="mx-auto h-8 w-8 text-gray-400" />
+									<p className="mt-2 text-gray-500">
+										{reportUtils.getEmptyStateMessage(
+											"conferencias",
+											hasFilters,
+										)}
+									</p>
+								</TableCell>
+							</TableRow>
+						)}
+					</TableBody>
+				</Table>
+			</div>
+		</CardContent>
+	</Card>
+);
+
+// Component for Summary Charts
+const SummaryCharts = ({ stats }: { stats: ConferenciaStats }) => {
+	if (Object.keys(stats.conferencias_por_fornecedor).length === 0) {
+		return null;
+	}
+
+	const topFornecedores = reportUtils.getTopEntries(
+		stats.conferencias_por_fornecedor,
+		(data) => data.valor_total,
+		5,
+	);
+
+	const topMeses = reportUtils.getTopEntries(
+		stats.conferencias_por_mes,
+		(data) => data.valor_total,
+		6,
+	);
+
+	return (
+		<div className="grid gap-4 md:grid-cols-2">
+			<Card>
+				<CardHeader>
+					<CardTitle>Top 5 Fornecedores</CardTitle>
+					<CardDescription>
+						Fornecedores com maior valor em conferências
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div className="space-y-3">
+						{topFornecedores.length > 0 ? (
+							topFornecedores.map(([fornecedor, data]) => (
+								<div
+									key={fornecedor}
+									className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800"
+								>
+									<div>
+										<div className="text-sm font-medium">{fornecedor}</div>
+										<div className="text-xs text-gray-500">
+											{formatters.number(data.count, "Nenhuma")} conferências
+										</div>
+									</div>
+									<div className="text-right">
+										<div className="font-medium text-green-600">
+											{formatters.currency(data.valor_total, "Sem valor")}
+										</div>
+									</div>
+								</div>
+							))
+						) : (
+							<div className="text-center py-4 text-gray-500">
+								<p>Nenhum fornecedor com conferências registradas</p>
+							</div>
+						)}
+					</div>
+				</CardContent>
+			</Card>
+
+			<Card>
+				<CardHeader>
+					<CardTitle>Últimos 6 Meses</CardTitle>
+					<CardDescription>Conferências e valores por mês</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div className="space-y-3">
+						{topMeses.length > 0 ? (
+							topMeses.map(([mes, data]) => (
+								<div
+									key={mes}
+									className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800"
+								>
+									<div>
+										<div className="text-sm font-medium capitalize">
+											{formatters.monthYear(mes)}
+										</div>
+										<div className="text-xs text-gray-500">
+											{formatters.number(data.count, "Nenhuma")} conferências
+										</div>
+									</div>
+									<div className="text-right">
+										<div className="font-medium text-blue-800">
+											{formatters.currency(data.valor_total, "Sem valor")}
+										</div>
+									</div>
+								</div>
+							))
+						) : (
+							<div className="text-center py-4 text-gray-500">
+								<p>Nenhuma conferência registrada no período</p>
+							</div>
+						)}
+					</div>
+				</CardContent>
+			</Card>
+		</div>
+	);
+};
 
 export default function RelatorioConferencias({
 	conferencias,
@@ -102,6 +494,8 @@ export default function RelatorioConferencias({
 		data_fim: filters?.data_fim || "",
 		fornecedor_id: filters?.fornecedor_id || "",
 	});
+
+	const hasActiveFilters = reportUtils.hasActiveFilters(data);
 
 	const handleFilter: FormEventHandler = (e) => {
 		e.preventDefault();
@@ -124,24 +518,12 @@ export default function RelatorioConferencias({
 	};
 
 	const handleExport = (format: string) => {
-		const params = new URLSearchParams(data as Record<string, string>);
-		params.append("formato", format);
-		window.location.href = `/relatorios/conferencias/export?${params.toString()}`;
-	};
-
-	const formatCurrency = (value: number) => {
-		return new Intl.NumberFormat("pt-BR", {
-			style: "currency",
-			currency: "BRL",
-		}).format(value);
-	};
-
-	const formatDate = (dateString: string) => {
-		try {
-			return new Date(dateString).toLocaleDateString("pt-BR");
-		} catch {
-			return dateString;
-		}
+		const exportUrl = reportUtils.buildExportUrl(
+			"/relatorios/conferencias/export",
+			data as Record<string, string>,
+			format,
+		);
+		window.location.href = exportUrl;
 	};
 
 	return (
@@ -149,6 +531,7 @@ export default function RelatorioConferencias({
 			<Head title="Relatório de Conferências" />
 
 			<div className="flex h-full flex-1 flex-col gap-6 p-6">
+				{/* Header */}
 				<div className="flex items-center justify-between">
 					<div className="flex items-center space-x-4">
 						<Link href="/relatorios">
@@ -162,7 +545,7 @@ export default function RelatorioConferencias({
 								Relatório de Conferências
 							</h1>
 							<p className="text-gray-600 dark:text-gray-400">
-								Análise detalhada das conferências realizadas
+								Análise detalhada das conferências realizadas no sistema
 							</p>
 						</div>
 					</div>
@@ -183,331 +566,27 @@ export default function RelatorioConferencias({
 				</div>
 
 				{/* Statistics Cards */}
-				<div className="grid gap-4 md:grid-cols-4">
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Total Conferências
-							</CardTitle>
-							<CheckCircle className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">
-								{stats.total_conferencias}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								conferências realizadas
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Valor Total Geral
-							</CardTitle>
-							<DollarSign className="h-4 w-4 text-green-600" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold text-green-600">
-								{formatCurrency(stats.valor_total_geral)}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								valor total conferido
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">Requisições</CardTitle>
-							<BarChart3 className="h-4 w-4 text-blue-800" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold text-blue-800">
-								{formatCurrency(stats.valor_total_requisicoes)}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								valor em requisições
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Pedidos Manuais
-							</CardTitle>
-							<TrendingUp className="h-4 w-4 text-purple-600" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold text-purple-600">
-								{formatCurrency(stats.valor_total_pedidos_manuais)}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								valor em pedidos manuais
-							</p>
-						</CardContent>
-					</Card>
-				</div>
+				<StatisticsCards stats={stats} />
 
 				{/* Filters */}
-				<Card>
-					<CardHeader>
-						<CardTitle className="flex items-center">
-							<Filter className="mr-2 h-5 w-5" />
-							Filtros
-						</CardTitle>
-						<CardDescription>
-							Use os filtros para refinar o relatório de conferências
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<form onSubmit={handleFilter} className="space-y-4">
-							<div className="grid gap-4 md:grid-cols-3">
-								<div className="space-y-2">
-									<Label htmlFor="data_inicio">Data Início</Label>
-									<Input
-										id="data_inicio"
-										type="date"
-										value={data.data_inicio}
-										onChange={(e) => setData("data_inicio", e.target.value)}
-									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="data_fim">Data Fim</Label>
-									<Input
-										id="data_fim"
-										type="date"
-										value={data.data_fim}
-										onChange={(e) => setData("data_fim", e.target.value)}
-									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="fornecedor_id">Fornecedor</Label>
-									<Select
-										value={data.fornecedor_id}
-										onValueChange={(value) => setData("fornecedor_id", value)}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Todos os fornecedores" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="">Todos os fornecedores</SelectItem>
-											{fornecedores.map((fornecedor) => (
-												<SelectItem
-													key={fornecedor.id}
-													value={fornecedor.id.toString()}
-												>
-													{fornecedor.razao_social}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</div>
-							</div>
-							<div className="flex justify-end space-x-2">
-								<Button type="button" variant="outline" onClick={handleReset}>
-									Limpar
-								</Button>
-								<Button type="submit" disabled={processing}>
-									<Search className="mr-2 h-4 w-4" />
-									Filtrar
-								</Button>
-							</div>
-						</form>
-					</CardContent>
-				</Card>
+				<FiltersCard
+					data={data}
+					setData={setData}
+					processing={processing}
+					fornecedores={fornecedores}
+					onFilter={handleFilter}
+					onReset={handleReset}
+				/>
 
 				{/* Results Table */}
-				<Card>
-					<CardHeader>
-						<CardTitle>Conferências Encontradas</CardTitle>
-						<CardDescription>
-							{stats.total_conferencias} conferências encontradas (ordenadas por
-							data)
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<div className="rounded-md border">
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead>Período</TableHead>
-										<TableHead>Fornecedor</TableHead>
-										<TableHead>Data Conferência</TableHead>
-										<TableHead className="text-right">Requisições</TableHead>
-										<TableHead className="text-right">
-											Pedidos Manuais
-										</TableHead>
-										<TableHead className="text-right">Total Geral</TableHead>
-										<TableHead>Observações</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{conferencias.length > 0 ? (
-										conferencias.map((conferencia) => (
-											<TableRow key={conferencia.id}>
-												<TableCell>
-													<div className="font-medium">
-														{conferencia.periodo}
-													</div>
-												</TableCell>
-												<TableCell>
-													{conferencia.fornecedor ? (
-														<div>
-															<div className="font-medium">
-																{conferencia.fornecedor.razao_social}
-															</div>
-															<div className="font-mono text-sm text-gray-500">
-																{conferencia.fornecedor.cnpj_formatado}
-															</div>
-														</div>
-													) : (
-														<span className="text-gray-400">-</span>
-													)}
-												</TableCell>
-												<TableCell>
-													<div className="flex items-center space-x-2">
-														<Calendar className="h-4 w-4 text-gray-400" />
-														<span>
-															{formatDate(conferencia.data_conferencia)}
-														</span>
-													</div>
-												</TableCell>
-												<TableCell className="text-right">
-													<span className="font-medium text-blue-800">
-														{formatCurrency(conferencia.total_requisicoes)}
-													</span>
-												</TableCell>
-												<TableCell className="text-right">
-													<span className="font-medium text-purple-600">
-														{formatCurrency(conferencia.total_pedidos_manuais)}
-													</span>
-												</TableCell>
-												<TableCell className="text-right">
-													<span className="font-medium text-green-600">
-														{formatCurrency(conferencia.total_geral)}
-													</span>
-												</TableCell>
-												<TableCell>
-													{conferencia.observacoes ? (
-														<div
-															className="max-w-xs truncate text-sm text-gray-600"
-															title={conferencia.observacoes}
-														>
-															{conferencia.observacoes}
-														</div>
-													) : (
-														<span className="text-gray-400">-</span>
-													)}
-												</TableCell>
-											</TableRow>
-										))
-									) : (
-										<TableRow>
-											<TableCell colSpan={7} className="py-8 text-center">
-												<CheckCircle className="mx-auto h-8 w-8 text-gray-400" />
-												<p className="mt-2 text-gray-500">
-													Nenhuma conferência encontrada com os filtros
-													aplicados
-												</p>
-											</TableCell>
-										</TableRow>
-									)}
-								</TableBody>
-							</Table>
-						</div>
-					</CardContent>
-				</Card>
+				<ResultsTable
+					conferencias={conferencias}
+					stats={stats}
+					hasFilters={hasActiveFilters}
+				/>
 
 				{/* Summary Charts */}
-				{Object.keys(stats.conferencias_por_fornecedor).length > 0 && (
-					<div className="grid gap-4 md:grid-cols-2">
-						<Card>
-							<CardHeader>
-								<CardTitle>Por Fornecedor</CardTitle>
-								<CardDescription>
-									Conferências e valores por fornecedor
-								</CardDescription>
-							</CardHeader>
-							<CardContent>
-								<div className="space-y-3">
-									{Object.entries(stats.conferencias_por_fornecedor)
-										.sort(([, a], [, b]) => b.valor_total - a.valor_total)
-										.slice(0, 5)
-										.map(([fornecedor, data]) => (
-											<div
-												key={fornecedor}
-												className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800"
-											>
-												<div>
-													<div className="text-sm font-medium">
-														{fornecedor}
-													</div>
-													<div className="text-xs text-gray-500">
-														{data.count} conferências
-													</div>
-												</div>
-												<div className="text-right">
-													<div className="font-medium text-green-600">
-														{formatCurrency(data.valor_total)}
-													</div>
-												</div>
-											</div>
-										))}
-								</div>
-							</CardContent>
-						</Card>
-
-						<Card>
-							<CardHeader>
-								<CardTitle>Por Mês</CardTitle>
-								<CardDescription>
-									Conferências e valores por mês
-								</CardDescription>
-							</CardHeader>
-							<CardContent>
-								<div className="space-y-3">
-									{Object.entries(stats.conferencias_por_mes)
-										.sort(([a], [b]) => b.localeCompare(a))
-										.slice(0, 6)
-										.map(([mes, data]) => {
-											const [ano, mesNum] = mes.split("-");
-											const mesNome = new Date(
-												parseInt(ano, 10),
-												parseInt(mesNum, 10) - 1,
-											).toLocaleDateString("pt-BR", {
-												month: "long",
-												year: "numeric",
-											});
-
-											return (
-												<div
-													key={mes}
-													className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800"
-												>
-													<div>
-														<div className="text-sm font-medium capitalize">
-															{mesNome}
-														</div>
-														<div className="text-xs text-gray-500">
-															{data.count} conferências
-														</div>
-													</div>
-													<div className="text-right">
-														<div className="font-medium text-blue-800">
-															{formatCurrency(data.valor_total)}
-														</div>
-													</div>
-												</div>
-											);
-										})}
-								</div>
-							</CardContent>
-						</Card>
-					</div>
-				)}
+				<SummaryCharts stats={stats} />
 			</div>
 		</AppLayout>
 	);

@@ -165,7 +165,7 @@ const QuickAction = ({
 	const content = (
 		<div className="flex items-center rounded-lg border border-gray-200 p-3 transition-colors hover:border-gray-300 hover:bg-gray-50">
 			{icon}
-			<div className="ml-1">
+			<div className="ml-3">
 				<p className="font-medium">{title}</p>
 				<p className="text-sm text-gray-600">{description}</p>
 			</div>
@@ -173,7 +173,7 @@ const QuickAction = ({
 	);
 
 	if (trigger) {
-		return <div className="cursor-pointer">{trigger}</div>;
+		return <div>{trigger}</div>;
 	}
 
 	if (href) {
@@ -433,36 +433,41 @@ export default function Dashboard({
 								Acesso rápido às principais funcionalidades
 							</CardDescription>
 						</CardHeader>
-						<CardContent className="space-y-3">
-							{quickActions.map((action) => {
+						<CardContent>
+							{quickActions.map((action, index) => {
+								const isLast = index === quickActions.length - 1;
+								const marginClass = isLast ? "" : "mb-3";
+
 								if (action.isModal) {
 									return (
-										<CreateFornecedorModal
-											key={action.id}
-											trigger={
-												<div className="flex cursor-pointer items-center rounded-lg border border-gray-200 p-3 transition-colors hover:border-gray-300 hover:bg-gray-50">
-													{action.icon}
-													<div className="ml-1">
-														<p className="font-medium">{action.title}</p>
-														<p className="text-sm text-gray-600">
-															{action.description}
-														</p>
+										<div key={action.id} className={marginClass}>
+											<CreateFornecedorModal
+												trigger={
+													<div className="flex cursor-pointer items-center rounded-lg border border-gray-200 p-3 transition-colors hover:border-gray-300 hover:bg-gray-50">
+														{action.icon}
+														<div className="ml-3">
+															<p className="font-medium">{action.title}</p>
+															<p className="text-sm text-gray-600">
+																{action.description}
+															</p>
+														</div>
 													</div>
-												</div>
-											}
-											onSuccess={() => router.reload()}
-										/>
+												}
+												onSuccess={() => router.reload()}
+											/>
+										</div>
 									);
 								}
 
 								return (
-									<QuickAction
-										key={action.id}
-										href={action.href}
-										icon={action.icon}
-										title={action.title}
-										description={action.description}
-									/>
+									<div key={action.id} className={marginClass}>
+										<QuickAction
+											href={action.href}
+											icon={action.icon}
+											title={action.title}
+											description={action.description}
+										/>
+									</div>
 								);
 							})}
 						</CardContent>
