@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use DateTime;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class Conferencia extends Model
 {
@@ -86,7 +89,7 @@ class Conferencia extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Collection<int, Requisicao>
      */
-    public function getRequisicoes()
+    public function getRequisicoes(): Collection
     {
         return Requisicao::query()->where('fornecedor_id', $this->fornecedor_id)
             ->whereBetween('data_recebimento', [$this->data_inicio, $this->data_fim])
@@ -95,6 +98,7 @@ class Conferencia extends Model
 
     /**
      * Scope a query to only include active conferencias.
+     * @param Builder<Model> $query
      */
     public function scopeEmAndamento(Builder $query): Builder
     {
@@ -103,6 +107,7 @@ class Conferencia extends Model
 
     /**
      * Scope a query to only include finalized conferencias.
+     * @param Builder<Model> $query
      */
     public function scopeFinalizada(Builder $query): Builder
     {
@@ -111,8 +116,9 @@ class Conferencia extends Model
 
     /**
      * Scope a query for a specific period.
+     * @param Builder<Model> $query
      */
-    public function scopePeriodo(Builder $query, \DateTime $inicio, \DateTime $fim): Builder
+    public function scopePeriodo(Builder $query, DateTime $inicio, DateTime $fim): Builder
     {
         return $query->where(function ($q) use ($inicio, $fim) {
             $q->whereBetween('periodo_inicio', [$inicio, $fim])

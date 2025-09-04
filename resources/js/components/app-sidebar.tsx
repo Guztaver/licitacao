@@ -5,7 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { conferencias, dashboard, destinatarios, emitentes, fornecedores, relatorios, requisicoes } from '@/routes';
 import type { NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BarChart3, BookOpen, Building, CheckSquare, FileText, Folder, LayoutGrid, MapPin, Users } from 'lucide-react';
+import { BarChart3, BookOpen, Building, CheckSquare, FileText, LayoutGrid, MapPin, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -48,13 +48,8 @@ const mainNavItems: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
+        title: 'Site da Prefeitura',
+        href: 'https://www.paubrasil.ba.gov.br/',
         icon: BookOpen,
     },
 ];

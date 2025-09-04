@@ -31,6 +31,7 @@ class DashboardController extends Controller
 
     /**
      * Get dashboard statistics.
+     * @return array<string,mixed>
      */
     private function getDashboardStats(): array
     {
@@ -67,6 +68,7 @@ class DashboardController extends Controller
 
     /**
      * Get recent requisições.
+     * @return array<TKey,mixed>
      */
     private function getRecentRequisicoes(): array
     {
@@ -96,6 +98,7 @@ class DashboardController extends Controller
 
     /**
      * Get active fornecedores with recent activity.
+     * @return array<TKey,mixed>
      */
     private function getFornecedoresAtivos(): array
     {
@@ -137,9 +140,9 @@ class DashboardController extends Controller
             ->get()
             ->map(fn ($conferencia) => [
                 'id' => $conferencia->id,
-                'periodo' => $conferencia->periodo,
+                'periodo' => $conferencia->periodo_display,
                 'total_geral' => $conferencia->total_geral,
-                'data_conferencia' => $conferencia->data_conferencia,
+                'data_conferencia' => $conferencia->created_at->format('d/m/Y'),
                 'fornecedor' => $conferencia->fornecedor ? [
                     'razao_social' => $conferencia->fornecedor->razao_social,
                 ] : null,

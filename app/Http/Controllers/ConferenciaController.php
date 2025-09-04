@@ -60,12 +60,16 @@ class ConferenciaController extends Controller
                  ->paginate(15)
                  ->withQueryString();
 
-             $conferenciasPaginated->getCollection()->transform(fn ($conferencia) =>
+                 $conferenciasPaginated->getCollection()->transform(fn ($conferencia) =>
                  [
+                 /**
+                 * @var Conferencia $conferencia
+                 */
                      'id' => $conferencia->id,
                      'periodo_inicio' => $conferencia->periodo_inicio->format('d/m/Y'),
                      'periodo_fim' => $conferencia->periodo_fim->format('d/m/Y'),
                      'periodo_display' => $conferencia->periodo_display,
+                     'periodo' => $conferencia->periodo_display,
                      'status' => $conferencia->status,
                      'status_display' => $conferencia->status_display,
                      'status_color' => $conferencia->status_color,
@@ -141,7 +145,7 @@ class ConferenciaController extends Controller
         // Add the parsed dates and user info
         $validated['periodo_inicio'] = $periodo_inicio;
         $validated['periodo_fim'] = $periodo_fim;
-        $validated['usuario_criacao_id'] = auth()->id();
+        $validated['usuario_criacao_id'] = auth()->secure()->id();
 
         // Remove the original periodo field as it's not in the database
         unset($validated['periodo']);
