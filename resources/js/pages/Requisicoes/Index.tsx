@@ -1,15 +1,3 @@
-import { Head, Link, router, useForm } from "@inertiajs/react";
-import {
-	CheckCircle,
-	Clock,
-	DollarSign,
-	FileDown,
-	FileText,
-	Plus,
-	Search,
-	X,
-} from "lucide-react";
-import type { FormEventHandler } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +19,41 @@ import {
 import AppLayout from "@/layouts/app-layout";
 import { requisicoes } from "@/routes";
 import type { BreadcrumbItem, Emitente, Requisicao } from "@/types";
+import { Head, Link, router, useForm } from "@inertiajs/react";
+import {
+	CheckCircle,
+	Clock,
+	DollarSign,
+	FileDown,
+	FileText,
+	Plus,
+	Search,
+	X,
+} from "lucide-react";
+import react from "react";
+
+// Constants
+const EMPTY_MESSAGES = {
+	noRequisitions: "Nenhuma requisição encontrada",
+	addFirstRequisition: "Adicionar Requisição",
+	noDataWithFilters:
+		"Não foram encontradas requisições que correspondam aos filtros aplicados. Tente ajustar os critérios de busca.",
+	noConcreteRequisitions:
+		"Existem requisições cadastradas, mas nenhuma foi concretizada ainda. Para gerar valor movimentado, concretize algumas requisições autorizadas.",
+	noRequisitionsAtAll:
+		'Não há requisições no sistema ainda. Clique em "Nova Requisição" para começar.',
+	noValue: "Não possui",
+	noAuthorized: "Nenhuma autorizada",
+	noCompleted: "Nenhuma concretizada",
+	noCanceled: "Nenhuma cancelada",
+} as const;
+
+const STATUS_OPTIONS = [
+	{ value: "", label: "Todos os status" },
+	{ value: "autorizada", label: "Autorizada" },
+	{ value: "concretizada", label: "Concretizada" },
+	{ value: "cancelada", label: "Cancelada" },
+] as const;
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
@@ -39,6 +62,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 	},
 ];
 
+// Types
 interface PaginationLink {
 	url: string | null;
 	label: string;
@@ -53,6 +77,14 @@ interface PaginationMeta {
 	current_page: number;
 }
 
+interface RequisicoesStats {
+	total_requisicoes: number;
+	autorizadas: number;
+	concretizadas: number;
+	canceladas: number;
+	valor_total: number;
+}
+
 interface RequisicoesIndexProps {
 	requisicoes: {
 		data: Requisicao[];
@@ -60,13 +92,7 @@ interface RequisicoesIndexProps {
 		meta: PaginationMeta;
 	};
 	emitentes: Emitente[];
-	stats: {
-		total_requisicoes: number;
-		autorizadas: number;
-		concretizadas: number;
-		canceladas: number;
-		valor_total: number;
-	};
+	stats: RequisicoesStats;
 	filters: {
 		search?: string;
 		status?: string;
@@ -76,21 +102,163 @@ interface RequisicoesIndexProps {
 	};
 }
 
+interface StatCardProps {
+	title: string;
+	icon: react.ReactNode;
+	value: string | number;
+	subtitle: string;
+}
+
+interface AlertCardProps {
+	type: "warning" | "info" | "success" | "neutral";
+	title: string;
+	message: string;
+	action?: react.ReactNode;
+}
+
+// Utility Functions
+const formatCurrency = (value: number | null): string => {
+	if (value === null || value === undefined || value === 0) return "Sem valor";
+	return new Intl.NumberFormat("pt-BR", {
+		style: "currency",
+		currency: "BRL",
+	}).format(value);
+};
+
+const displayValue = (value: number, emptyMessage: string): string | number => {
+	return value === 0 ? emptyMessage : value;
+};
+
+const formatPaginationLabel = (label: string): string => {
+	if (label.includes("&laquo;")) return "«";
+	if (label.includes("&raquo;")) return "»";
+	if (label.includes("&hellip;")) return "...";
+	return label;
+};
+
+const buildExportUrl = (filters: Record<string, string>): string => {
+	const params = new URLSearchParams(filters);
+	return `${requisicoes.export()}?${params.toString()}`;
+};
+
+// Components
+const StatCard = ({ title, icon, value, subtitle }: StatCardProps) => (
+	<Card>
+		<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+			<CardTitle className="text-sm font-medium">{title}</CardTitle>
+			{icon}
+		</CardHeader>
+		<CardContent>
+			<div className="text-2xl font-bold">{value}</div>
+			<p className="text-xs text-muted-foreground">{subtitle}</p>
+		</CardContent>
+	</Card>
+);
+
+const AlertCard = ({ type, title, message, action }: AlertCardProps) => {
+	const getColorClasses = () => {
+		switch (type) {
+			case "warning":
+				return {
+					bg: "bg-yellow-50 dark:bg-yellow-900/20",
+					title: "text-yellow-800 dark:text-yellow-200",
+					message: "text-yellow-700 dark:text-yellow-300",
+				};
+			case "info":
+				return {
+					bg: "bg-blue-50 dark:bg-blue-900/20",
+					title: "text-blue-800 dark:text-blue-200",
+					message: "text-blue-700 dark:text-blue-300",
+				};
+			case "success":
+				return {
+					bg: "bg-green-50 dark:bg-green-900/20",
+					title: "text-green-800 dark:text-green-200",
+					message: "text-green-700 dark:text-green-300",
+				};
+			default:
+				return {
+					bg: "bg-gray-50 dark:bg-gray-900/20",
+					title: "text-gray-800 dark:text-gray-200",
+					message: "text-gray-700 dark:text-gray-300",
+				};
+		}
+	};
+
+	const colors = getColorClasses();
+
+	return (
+		<div className={`rounded-lg p-4 ${colors.bg}`}>
+			<div className="flex items-center justify-between">
+				<div className="flex-1">
+					<h3 className={`text-sm font-medium ${colors.title}`}>{title}</h3>
+					<p className={`mt-2 text-sm ${colors.message}`}>{message}</p>
+				</div>
+				{action && <div className="ml-4">{action}</div>}
+			</div>
+		</div>
+	);
+};
+
+const EmitenteInfo = ({
+	emitente,
+}: {
+	emitente?: { sigla: string; nome: string };
+}) => (
+	<div className="text-sm">
+		{emitente ? (
+			<>
+				<p className="font-medium">{emitente.sigla}</p>
+				<p className="text-gray-500">{emitente.nome}</p>
+			</>
+		) : (
+			<span className="text-gray-400">Sem emitente</span>
+		)}
+	</div>
+);
+
+const StatusBadge = ({
+	status,
+	statusColor,
+}: {
+	status: string;
+	statusColor?: string;
+}) => (
+	<Badge
+		variant="outline"
+		className={statusColor || "border-gray-200 bg-gray-100 text-gray-800"}
+	>
+		{status}
+	</Badge>
+);
+
+const EmptyTableRow = () => (
+	<TableRow>
+		<TableCell colSpan={7} className="py-8 text-center">
+			<div className="flex flex-col items-center space-y-2">
+				<FileText className="h-8 w-8 text-gray-400" />
+				<p className="text-gray-500">{EMPTY_MESSAGES.noRequisitions}</p>
+				<Link href={requisicoes.create()}>
+					<Button size="sm">
+						<Plus className="mr-2 h-4 w-4" />
+						{EMPTY_MESSAGES.addFirstRequisition}
+					</Button>
+				</Link>
+			</div>
+		</TableCell>
+	</TableRow>
+);
+
 export default function RequisicoesIndex({
 	requisicoes: requisicoesPaginated,
 	emitentes,
 	stats,
 	filters,
 }: RequisicoesIndexProps) {
-	// Add safety checks for data
-	const safeRequisicoes = requisicoesPaginated || {
-		data: [],
-		links: [],
-		meta: { total: 0, from: 0, to: 0, last_page: 1, current_page: 1 },
-	};
-	const safeData = safeRequisicoes.data || [];
-	const safeLinks = safeRequisicoes.links || [];
-	const safeMeta = safeRequisicoes.meta || {
+	// Safe data with defaults
+	const safeData = requisicoesPaginated?.data || [];
+	const safeLinks = requisicoesPaginated?.links || [];
+	const safeMeta = requisicoesPaginated?.meta || {
 		total: 0,
 		from: 0,
 		to: 0,
@@ -114,15 +282,19 @@ export default function RequisicoesIndex({
 		data_fim: filters?.data_fim || "",
 	});
 
-	const handleSearch: FormEventHandler = (e) => {
-		e.preventDefault();
-		get(requisicoes.index(), {
-			preserveState: true,
-			replace: true,
-		});
-	};
+	// Handlers
+	const handleSearch: react.FormEventHandler = react.useCallback(
+		(e) => {
+			e.preventDefault();
+			get(requisicoes.index(), {
+				preserveState: true,
+				replace: true,
+			});
+		},
+		[get],
+	);
 
-	const handleReset = () => {
+	const handleReset = react.useCallback(() => {
 		setData({
 			search: "",
 			status: "",
@@ -134,32 +306,80 @@ export default function RequisicoesIndex({
 			preserveState: true,
 			replace: true,
 		});
-	};
+	}, [setData, get]);
 
-	const formatCurrency = (value: number | null) => {
-		if (value === null || value === undefined) return "-";
-		return new Intl.NumberFormat("pt-BR", {
-			style: "currency",
-			currency: "BRL",
-		}).format(value);
-	};
+	const handleExport = react.useCallback(() => {
+		window.location.href = buildExportUrl(filters as Record<string, string>);
+	}, [filters]);
 
-	const getStatusBadge = (status: string, statusColor?: string) => {
-		return (
-			<Badge
-				variant="outline"
-				className={statusColor || "border-gray-200 bg-gray-100 text-gray-800"}
-			>
-				{status}
-			</Badge>
-		);
-	};
+	const handlePaginationClick = react.useCallback((url: string) => {
+		router.get(url);
+	}, []);
+
+	// Statistics data
+	const hasFilters =
+		data.search ||
+		data.status ||
+		data.emitente_id ||
+		data.data_inicio ||
+		data.data_fim;
+	const statisticsData = [
+		{
+			title: "Total",
+			icon: <FileText className="h-4 w-4 text-muted-foreground" />,
+			value: displayValue(safeStats.total_requisicoes, EMPTY_MESSAGES.noValue),
+			subtitle: hasFilters
+				? "encontradas com filtros"
+				: "requisições cadastradas",
+		},
+		{
+			title: "Autorizadas",
+			icon: <Clock className="h-4 w-4 text-muted-foreground" />,
+			value: displayValue(safeStats.autorizadas, EMPTY_MESSAGES.noAuthorized),
+			subtitle: hasFilters
+				? "autorizadas nos resultados"
+				: "aguardando processamento",
+		},
+		{
+			title: "Concretizadas",
+			icon: <CheckCircle className="h-4 w-4 text-muted-foreground" />,
+			value: displayValue(safeStats.concretizadas, EMPTY_MESSAGES.noCompleted),
+			subtitle: hasFilters ? "concretizadas nos resultados" : "finalizadas",
+		},
+		{
+			title: "Valor Total",
+			icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
+			value:
+				safeStats.valor_total === 0
+					? EMPTY_MESSAGES.noValue
+					: formatCurrency(safeStats.valor_total),
+			subtitle: hasFilters ? "valor dos resultados" : "valor concretizado",
+		},
+		{
+			title: "Canceladas",
+			icon: <X className="h-4 w-4 text-muted-foreground" />,
+			value: displayValue(safeStats.canceladas, EMPTY_MESSAGES.noCanceled),
+			subtitle: hasFilters
+				? "canceladas nos resultados"
+				: "canceladas no sistema",
+		},
+	];
+
+	// Conditional alerts
+	const showFiltersAppliedAlert = hasFilters && safeStats.total_requisicoes > 0;
+	const showEmptyFiltersAlert = safeStats.total_requisicoes === 0 && hasFilters;
+	const showNoConcreteAlert =
+		safeStats.total_requisicoes > 0 &&
+		safeStats.concretizadas === 0 &&
+		!hasFilters;
+	const showNoDataAlert = safeStats.total_requisicoes === 0 && !hasFilters;
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
 			<Head title="Requisições" />
 
 			<div className="flex h-full flex-1 flex-col gap-6 p-6">
+				{/* Header */}
 				<div className="flex items-center justify-between">
 					<div>
 						<h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -170,15 +390,7 @@ export default function RequisicoesIndex({
 						</p>
 					</div>
 					<div className="flex items-center space-x-2">
-						<Button
-							variant="outline"
-							onClick={() => {
-								const params = new URLSearchParams(
-									filters as Record<string, string>,
-								);
-								window.location.href = `${requisicoes.export()}?${params.toString()}`;
-							}}
-						>
+						<Button variant="outline" onClick={handleExport}>
 							<FileDown className="mr-2 h-4 w-4" />
 							Exportar
 						</Button>
@@ -193,222 +405,61 @@ export default function RequisicoesIndex({
 
 				{/* Statistics Cards */}
 				<div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">Total</CardTitle>
-							<FileText className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">
-								{safeStats.total_requisicoes}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								{data.search ||
-								data.status ||
-								data.emitente_id ||
-								data.data_inicio ||
-								data.data_fim
-									? "encontradas com filtros"
-									: "requisições cadastradas"}
-							</p>
-							{safeData.length > 0 &&
-								safeMeta.total !== safeStats.total_requisicoes && (
-									<p className="mt-1 text-xs text-gray-400">
-										Mostrando {safeData.length} de {safeMeta.total} na página
-									</p>
-								)}
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">Autorizadas</CardTitle>
-							<Clock className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">{safeStats.autorizadas}</div>
-							<p className="text-xs text-muted-foreground">
-								{data.search ||
-								data.status ||
-								data.emitente_id ||
-								data.data_inicio ||
-								data.data_fim
-									? "autorizadas nos resultados"
-									: "aguardando processamento"}
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Concretizadas
-							</CardTitle>
-							<CheckCircle className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">
-								{safeStats.concretizadas}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								{data.search ||
-								data.status ||
-								data.emitente_id ||
-								data.data_inicio ||
-								data.data_fim
-									? "concretizadas nos resultados"
-									: "finalizadas"}
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">Valor Total</CardTitle>
-							<DollarSign className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">
-								{formatCurrency(safeStats.valor_total)}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								{data.search ||
-								data.status ||
-								data.emitente_id ||
-								data.data_inicio ||
-								data.data_fim
-									? "valor dos resultados"
-									: "valor concretizado"}
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">Canceladas</CardTitle>
-							<X className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">{safeStats.canceladas}</div>
-							<p className="text-xs text-muted-foreground">
-								{data.search ||
-								data.status ||
-								data.emitente_id ||
-								data.data_inicio ||
-								data.data_fim
-									? "canceladas nos resultados"
-									: "canceladas no sistema"}
-							</p>
-						</CardContent>
-					</Card>
+					{statisticsData.map((stat) => (
+						<StatCard key={`stat-${stat.title}`} {...stat} />
+					))}
 				</div>
 
-				{/* Filter Summary */}
-				{(data.search ||
-					data.status ||
-					data.emitente_id ||
-					data.data_inicio ||
-					data.data_fim) &&
-					safeStats.total_requisicoes > 0 && (
-						<div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
-							<div className="flex items-center justify-between">
-								<div>
-									<h3 className="text-sm font-medium text-green-800 dark:text-green-200">
-										Filtros aplicados
-									</h3>
-									<p className="mt-1 text-sm text-green-700 dark:text-green-300">
-										Mostrando {safeStats.total_requisicoes} requisições que
-										correspondem aos critérios de busca
-									</p>
-								</div>
-								<Button variant="outline" size="sm" onClick={handleReset}>
-									Limpar Filtros
-								</Button>
-							</div>
-						</div>
-					)}
+				{/* Alert Messages */}
+				{showFiltersAppliedAlert && (
+					<AlertCard
+						type="success"
+						title="Filtros aplicados"
+						message={`Mostrando ${safeStats.total_requisicoes} requisições que correspondem aos critérios de busca`}
+						action={
+							<Button variant="outline" size="sm" onClick={handleReset}>
+								Limpar Filtros
+							</Button>
+						}
+					/>
+				)}
 
-				{/* Empty State Message */}
-				{safeStats.total_requisicoes === 0 &&
-					(data.search ||
-						data.status ||
-						data.emitente_id ||
-						data.data_inicio ||
-						data.data_fim) && (
-						<div className="rounded-lg bg-yellow-50 p-4 dark:bg-yellow-900/20">
-							<div className="flex">
-								<div className="ml-3">
-									<h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-										Nenhuma requisição encontrada
-									</h3>
-									<p className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
-										Não foram encontradas requisições que correspondam aos
-										filtros aplicados. Tente ajustar os critérios de busca.
-									</p>
-									<div className="mt-3">
-										<Button variant="outline" size="sm" onClick={handleReset}>
-											Limpar Filtros
-										</Button>
-									</div>
-								</div>
-							</div>
-						</div>
-					)}
+				{showEmptyFiltersAlert && (
+					<AlertCard
+						type="warning"
+						title="Nenhuma requisição encontrada"
+						message={EMPTY_MESSAGES.noDataWithFilters}
+						action={
+							<Button variant="outline" size="sm" onClick={handleReset}>
+								Limpar Filtros
+							</Button>
+						}
+					/>
+				)}
 
-				{/* Low Data Notice */}
-				{safeStats.total_requisicoes > 0 &&
-					safeStats.concretizadas === 0 &&
-					!data.search &&
-					!data.status &&
-					!data.emitente_id &&
-					!data.data_inicio &&
-					!data.data_fim && (
-						<div className="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
-							<div className="flex">
-								<div className="ml-3">
-									<h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
-										Requisições sem concretização
-									</h3>
-									<p className="mt-2 text-sm text-blue-700 dark:text-blue-300">
-										Existem {safeStats.total_requisicoes} requisições
-										cadastradas, sendo {safeStats.autorizadas} autorizadas, mas
-										nenhuma foi concretizada ainda. Para gerar valor
-										movimentado, concretize algumas requisições autorizadas.
-									</p>
-								</div>
-							</div>
-						</div>
-					)}
+				{showNoConcreteAlert && (
+					<AlertCard
+						type="info"
+						title="Requisições sem concretização"
+						message={`${EMPTY_MESSAGES.noConcreteRequisitions} Existem ${safeStats.total_requisicoes} requisições cadastradas, sendo ${safeStats.autorizadas} autorizadas.`}
+					/>
+				)}
 
-				{/* No Data Notice */}
-				{safeStats.total_requisicoes === 0 &&
-					!data.search &&
-					!data.status &&
-					!data.emitente_id &&
-					!data.data_inicio &&
-					!data.data_fim && (
-						<div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900/20">
-							<div className="flex">
-								<div className="ml-3">
-									<h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">
-										Nenhuma requisição cadastrada
-									</h3>
-									<p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
-										Não há requisições no sistema ainda. Clique em "Nova
-										Requisição" para começar.
-									</p>
-									<div className="mt-3">
-										<Button asChild>
-											<Link href={requisicoes.create()}>
-												<Plus className="mr-2 h-4 w-4" />
-												Nova Requisição
-											</Link>
-										</Button>
-									</div>
-								</div>
-							</div>
-						</div>
-					)}
+				{showNoDataAlert && (
+					<AlertCard
+						type="neutral"
+						title="Nenhuma requisição cadastrada"
+						message={EMPTY_MESSAGES.noRequisitionsAtAll}
+						action={
+							<Button asChild>
+								<Link href={requisicoes.create()}>
+									<Plus className="mr-2 h-4 w-4" />
+									Nova Requisição
+								</Link>
+							</Button>
+						}
+					/>
+				)}
 
 				{/* Filters */}
 				<Card>
@@ -437,10 +488,11 @@ export default function RequisicoesIndex({
 									onChange={(e) => setData("status", e.target.value)}
 									className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 								>
-									<option value="">Todos os status</option>
-									<option value="autorizada">Autorizada</option>
-									<option value="concretizada">Concretizada</option>
-									<option value="cancelada">Cancelada</option>
+									{STATUS_OPTIONS.map((option) => (
+										<option key={option.value} value={option.value}>
+											{option.label}
+										</option>
+									))}
 								</select>
 							</div>
 							<div className="min-w-[150px]">
@@ -489,8 +541,7 @@ export default function RequisicoesIndex({
 					<CardHeader>
 						<CardTitle className="text-lg">Lista de Requisições</CardTitle>
 						<CardDescription>
-							Mostrando {requisicoesPaginated.data.length} de{" "}
-							{requisicoesPaginated.meta?.total || 0} requisições
+							Mostrando {safeData.length} de {safeMeta.total} requisições
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
@@ -526,25 +577,20 @@ export default function RequisicoesIndex({
 														)}
 													</div>
 												</TableCell>
-												<TableCell>{requisicao.solicitante}</TableCell>
+												<TableCell>{requisicao.solicitante || "-"}</TableCell>
 												<TableCell>
-													{requisicao.emitente && (
-														<div className="text-sm">
-															<p className="font-medium">
-																{requisicao.emitente.sigla}
-															</p>
-															<p className="text-gray-500">
-																{requisicao.emitente.nome}
-															</p>
-														</div>
-													)}
+													<EmitenteInfo emitente={requisicao.emitente} />
 												</TableCell>
-												<TableCell>{requisicao.data_recebimento}</TableCell>
 												<TableCell>
-													{getStatusBadge(
-														requisicao.status_display || requisicao.status,
-														requisicao.status_color,
-													)}
+													{requisicao.data_recebimento || "-"}
+												</TableCell>
+												<TableCell>
+													<StatusBadge
+														status={
+															requisicao.status_display || requisicao.status
+														}
+														statusColor={requisicao.status_color}
+													/>
 												</TableCell>
 												<TableCell>
 													{formatCurrency(requisicao.valor_final || null)}
@@ -568,51 +614,31 @@ export default function RequisicoesIndex({
 											</TableRow>
 										))
 									) : (
-										<TableRow>
-											<TableCell colSpan={7} className="py-8 text-center">
-												<div className="flex flex-col items-center space-y-2">
-													<FileText className="h-8 w-8 text-gray-400" />
-													<p className="text-gray-500">
-														Nenhuma requisição encontrada
-													</p>
-													<Link href={requisicoes.create()}>
-														<Button size="sm">
-															<Plus className="mr-2 h-4 w-4" />
-															Adicionar Requisição
-														</Button>
-													</Link>
-												</div>
-											</TableCell>
-										</TableRow>
+										<EmptyTableRow />
 									)}
 								</TableBody>
 							</Table>
 						</div>
 
 						{/* Pagination */}
-						{requisicoesPaginated.meta?.last_page > 1 && (
+						{safeMeta.last_page > 1 && (
 							<div className="flex items-center justify-between px-2 py-4">
 								<div className="text-sm text-gray-700">
-									Mostrando {requisicoesPaginated.meta?.from || 0} até{" "}
-									{requisicoesPaginated.meta?.to || 0} de {safeMeta.total}{" "}
-									resultados
+									Mostrando {safeMeta.from || 0} até {safeMeta.to || 0} de{" "}
+									{safeMeta.total} resultados
 								</div>
 								<div className="flex items-center space-x-2">
-									{safeLinks.map((link) => (
+									{safeLinks.map((link, index) => (
 										<Button
-											key={link.label}
+											key={`${link.label}-${index}`}
 											variant={link.active ? "default" : "outline"}
 											size="sm"
 											disabled={!link.url}
-											onClick={() => link.url && router.get(link.url)}
+											onClick={() =>
+												link.url && handlePaginationClick(link.url)
+											}
 										>
-											{link.label.includes("&laquo;")
-												? "«"
-												: link.label.includes("&raquo;")
-													? "»"
-													: link.label.includes("&hellip;")
-														? "..."
-														: link.label}
+											{formatPaginationLabel(link.label)}
 										</Button>
 									))}
 								</div>
