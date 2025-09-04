@@ -31,6 +31,7 @@ class DashboardController extends Controller
 
     /**
      * Get dashboard statistics.
+     *
      * @return array<string,mixed>
      */
     private function getDashboardStats(): array
@@ -68,6 +69,7 @@ class DashboardController extends Controller
 
     /**
      * Get recent requisições.
+     *
      * @return array<TKey,mixed>
      */
     private function getRecentRequisicoes(): array
@@ -98,6 +100,7 @@ class DashboardController extends Controller
 
     /**
      * Get active fornecedores with recent activity.
+     *
      * @return array<TKey,mixed>
      */
     private function getFornecedoresAtivos(): array
@@ -122,7 +125,7 @@ class DashboardController extends Controller
                 'total_requisicoes' => $fornecedor->total_requisicoes,
                 'requisicoes_mes_atual' => $fornecedor->requisicoes_mes_atual,
                 'total_geral' => $fornecedor->getTotalGeral(),
-                 ])
+            ])
             ->toArray();
     }
 

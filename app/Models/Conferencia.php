@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use DateTime;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
 
 class Conferencia extends Model
 {
@@ -98,7 +98,8 @@ class Conferencia extends Model
 
     /**
      * Scope a query to only include active conferencias.
-     * @param Builder<Model> $query
+     *
+     * @param  Builder<Model>  $query
      */
     public function scopeEmAndamento(Builder $query): Builder
     {
@@ -107,7 +108,8 @@ class Conferencia extends Model
 
     /**
      * Scope a query to only include finalized conferencias.
-     * @param Builder<Model> $query
+     *
+     * @param  Builder<Model>  $query
      */
     public function scopeFinalizada(Builder $query): Builder
     {
@@ -116,7 +118,8 @@ class Conferencia extends Model
 
     /**
      * Scope a query for a specific period.
-     * @param Builder<Model> $query
+     *
+     * @param  Builder<Model>  $query
      */
     public function scopePeriodo(Builder $query, DateTime $inicio, DateTime $fim): Builder
     {
