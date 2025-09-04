@@ -9,7 +9,7 @@ import {
 	TrendingUp,
 	Users,
 } from "lucide-react";
-import type react from "react";
+import type { ReactNode } from "react";
 import CreateFornecedorModal from "@/components/modals/CreateFornecedorModal";
 import {
 	Card,
@@ -99,7 +99,7 @@ const displayCurrency = (value: number, emptyMessage: string): string => {
 // Components
 interface StatCardProps {
 	title: string;
-	icon: react.ReactNode;
+	icon: ReactNode;
 	value: number | string;
 	subtitle: string;
 }
@@ -148,10 +148,10 @@ const SectionHeader = ({
 interface QuickActionProps {
 	href?: string;
 	onClick?: () => void;
-	icon: react.ReactNode;
+	icon: ReactNode;
 	title: string;
 	description: string;
-	trigger?: react.ReactNode;
+	trigger?: ReactNode;
 }
 
 const QuickAction = ({
@@ -165,7 +165,7 @@ const QuickAction = ({
 	const content = (
 		<div className="flex items-center rounded-lg border border-gray-200 p-3 transition-colors hover:border-gray-300 hover:bg-gray-50">
 			{icon}
-			<div>
+			<div className="ml-1">
 				<p className="font-medium">{title}</p>
 				<p className="text-sm text-gray-600">{description}</p>
 			</div>
@@ -181,9 +181,9 @@ const QuickAction = ({
 	}
 
 	return (
-		<div onClick={onClick} className="cursor-pointer">
+		<button type="button" onClick={onClick} className="w-full text-left">
 			{content}
-		</div>
+		</button>
 	);
 };
 
@@ -213,6 +213,7 @@ export default function Dashboard({
 	// Statistics data
 	const statisticsData = [
 		{
+			id: "fornecedores",
 			title: "Fornecedores",
 			icon: <Users className="h-4 w-4 text-muted-foreground" />,
 			value: displayValue(safeStats.total_fornecedores, EMPTY_MESSAGES.noValue),
@@ -224,6 +225,7 @@ export default function Dashboard({
 			),
 		},
 		{
+			id: "requisicoes",
 			title: "Requisições",
 			icon: <FileText className="h-4 w-4 text-muted-foreground" />,
 			value: displayValue(safeStats.total_requisicoes, EMPTY_MESSAGES.noValue),
@@ -235,6 +237,7 @@ export default function Dashboard({
 			),
 		},
 		{
+			id: "valor-total",
 			title: "Valor Total",
 			icon: <DollarSign className="h-4 w-4 text-muted-foreground" />,
 			value: displayCurrency(
@@ -249,6 +252,7 @@ export default function Dashboard({
 			),
 		},
 		{
+			id: "este-mes",
 			title: "Este Mês",
 			icon: <TrendingUp className="h-4 w-4 text-muted-foreground" />,
 			value: displayValue(
@@ -267,20 +271,23 @@ export default function Dashboard({
 	// Quick actions data
 	const quickActions = [
 		{
+			id: "nova-requisicao",
 			href: requisicoes.create(),
-			icon: <FileText className="mr-3 h-5 w-5 text-blue-900" />,
+			icon: <FileText className="h-5 w-5 text-blue-900" />,
 			title: "Nova Requisição",
 			description: "Criar nova requisição",
 		},
 		{
-			icon: <Building className="mr-3 h-5 w-5 text-green-600" />,
+			id: "novo-fornecedor",
+			icon: <Building className="h-5 w-5 text-green-600" />,
 			title: "Novo Fornecedor",
 			description: "Cadastrar fornecedor",
 			isModal: true,
 		},
 		{
+			id: "nova-conferencia",
 			href: conferencias.create(),
-			icon: <CheckSquare className="mr-3 h-5 w-5 text-purple-600" />,
+			icon: <CheckSquare className="h-5 w-5 text-purple-600" />,
 			title: "Nova Conferência",
 			description: "Iniciar conferência",
 		},
@@ -304,8 +311,8 @@ export default function Dashboard({
 
 				{/* Statistics Grid */}
 				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-					{statisticsData.map((stat, index) => (
-						<StatCard key={index} {...stat} />
+					{statisticsData.map((stat) => (
+						<StatCard key={stat.id} {...stat} />
 					))}
 				</div>
 
@@ -389,7 +396,7 @@ export default function Dashboard({
 												<div className="mt-1 flex items-center space-x-4">
 													<span className="text-xs text-gray-500">
 														{displayCount(
-															fornecedor.requisicoes_mes_atual,
+															fornecedor.requisicoes_mes_atual || 0,
 															"req. este mês",
 															"req. este mês",
 															EMPTY_MESSAGES.noRequests,
@@ -427,15 +434,15 @@ export default function Dashboard({
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-3">
-							{quickActions.map((action, index) => {
+							{quickActions.map((action) => {
 								if (action.isModal) {
 									return (
 										<CreateFornecedorModal
-											key={index}
+											key={action.id}
 											trigger={
 												<div className="flex cursor-pointer items-center rounded-lg border border-gray-200 p-3 transition-colors hover:border-gray-300 hover:bg-gray-50">
 													{action.icon}
-													<div>
+													<div className="ml-1">
 														<p className="font-medium">{action.title}</p>
 														<p className="text-sm text-gray-600">
 															{action.description}
@@ -450,7 +457,7 @@ export default function Dashboard({
 
 								return (
 									<QuickAction
-										key={index}
+										key={action.id}
 										href={action.href}
 										icon={action.icon}
 										title={action.title}

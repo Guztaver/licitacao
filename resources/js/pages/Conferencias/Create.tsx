@@ -76,20 +76,6 @@ const INFO_CARDS = [
 		textColor: "text-blue-900 dark:text-blue-100",
 		contentColor: "text-blue-700 dark:text-blue-300",
 	},
-	{
-		type: "detailed" as const,
-		title: "Conferência Detalhada",
-		content:
-			"Para adicionar valores manualmente e fazer conferência detalhada, acesse diretamente a conferência por fornecedor.",
-		bgColor: "bg-green-50 dark:bg-green-900/20",
-		textColor: "text-green-900 dark:text-green-100",
-		contentColor: "text-green-700 dark:text-green-300",
-		examples: [
-			"Janeiro 2024: /conferencias/fornecedor/1/2024-01",
-			"Dezembro 2023: /conferencias/fornecedor/2/2023-12",
-			"Formato: /conferencias/fornecedor/[ID]/[ANO-MES]",
-		],
-	},
 ];
 
 const MESSAGES = {

@@ -25,14 +25,14 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import {
+	DESTINATARIOS_LABELS,
+	useDestinatarisActions,
+	useDestinatarisUtils,
+} from "@/hooks/use-destinatarios";
 import AppLayout from "@/layouts/app-layout";
 import { destinatarios } from "@/routes";
 import type { BreadcrumbItem, Destinatario, Requisicao } from "@/types";
-import {
-	useDestinatarisActions,
-	useDestinatarisUtils,
-	DESTINATARIOS_LABELS,
-} from "@/hooks/use-destinatarios";
 
 interface DestinatariosShowProps {
 	destinatario: Destinatario & {
@@ -76,24 +76,32 @@ export default function DestinatariosShow({
 
 	const statsConfig = [
 		{
-			value: stats.total_requisicoes,
+			value:
+				stats.total_requisicoes === 0 ? "Nenhuma" : stats.total_requisicoes,
 			label: "Requisições totais",
-			color: "text-blue-800",
+			color: "text-grey-600",
 		},
 		{
-			value: stats.requisicoes_concretizadas,
+			value:
+				stats.requisicoes_concretizadas === 0
+					? "Nenhuma"
+					: stats.requisicoes_concretizadas,
 			label: "Concretizadas",
-			color: "text-green-600",
+			color: "text-grey-600",
 		},
 		{
-			value: formatCurrency(stats.valor_total),
+			value:
+				stats.valor_total === 0 ? "R$ 0,00" : formatCurrency(stats.valor_total),
 			label: "Valor total",
-			color: "text-purple-600",
+			color: "text-grey-600",
 		},
 		{
-			value: stats.requisicoes_mes_atual,
+			value:
+				stats.requisicoes_mes_atual === 0
+					? "Nenhuma"
+					: stats.requisicoes_mes_atual,
 			label: "Este mês",
-			color: "text-amber-600",
+			color: "text-grey-800",
 		},
 	];
 

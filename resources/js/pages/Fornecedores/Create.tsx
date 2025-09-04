@@ -155,7 +155,7 @@ const InfoCard = () => (
 					<Building className="h-5 w-5 text-blue-400" />
 				</div>
 				<div className="ml-3">
-					<h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
+					<h3 className="text-sm font-medium text-blue-900 dark:text-blue-200">
 						Informações importantes
 					</h3>
 					<div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
@@ -179,6 +179,13 @@ export default function FornecedorCreate() {
 		email: "",
 		tipo_principal: "",
 	});
+
+	// Generate unique IDs
+	const razaoSocialId = react.useId();
+	const cnpjId = react.useId();
+	const tipoPrincipalId = react.useId();
+	const telefoneId = react.useId();
+	const emailId = react.useId();
 
 	// Handlers
 	const handleSubmit = react.useCallback(
@@ -254,7 +261,7 @@ export default function FornecedorCreate() {
 						<CardContent className="space-y-6">
 							{/* Company Name */}
 							<InputField
-								id="razao_social"
+								id={razaoSocialId}
 								label="Razão Social"
 								value={data.razao_social}
 								onChange={(value) => setData("razao_social", value)}
@@ -266,7 +273,7 @@ export default function FornecedorCreate() {
 							<div className="grid gap-4 md:grid-cols-2">
 								{/* CNPJ */}
 								<InputField
-									id="cnpj"
+									id={cnpjId}
 									label="CNPJ"
 									value={data.cnpj}
 									onChange={handleCNPJChange}
@@ -277,7 +284,7 @@ export default function FornecedorCreate() {
 
 								{/* Main Type */}
 								<InputField
-									id="tipo_principal"
+									id={tipoPrincipalId}
 									label="Tipo Principal de Fornecimento"
 									value={data.tipo_principal}
 									onChange={(value) => setData("tipo_principal", value)}
@@ -297,7 +304,7 @@ export default function FornecedorCreate() {
 								<div className="grid gap-4 md:grid-cols-2">
 									{/* Phone */}
 									<InputField
-										id="telefone"
+										id={telefoneId}
 										label="Telefone"
 										value={data.telefone}
 										onChange={handlePhoneChange}
@@ -309,7 +316,7 @@ export default function FornecedorCreate() {
 
 									{/* Email */}
 									<InputField
-										id="email"
+										id={emailId}
 										label="E-mail"
 										value={data.email}
 										onChange={(value) => setData("email", value)}

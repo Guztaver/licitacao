@@ -457,7 +457,7 @@ export default function FornecedoresShow({
 								<StatCard
 									label="Total"
 									value={stats.total}
-									color="text-blue-800"
+									color="text-grey-800"
 									description="requisições"
 								/>
 

@@ -167,7 +167,7 @@ const InfoCard = () => (
 					<Users className="h-5 w-5 text-blue-400" />
 				</div>
 				<div className="ml-3">
-					<h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
+					<h3 className="text-sm font-medium text-blue-900 dark:text-blue-200">
 						Informações importantes
 					</h3>
 					<div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
@@ -191,6 +191,13 @@ const InfoCard = () => (
 export default function FornecedoresEdit({
 	fornecedor,
 }: FornecedoresEditProps) {
+	const nomeId = react.useId();
+	const cnpjCpfId = react.useId();
+	const enderecoId = react.useId();
+	const telefoneId = react.useId();
+	const emailId = react.useId();
+	const observacoesId = react.useId();
+
 	const breadcrumbs: BreadcrumbItem[] = [
 		{
 			title: "Fornecedores",
@@ -282,7 +289,7 @@ export default function FornecedoresEdit({
 							<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 								{/* Name */}
 								<InputField
-									id="nome"
+									id={nomeId}
 									label="Nome / Razão Social"
 									value={data.nome}
 									onChange={(value) => setData("nome", value)}
@@ -293,7 +300,7 @@ export default function FornecedoresEdit({
 
 								{/* CNPJ/CPF */}
 								<InputField
-									id="cnpj_cpf"
+									id={cnpjCpfId}
 									label="CNPJ / CPF"
 									value={data.cnpj_cpf}
 									onChange={handleCnpjCpfChange}
@@ -305,7 +312,7 @@ export default function FornecedoresEdit({
 
 							{/* Address */}
 							<InputField
-								id="endereco"
+								id={enderecoId}
 								label="Endereço"
 								value={data.endereco}
 								onChange={(value) => setData("endereco", value)}
@@ -316,7 +323,7 @@ export default function FornecedoresEdit({
 							<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 								{/* Phone */}
 								<InputField
-									id="telefone"
+									id={telefoneId}
 									label="Telefone"
 									value={data.telefone}
 									onChange={(value) => setData("telefone", value)}
@@ -327,7 +334,7 @@ export default function FornecedoresEdit({
 
 								{/* Email */}
 								<InputField
-									id="email"
+									id={emailId}
 									label="E-mail"
 									value={data.email}
 									onChange={(value) => setData("email", value)}
@@ -339,7 +346,7 @@ export default function FornecedoresEdit({
 
 							{/* Observations */}
 							<TextareaField
-								id="observacoes"
+								id={observacoesId}
 								label="Observações"
 								value={data.observacoes}
 								onChange={(value) => setData("observacoes", value)}
