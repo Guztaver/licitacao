@@ -25,6 +25,7 @@ class Fornecedor extends Model
         'contato',
         'status',
         'observacoes',
+        'tipo_fornecimento',
     ];
 
     protected $casts = [

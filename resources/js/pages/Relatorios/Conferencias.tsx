@@ -195,6 +195,7 @@ const FiltersCard = ({
 }) => {
 	const dataInicioId = useId();
 	const dataFimId = useId();
+	const fornecedorId = useId();
 
 	return (
 		<Card>
@@ -229,7 +230,7 @@ const FiltersCard = ({
 							/>
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="fornecedor_id">Fornecedor</Label>
+							<Label htmlFor={fornecedorId}>Fornecedor</Label>
 							<Select
 								value={data.fornecedor_id}
 								onValueChange={(value) => setData("fornecedor_id", value)}

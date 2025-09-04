@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'municipio',
+        'tipo_acesso',
     ];
 
     /**
@@ -43,6 +45,36 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'tipo_acesso' => 'string',
         ];
+    }
+
+    /**
+     * Check if user is a manager.
+     */
+    public function isGestor(): bool
+    {
+        return $this->tipo_acesso === 'gestor';
+    }
+
+    /**
+     * Check if user is operational.
+     */
+    public function isOperacional(): bool
+    {
+        return $this->tipo_acesso === 'operacional';
+    }
+
+    /**
+     * Get tipo_acesso display name.
+     */
+    public function getTipoAcessoDisplayAttribute(): string
+    {
+        $tipos = [
+            'gestor' => 'Gestor',
+            'operacional' => 'Operacional',
+        ];
+
+        return $tipos[$this->tipo_acesso] ?? $this->tipo_acesso;
     }
 }

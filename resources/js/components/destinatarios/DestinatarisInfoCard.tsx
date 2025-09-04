@@ -54,7 +54,7 @@ export default function DestinatarisInfoCard({
 						</h3>
 						<div className={`mt-2 text-sm ${config.contentColor}`}>
 							{content.split("\n").map((line, index) => (
-								<p key={index}>{line}</p>
+								<p key={`line-${index}-${line.slice(0, 10)}`}>{line}</p>
 							))}
 						</div>
 					</div>

@@ -251,7 +251,7 @@ export const EMITENTE_LABELS = {
 	saving: "Salvando...",
 	cancel: "Cancelar",
 	back: "Voltar",
-	edit: "Editar",
+	editAction: "Editar",
 	delete: "Excluir",
 	export: "Exportar",
 	search: "Buscar",

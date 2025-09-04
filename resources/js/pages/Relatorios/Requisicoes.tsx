@@ -51,7 +51,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 	},
 ];
 
-interface RequisicaoExtended extends Omit<Requisicao, "emitente"> {
+interface RequisicaoExtended
+	extends Omit<Requisicao, "emitente" | "fornecedor"> {
 	emitente?: Pick<Emitente, "nome" | "sigla">;
 	destinatario?: { nome: string };
 	fornecedor?: Pick<Fornecedor, "razao_social">;

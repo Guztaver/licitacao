@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Conferencia;
 use App\Models\Fornecedor;
+use App\Models\PedidoManual;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ConferenciaController extends Controller
 {
@@ -64,8 +67,8 @@ class ConferenciaController extends Controller
              * @var Conferencia $conferencia
              */
             'id' => $conferencia->id,
-            'periodo_inicio' => $conferencia->periodo_inicio->format('d/m/Y'),
-            'periodo_fim' => $conferencia->periodo_fim->format('d/m/Y'),
+            'periodo_inicio' => $conferencia->periodo_inicio ? $conferencia->periodo_inicio->format('d/m/Y') : '',
+            'periodo_fim' => $conferencia->periodo_fim ? $conferencia->periodo_fim->format('d/m/Y') : '',
             'periodo_display' => $conferencia->periodo_display,
             'periodo' => $conferencia->periodo_display,
             'status' => $conferencia->status,
@@ -143,7 +146,7 @@ class ConferenciaController extends Controller
         // Add the parsed dates and user info
         $validated['periodo_inicio'] = $periodo_inicio;
         $validated['periodo_fim'] = $periodo_fim;
-        $validated['usuario_criacao_id'] = auth()->secure()->id();
+        $validated['usuario_criacao_id'] = Auth::id();
 
         // Remove the original periodo field as it's not in the database
         unset($validated['periodo']);
@@ -164,8 +167,8 @@ class ConferenciaController extends Controller
 
         $conferenciaData = [
             'id' => $conferencia->id,
-            'periodo_inicio' => $conferencia->periodo_inicio->format('d/m/Y'),
-            'periodo_fim' => $conferencia->periodo_fim->format('d/m/Y'),
+            'periodo_inicio' => $conferencia->periodo_inicio ? $conferencia->periodo_inicio->format('d/m/Y') : '',
+            'periodo_fim' => $conferencia->periodo_fim ? $conferencia->periodo_fim->format('d/m/Y') : '',
             'periodo_display' => $conferencia->periodo_display,
             'total_requisicoes' => $conferencia->total_requisicoes,
             'total_pedidos_manuais' => $conferencia->total_pedidos_manuais,
@@ -198,7 +201,15 @@ class ConferenciaController extends Controller
     /**
      * Display conferência for specific fornecedor and period.
      */
-    public function fornecedor(Request $request, $fornecedorId, $periodo): Response
+    /**
+     * Display conference details for a specific fornecedor and period.
+     *
+     * @param Request $request
+     * @param int $fornecedorId
+     * @param string $periodo
+     * @return Response
+     */
+    public function fornecedor(Request $request, int $fornecedorId, string $periodo): Response|RedirectResponse
     {
         $fornecedor = Fornecedor::query()->findOrFail($fornecedorId);
 
@@ -214,7 +225,7 @@ class ConferenciaController extends Controller
 
         // Get requisições for the period
         $requisicoes = $fornecedor->requisicoes()
-            ->concretizada()
+            ->where('status', 'concretizada')
             ->whereYear('data_concretizacao', $ano)
             ->whereMonth('data_concretizacao', $mes)
             ->with(['emitente', 'destinatario'])
@@ -280,7 +291,7 @@ class ConferenciaController extends Controller
     /**
      * Export conferências to CSV.
      */
-    public function export(Request $request)
+    public function export(Request $request): StreamedResponse
     {
         $query = Conferencia::query()->with('fornecedor');
 
@@ -370,9 +381,14 @@ class ConferenciaController extends Controller
     }
 
     /**
-     * Store a new pedido manual for the conference.
+     * Store a new pedido manual for conferência.
+     *
+     * @param Request $request
+     * @param int $fornecedorId
+     * @param string $periodo
+     * @return RedirectResponse
      */
-    public function storePedidoManual(Request $request, $fornecedorId, $periodo): \Illuminate\Http\RedirectResponse
+    public function storePedidoManual(Request $request, int $fornecedorId, string $periodo): RedirectResponse
     {
         $validated = $request->validate([
             'descricao' => 'required|string|max:500',
@@ -382,9 +398,9 @@ class ConferenciaController extends Controller
             'observacoes' => 'required|string|max:1000',
         ]);
 
-        $fornecedor = \App\Models\Fornecedor::findOrFail($fornecedorId);
+        $fornecedor = Fornecedor::query()->findOrFail($fornecedorId);
 
-        $pedidoManual = new \App\Models\PedidoManual($validated);
+        $pedidoManual = new PedidoManual($validated);
         $pedidoManual->fornecedor_id = $fornecedor->id;
         $pedidoManual->save();
 
@@ -393,11 +409,17 @@ class ConferenciaController extends Controller
     }
 
     /**
-     * Delete a pedido manual from the conference.
+     * Delete a pedido manual from conferência.
+     *
+     * @param Request $request
+     * @param int $fornecedorId
+     * @param string $periodo
+     * @param int $pedidoId
+     * @return RedirectResponse
      */
-    public function destroyPedidoManual(Request $request, $fornecedorId, $periodo, $pedidoId): \Illuminate\Http\RedirectResponse
+    public function destroyPedidoManual(Request $request, int $fornecedorId, string $periodo, int $pedidoId): RedirectResponse
     {
-        $pedidoManual = \App\Models\PedidoManual::findOrFail($pedidoId);
+        $pedidoManual = PedidoManual::query()->findOrFail($pedidoId);
 
         // Verify the pedido belongs to the correct fornecedor
         if ($pedidoManual->fornecedor_id != $fornecedorId) {
@@ -412,11 +434,16 @@ class ConferenciaController extends Controller
     }
 
     /**
-     * Finalize the conference for a fornecedor and period.
+     * Finalize conferência for a fornecedor and period.
+     *
+     * @param Request $request
+     * @param int $fornecedorId
+     * @param string $periodo
+     * @return RedirectResponse
      */
-    public function finalizarConferencia(Request $request, $fornecedorId, $periodo): \Illuminate\Http\RedirectResponse
+    public function finalizarConferencia(Request $request, int $fornecedorId, string $periodo): RedirectResponse
     {
-        $fornecedor = \App\Models\Fornecedor::findOrFail($fornecedorId);
+        $fornecedor = Fornecedor::query()->findOrFail($fornecedorId);
 
         // Parse period (e.g., "2024-01" for January 2024)
         $periodoData = explode('-', $periodo);
@@ -433,19 +460,19 @@ class ConferenciaController extends Controller
         $periodo_fim = $periodo_inicio->copy()->endOfMonth();
 
         // Check if conference already exists for this fornecedor and period
-        $existingConferencia = Conferencia::where('fornecedor_id', $fornecedorId)
+        $conferencia = Conferencia::query()->where('fornecedor_id', $fornecedorId)
             ->where('periodo_inicio', $periodo_inicio)
             ->where('periodo_fim', $periodo_fim)
             ->first();
 
-        if ($existingConferencia) {
-            return redirect()->route('conferencias.show', $existingConferencia)
+        if ($conferencia) {
+            return redirect()->route('conferencias.show', $conferencia)
                 ->with('info', 'Conferência já foi finalizada anteriormente.');
         }
 
         // Calculate totals
         $totalRequisicoes = $fornecedor->requisicoes()
-            ->concretizada()
+            ->where('status', 'concretizada')
             ->whereYear('data_concretizacao', $ano)
             ->whereMonth('data_concretizacao', $mes)
             ->sum('valor_final') ?? 0;
@@ -466,7 +493,7 @@ class ConferenciaController extends Controller
             'total_pedidos_manuais' => $totalPedidosManuais,
             'total_geral' => $totalGeral,
             'status' => 'finalizada',
-            'usuario_criacao_id' => auth()->id(),
+            'usuario_finalizacao_id' => Auth::id(),
             'observacoes' => 'Conferência finalizada através do módulo de conferência detalhada.',
         ]);
 

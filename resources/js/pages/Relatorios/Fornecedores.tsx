@@ -13,6 +13,7 @@ import type { FormEventHandler } from "react";
 import { useId } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/ui/status-badge";
 import {
 	Card,
 	CardContent,

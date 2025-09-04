@@ -1,7 +1,7 @@
 import { Link } from "@inertiajs/react";
 import { FileDown, Search } from "lucide-react";
 import type { FormEventHandler } from "react";
-import { useMemo } from "react";
+import { useId, useMemo } from "react";
 import CreateEmitenteModal from "@/components/modals/CreateEmitenteModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -182,7 +182,7 @@ interface EmitenteAdvancedFiltersProps {
 	onChange: (filters: Partial<EmitenteAdvancedFiltersProps["filters"]>) => void;
 	onSubmit: FormEventHandler;
 	onClear: () => void;
-	processing?: boolean;
+	processing: boolean;
 }
 
 export function EmitenteAdvancedFilters({
@@ -190,8 +190,11 @@ export function EmitenteAdvancedFilters({
 	onChange,
 	onSubmit,
 	onClear,
-	processing = false,
+	processing,
 }: EmitenteAdvancedFiltersProps) {
+	const searchId = useId();
+	const dateFromId = useId();
+	const dateToId = useId();
 	const handleChange = useMemo(
 		() => (field: keyof typeof filters) => (value: string) => {
 			onChange({ [field]: value });
@@ -212,7 +215,7 @@ export function EmitenteAdvancedFilters({
 					{/* Search Input */}
 					<div>
 						<label
-							htmlFor="advanced-search"
+							htmlFor={searchId}
 							className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
 						>
 							Buscar
@@ -220,7 +223,7 @@ export function EmitenteAdvancedFilters({
 						<div className="relative">
 							<Search className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
 							<Input
-								id="advanced-search"
+								id={searchId}
 								placeholder={EMITENTE_MESSAGES.searchPlaceholder}
 								value={filters.search}
 								onChange={(e) => handleChange("search")(e.target.value)}
@@ -233,13 +236,13 @@ export function EmitenteAdvancedFilters({
 					<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 						<div>
 							<label
-								htmlFor="date-from"
+								htmlFor={dateFromId}
 								className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
 							>
 								Data inicial
 							</label>
 							<Input
-								id="date-from"
+								id={dateFromId}
 								type="date"
 								value={filters.dateFrom || ""}
 								onChange={(e) => handleChange("dateFrom")(e.target.value)}
@@ -247,13 +250,13 @@ export function EmitenteAdvancedFilters({
 						</div>
 						<div>
 							<label
-								htmlFor="date-to"
+								htmlFor={dateToId}
 								className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
 							>
 								Data final
 							</label>
 							<Input
-								id="date-to"
+								id={dateToId}
 								type="date"
 								value={filters.dateTo || ""}
 								onChange={(e) => handleChange("dateTo")(e.target.value)}

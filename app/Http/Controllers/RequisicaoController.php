@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Destinatario;
 use App\Models\Emitente;
+use App\Models\Fornecedor;
 use App\Models\Requisicao;
+use App\Services\PdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RequisicaoController extends Controller
 {
@@ -157,7 +161,7 @@ class RequisicaoController extends Controller
         }
 
         // Load emitente to generate complete number before saving
-        $emitente = Emitente::find($validated['emitente_id']);
+        $emitente = Emitente::query()->find($validated['emitente_id']);
         if (! $emitente) {
             return back()->withErrors(['emitente_id' => 'Emitente não encontrado.']);
         }
@@ -440,13 +444,15 @@ class RequisicaoController extends Controller
     /**
      * Generate PDF for requisição.
      */
-    public function pdf(Requisicao $requisicao): \Illuminate\Http\JsonResponse
+    public function pdf(Request $request, Requisicao $requisicao, PdfService $pdfService): \Illuminate\Http\Response
     {
-        // This would typically use a PDF generation library like DomPDF or TCPDF
-        return response()->json([
-            'message' => 'PDF generation would be implemented here',
-            'requisicao_id' => $requisicao->id,
-        ]);
+        $type = $request->get('type', 'setor'); // 'setor' or 'fornecedor'
+
+        if (!in_array($type, ['setor', 'fornecedor'])) {
+            $type = 'setor';
+        }
+
+        return $pdfService->generateRequisicaoPdf($requisicao, $type);
     }
 
     /**
@@ -466,13 +472,13 @@ class RequisicaoController extends Controller
 
         $filename = basename($requisicao->anexo);
 
-        return Storage::disk('public')->download($requisicao->anexo, $filename);
+        return response()->download(storage_path('app/public/'.$requisicao->anexo));
     }
 
     /**
      * Export requisições to CSV.
      */
-    public function export(Request $request)
+    public function export(Request $request): StreamedResponse
     {
         $query = Requisicao::query()->where('status', '!=', 'excluida')->with(['emitente', 'destinatario', 'fornecedor']);
 

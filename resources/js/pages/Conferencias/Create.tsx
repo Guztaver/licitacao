@@ -181,23 +181,6 @@ function InfoCard({ card }: InfoCardProps) {
 		<div className={`rounded-lg p-4 ${card.bgColor}`}>
 			<h4 className={`font-medium ${card.textColor}`}>{card.title}</h4>
 			<p className={`text-sm ${card.contentColor}`}>{card.content}</p>
-			{card.examples && (
-				<>
-					<p className="mb-3 text-sm font-medium text-green-600 dark:text-green-400">
-						Exemplos de acesso direto:
-					</p>
-					<div className="space-y-1 text-xs text-green-600 dark:text-green-400">
-						{card.examples.map((example) => (
-							<p key={example}>
-								• {example.split(": ")[0]}:{" "}
-								<code className="rounded bg-green-100 px-1 dark:bg-green-800">
-									{example.split(": ")[1] || example.split(": ")[0]}
-								</code>
-							</p>
-						))}
-					</div>
-				</>
-			)}
 		</div>
 	);
 }
