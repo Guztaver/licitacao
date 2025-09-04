@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Destinatario;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DestinatarioSeeder extends Seeder
@@ -165,7 +164,7 @@ class DestinatarioSeeder extends Seeder
         Destinatario::factory(5)->create();
 
         $this->command->info('Destinatários criados com sucesso!');
-        $this->command->info('Total: ' . Destinatario::count() . ' destinatários');
+        $this->command->info('Total: '.Destinatario::count().' destinatários');
 
         // Show some examples
         $this->command->info("\nExemplos de destinatários criados:");

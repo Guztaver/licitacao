@@ -39,10 +39,10 @@ class EmitenteFactory extends Factory
 
         return [
             'nome' => $orgao['nome'],
-            'sigla' => $orgao['sigla'] . $randomSuffix,
-            'endereco' => fake()->streetAddress() . ', ' . fake()->city() . ' - ' . fake()->stateAbbr(),
+            'sigla' => $orgao['sigla'].$randomSuffix,
+            'endereco' => fake()->streetAddress().', '.fake()->city().' - '.fake()->stateAbbr(),
             'telefone' => fake()->phoneNumber(),
-            'email' => strtolower($orgao['sigla'] . $randomSuffix) . '@prefeitura.gov.br',
+            'email' => strtolower($orgao['sigla'].$randomSuffix).'@prefeitura.gov.br',
         ];
     }
 
@@ -54,7 +54,7 @@ class EmitenteFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'nome' => $nome,
             'sigla' => $sigla,
-            'email' => strtolower($sigla) . '@prefeitura.gov.br',
+            'email' => strtolower($sigla).'@prefeitura.gov.br',
         ]);
     }
 

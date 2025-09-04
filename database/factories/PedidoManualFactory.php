@@ -101,7 +101,7 @@ class PedidoManualFactory extends Factory
     public function withOrderNumber(): static
     {
         return $this->state(fn (array $attributes) => [
-            'numero_pedido' => 'PM-' . fake()->numerify('####') . '/' . fake()->year(),
+            'numero_pedido' => 'PM-'.fake()->numerify('####').'/'.fake()->year(),
         ]);
     }
 

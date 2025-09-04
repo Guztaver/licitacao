@@ -68,7 +68,7 @@ class FornecedorFactory extends Factory
         $sum = 0;
         $multiplier = 5;
         for ($i = 0; $i < 12; $i++) {
-            $sum += (int)$cnpj[$i] * $multiplier;
+            $sum += (int) $cnpj[$i] * $multiplier;
             $multiplier = ($multiplier == 2) ? 9 : $multiplier - 1;
         }
         $remainder = $sum % 11;
@@ -79,7 +79,7 @@ class FornecedorFactory extends Factory
         $sum = 0;
         $multiplier = 6;
         for ($i = 0; $i < 13; $i++) {
-            $sum += (int)$cnpj[$i] * $multiplier;
+            $sum += (int) $cnpj[$i] * $multiplier;
             $multiplier = ($multiplier == 2) ? 9 : $multiplier - 1;
         }
         $remainder = $sum % 11;
@@ -87,10 +87,10 @@ class FornecedorFactory extends Factory
         $cnpj .= $digit2;
 
         // Format CNPJ with dots, slash and dash
-        return substr($cnpj, 0, 2) . '.' .
-               substr($cnpj, 2, 3) . '.' .
-               substr($cnpj, 5, 3) . '/' .
-               substr($cnpj, 8, 4) . '-' .
+        return substr($cnpj, 0, 2).'.'.
+               substr($cnpj, 2, 3).'.'.
+               substr($cnpj, 5, 3).'/'.
+               substr($cnpj, 8, 4).'-'.
                substr($cnpj, 12, 2);
     }
 }

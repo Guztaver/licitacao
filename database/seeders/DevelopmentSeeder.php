@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DevelopmentSeeder extends Seeder
@@ -136,7 +135,7 @@ class DevelopmentSeeder extends Seeder
             }
         }
 
-        if (!empty($missing)) {
+        if (! empty($missing)) {
             $this->command->warn("⚠️  Dependências ausentes para criar {$entityName}:");
             foreach ($missing as $dep) {
                 $this->command->line("   - {$dep}");
@@ -148,6 +147,7 @@ class DevelopmentSeeder extends Seeder
                 }
             } else {
                 $this->command->error("❌ Não é possível criar {$entityName} sem as dependências.");
+
                 return;
             }
         }
@@ -206,13 +206,13 @@ class DevelopmentSeeder extends Seeder
         $this->command->info('✅ Seeding concluído!');
         $this->command->info('');
         $this->command->info('📊 Resumo atual do banco:');
-        $this->command->info('👥 Usuários: ' . \App\Models\User::count());
-        $this->command->info('🏢 Fornecedores: ' . \App\Models\Fornecedor::count());
-        $this->command->info('🏛️ Emitentes: ' . \App\Models\Emitente::count());
-        $this->command->info('📋 Destinatários: ' . \App\Models\Destinatario::count());
-        $this->command->info('📄 Requisições: ' . \App\Models\Requisicao::count());
-        $this->command->info('📝 Pedidos manuais: ' . \App\Models\PedidoManual::count());
-        $this->command->info('📊 Conferências: ' . \App\Models\Conferencia::count());
+        $this->command->info('👥 Usuários: '.\App\Models\User::count());
+        $this->command->info('🏢 Fornecedores: '.\App\Models\Fornecedor::count());
+        $this->command->info('🏛️ Emitentes: '.\App\Models\Emitente::count());
+        $this->command->info('📋 Destinatários: '.\App\Models\Destinatario::count());
+        $this->command->info('📄 Requisições: '.\App\Models\Requisicao::count());
+        $this->command->info('📝 Pedidos manuais: '.\App\Models\PedidoManual::count());
+        $this->command->info('📊 Conferências: '.\App\Models\Conferencia::count());
 
         if (\App\Models\User::count() > 0) {
             $this->command->info('');

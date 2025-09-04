@@ -36,10 +36,10 @@ class DestinatarioFactory extends Factory
 
         return [
             'nome' => $departamento['nome'],
-            'sigla' => $departamento['sigla'] . $randomSuffix,
-            'endereco' => fake()->streetAddress() . ', ' . fake()->city() . ' - ' . fake()->stateAbbr(),
+            'sigla' => $departamento['sigla'].$randomSuffix,
+            'endereco' => fake()->streetAddress().', '.fake()->city().' - '.fake()->stateAbbr(),
             'telefone' => fake()->phoneNumber(),
-            'email' => strtolower($departamento['sigla'] . $randomSuffix) . '@compras.gov.br',
+            'email' => strtolower($departamento['sigla'].$randomSuffix).'@compras.gov.br',
         ];
     }
 
@@ -51,7 +51,7 @@ class DestinatarioFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'nome' => $nome,
             'sigla' => $sigla,
-            'email' => strtolower($sigla) . '@compras.gov.br',
+            'email' => strtolower($sigla).'@compras.gov.br',
         ]);
     }
 

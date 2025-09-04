@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Emitente;
 use App\Models\Destinatario;
+use App\Models\Emitente;
 use App\Models\Fornecedor;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -58,7 +58,7 @@ class RequisicaoFactory extends Factory
         ];
 
         $attributes = [
-            'numero' => (string)$numero,
+            'numero' => (string) $numero,
             'numero_completo' => $numeroCompleto,
             'emitente_id' => Emitente::factory(),
             'destinatario_id' => Destinatario::factory(),
@@ -67,10 +67,10 @@ class RequisicaoFactory extends Factory
             'data_recebimento' => $dataRecebimento,
             'descricao' => fake()->randomElement($descricoes),
             'fornecedor_id' => fake()->optional(0.6)->randomElement([
-                fn() => Fornecedor::factory(),
-                null
+                fn () => Fornecedor::factory(),
+                null,
             ]),
-            'anexo' => fake()->optional(0.3)->word() . '.pdf',
+            'anexo' => fake()->optional(0.3)->word().'.pdf',
             'status' => $status,
             'usuario_criacao_id' => User::factory(),
         ];
@@ -193,7 +193,7 @@ class RequisicaoFactory extends Factory
     public function withAttachment(): static
     {
         return $this->state(fn (array $attributes) => [
-            'anexo' => fake()->word() . '.pdf',
+            'anexo' => fake()->word().'.pdf',
         ]);
     }
 

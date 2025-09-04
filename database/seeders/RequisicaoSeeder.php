@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Requisicao;
-use App\Models\Emitente;
 use App\Models\Destinatario;
+use App\Models\Emitente;
 use App\Models\Fornecedor;
+use App\Models\Requisicao;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class RequisicaoSeeder extends Seeder
@@ -28,6 +27,7 @@ class RequisicaoSeeder extends Seeder
             $this->command->info('Execute: php artisan db:seed --class=EmitenteSeeder');
             $this->command->info('Execute: php artisan db:seed --class=DestinatarioSeeder');
             $this->command->info('Execute: php artisan db:seed --class=UserSeeder');
+
             return;
         }
 
@@ -168,51 +168,51 @@ class RequisicaoSeeder extends Seeder
 
         // Create authorized requisitions using factory
         Requisicao::factory(15)->authorized()->create([
-            'emitente_id' => fn() => $emitentes->random()->id,
-            'destinatario_id' => fn() => $destinatarios->random()->id,
-            'usuario_criacao_id' => fn() => $users->random()->id,
-            'fornecedor_id' => fn() => $fornecedores->isNotEmpty() && fake()->boolean(60)
+            'emitente_id' => fn () => $emitentes->random()->id,
+            'destinatario_id' => fn () => $destinatarios->random()->id,
+            'usuario_criacao_id' => fn () => $users->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->isNotEmpty() && fake()->boolean(60)
                 ? $fornecedores->random()->id
                 : null,
         ]);
 
         // Create completed requisitions using factory
         Requisicao::factory(20)->completed()->create([
-            'emitente_id' => fn() => $emitentes->random()->id,
-            'destinatario_id' => fn() => $destinatarios->random()->id,
-            'usuario_criacao_id' => fn() => $users->random()->id,
-            'usuario_concretizacao_id' => fn() => $users->random()->id,
-            'fornecedor_id' => fn() => $fornecedores->isNotEmpty() ? $fornecedores->random()->id : null,
+            'emitente_id' => fn () => $emitentes->random()->id,
+            'destinatario_id' => fn () => $destinatarios->random()->id,
+            'usuario_criacao_id' => fn () => $users->random()->id,
+            'usuario_concretizacao_id' => fn () => $users->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->isNotEmpty() ? $fornecedores->random()->id : null,
         ]);
 
         // Create cancelled requisitions using factory
         Requisicao::factory(8)->cancelled()->create([
-            'emitente_id' => fn() => $emitentes->random()->id,
-            'destinatario_id' => fn() => $destinatarios->random()->id,
-            'usuario_criacao_id' => fn() => $users->random()->id,
-            'usuario_exclusao_id' => fn() => $users->random()->id,
+            'emitente_id' => fn () => $emitentes->random()->id,
+            'destinatario_id' => fn () => $destinatarios->random()->id,
+            'usuario_criacao_id' => fn () => $users->random()->id,
+            'usuario_exclusao_id' => fn () => $users->random()->id,
         ]);
 
         // Create deleted requisitions using factory
         Requisicao::factory(3)->deleted()->create([
-            'emitente_id' => fn() => $emitentes->random()->id,
-            'destinatario_id' => fn() => $destinatarios->random()->id,
-            'usuario_criacao_id' => fn() => $users->random()->id,
-            'usuario_exclusao_id' => fn() => $users->random()->id,
+            'emitente_id' => fn () => $emitentes->random()->id,
+            'destinatario_id' => fn () => $destinatarios->random()->id,
+            'usuario_criacao_id' => fn () => $users->random()->id,
+            'usuario_exclusao_id' => fn () => $users->random()->id,
         ]);
 
         // Create some recent requisitions
         Requisicao::factory(10)->recent()->authorized()->create([
-            'emitente_id' => fn() => $emitentes->random()->id,
-            'destinatario_id' => fn() => $destinatarios->random()->id,
-            'usuario_criacao_id' => fn() => $users->random()->id,
-            'fornecedor_id' => fn() => $fornecedores->isNotEmpty() && fake()->boolean(40)
+            'emitente_id' => fn () => $emitentes->random()->id,
+            'destinatario_id' => fn () => $destinatarios->random()->id,
+            'usuario_criacao_id' => fn () => $users->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->isNotEmpty() && fake()->boolean(40)
                 ? $fornecedores->random()->id
                 : null,
         ]);
 
         $this->command->info('Requisições criadas com sucesso!');
-        $this->command->info('Total: ' . Requisicao::count() . ' requisições');
+        $this->command->info('Total: '.Requisicao::count().' requisições');
 
         // Show statistics
         $stats = [
@@ -227,8 +227,8 @@ class RequisicaoSeeder extends Seeder
             $this->command->line("- {$status}: {$count}");
         }
 
-        $this->command->info("\nRequisições com fornecedor: " . Requisicao::whereNotNull('fornecedor_id')->count());
-        $this->command->info("Requisições com anexo: " . Requisicao::whereNotNull('anexo')->count());
-        $this->command->info("Valor total concretizado: R$ " . number_format(Requisicao::where('status', 'concretizada')->sum('valor_final'), 2, ',', '.'));
+        $this->command->info("\nRequisições com fornecedor: ".Requisicao::whereNotNull('fornecedor_id')->count());
+        $this->command->info('Requisições com anexo: '.Requisicao::whereNotNull('anexo')->count());
+        $this->command->info('Valor total concretizado: R$ '.number_format(Requisicao::where('status', 'concretizada')->sum('valor_final'), 2, ',', '.'));
     }
 }

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -119,14 +118,14 @@ class UserSeeder extends Seeder
         User::factory(5)->unverified()->create();
 
         $this->command->info('Usuários criados com sucesso!');
-        $this->command->info('Total: ' . User::count() . ' usuários');
-        $this->command->info('Verificados: ' . User::whereNotNull('email_verified_at')->count());
-        $this->command->info('Não verificados: ' . User::whereNull('email_verified_at')->count());
+        $this->command->info('Total: '.User::count().' usuários');
+        $this->command->info('Verificados: '.User::whereNotNull('email_verified_at')->count());
+        $this->command->info('Não verificados: '.User::whereNull('email_verified_at')->count());
 
         $this->command->info("\nUsuários principais criados:");
-        $this->command->info("- admin@licitacao.gov.br (senha: admin123)");
-        $this->command->info("- supervisor@licitacao.gov.br (senha: supervisor123)");
-        $this->command->info("- operador@compras.gov.br (senha: operador123)");
-        $this->command->info("- Demais usuários: password123");
+        $this->command->info('- admin@licitacao.gov.br (senha: admin123)');
+        $this->command->info('- supervisor@licitacao.gov.br (senha: supervisor123)');
+        $this->command->info('- operador@compras.gov.br (senha: operador123)');
+        $this->command->info('- Demais usuários: password123');
     }
 }

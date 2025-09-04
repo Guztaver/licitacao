@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Fornecedor;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class FornecedorSeeder extends Seeder
@@ -158,8 +157,8 @@ class FornecedorSeeder extends Seeder
         Fornecedor::factory(5)->inactive()->create();
 
         $this->command->info('Fornecedores criados com sucesso!');
-        $this->command->info('Total: ' . Fornecedor::count() . ' fornecedores');
-        $this->command->info('Ativos: ' . Fornecedor::where('status', true)->count());
-        $this->command->info('Inativos: ' . Fornecedor::where('status', false)->count());
+        $this->command->info('Total: '.Fornecedor::count().' fornecedores');
+        $this->command->info('Ativos: '.Fornecedor::where('status', true)->count());
+        $this->command->info('Inativos: '.Fornecedor::where('status', false)->count());
     }
 }

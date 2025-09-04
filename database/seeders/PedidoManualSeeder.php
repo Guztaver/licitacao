@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\PedidoManual;
 use App\Models\Fornecedor;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\PedidoManual;
 use Illuminate\Database\Seeder;
 
 class PedidoManualSeeder extends Seeder
@@ -20,6 +19,7 @@ class PedidoManualSeeder extends Seeder
         if ($fornecedores->isEmpty()) {
             $this->command->error('Erro: É necessário ter fornecedores cadastrados antes de criar pedidos manuais.');
             $this->command->info('Execute: php artisan db:seed --class=FornecedorSeeder');
+
             return;
         }
 
@@ -113,52 +113,52 @@ class PedidoManualSeeder extends Seeder
 
         // Create additional random manual orders using factory
         PedidoManual::factory(20)->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
         ]);
 
         // Create some high-value orders
         PedidoManual::factory(5)->highValue()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
         ]);
 
         // Create some low-value orders
         PedidoManual::factory(10)->lowValue()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
         ]);
 
         // Create recent orders
         PedidoManual::factory(8)->recent()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
         ]);
 
         // Create orders with observations
         PedidoManual::factory(6)->withObservations()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
         ]);
 
         // Create specific type orders
         PedidoManual::factory(3)->cleaningSupplies()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
         ]);
 
         PedidoManual::factory(3)->officeSupplies()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
         ]);
 
         PedidoManual::factory(2)->itEquipment()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
         ]);
 
         PedidoManual::factory(2)->medicalSupplies()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
         ]);
 
         PedidoManual::factory(2)->fuel()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
         ]);
 
         $this->command->info('Pedidos manuais criados com sucesso!');
-        $this->command->info('Total: ' . PedidoManual::count() . ' pedidos manuais');
+        $this->command->info('Total: '.PedidoManual::count().' pedidos manuais');
 
         // Show statistics
         $totalValue = PedidoManual::sum('valor');
@@ -167,21 +167,21 @@ class PedidoManualSeeder extends Seeder
         $minValue = PedidoManual::min('valor');
 
         $this->command->info("\nEstatísticas dos pedidos manuais:");
-        $this->command->info("Valor total: R$ " . number_format($totalValue, 2, ',', '.'));
-        $this->command->info("Valor médio: R$ " . number_format($avgValue, 2, ',', '.'));
-        $this->command->info("Maior valor: R$ " . number_format($maxValue, 2, ',', '.'));
-        $this->command->info("Menor valor: R$ " . number_format($minValue, 2, ',', '.'));
+        $this->command->info('Valor total: R$ '.number_format($totalValue, 2, ',', '.'));
+        $this->command->info('Valor médio: R$ '.number_format($avgValue, 2, ',', '.'));
+        $this->command->info('Maior valor: R$ '.number_format($maxValue, 2, ',', '.'));
+        $this->command->info('Menor valor: R$ '.number_format($minValue, 2, ',', '.'));
 
         $this->command->info("\nPedidos por fornecedor:");
         $fornecedores->each(function ($fornecedor) {
             $count = PedidoManual::where('fornecedor_id', $fornecedor->id)->count();
             if ($count > 0) {
                 $total = PedidoManual::where('fornecedor_id', $fornecedor->id)->sum('valor');
-                $this->command->line("- {$fornecedor->razao_social}: {$count} pedidos (R$ " . number_format($total, 2, ',', '.') . ")");
+                $this->command->line("- {$fornecedor->razao_social}: {$count} pedidos (R$ ".number_format($total, 2, ',', '.').')');
             }
         });
 
-        $this->command->info("\nPedidos com número: " . PedidoManual::whereNotNull('numero_pedido')->count());
-        $this->command->info("Pedidos com observações: " . PedidoManual::whereNotNull('observacoes')->count());
+        $this->command->info("\nPedidos com número: ".PedidoManual::whereNotNull('numero_pedido')->count());
+        $this->command->info('Pedidos com observações: '.PedidoManual::whereNotNull('observacoes')->count());
     }
 }

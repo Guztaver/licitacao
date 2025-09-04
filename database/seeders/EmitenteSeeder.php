@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Emitente;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class EmitenteSeeder extends Seeder
@@ -165,7 +164,7 @@ class EmitenteSeeder extends Seeder
         Emitente::factory(5)->create();
 
         $this->command->info('Emitentes criados com sucesso!');
-        $this->command->info('Total: ' . Emitente::count() . ' emitentes');
+        $this->command->info('Total: '.Emitente::count().' emitentes');
 
         // Show some examples
         $this->command->info("\nExemplos de emitentes criados:");

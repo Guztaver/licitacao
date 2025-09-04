@@ -5,9 +5,6 @@ namespace Database\Seeders;
 use App\Models\Conferencia;
 use App\Models\Fornecedor;
 use App\Models\User;
-use App\Models\Requisicao;
-use App\Models\PedidoManual;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ConferenciaSeeder extends Seeder
@@ -25,6 +22,7 @@ class ConferenciaSeeder extends Seeder
             $this->command->error('Erro: É necessário ter fornecedores e usuários cadastrados antes de criar conferências.');
             $this->command->info('Execute: php artisan db:seed --class=FornecedorSeeder');
             $this->command->info('Execute: php artisan db:seed --class=UserSeeder');
+
             return;
         }
 
@@ -139,54 +137,54 @@ class ConferenciaSeeder extends Seeder
 
         // Create monthly conferences using factory
         Conferencia::factory(8)->monthly()->finalized()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
-            'usuario_criacao_id' => fn() => $users->random()->id,
-            'usuario_finalizacao_id' => fn() => $users->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
+            'usuario_criacao_id' => fn () => $users->random()->id,
+            'usuario_finalizacao_id' => fn () => $users->random()->id,
         ]);
 
         // Create quarterly conferences using factory
         Conferencia::factory(4)->quarterly()->finalized()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
-            'usuario_criacao_id' => fn() => $users->random()->id,
-            'usuario_finalizacao_id' => fn() => $users->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
+            'usuario_criacao_id' => fn () => $users->random()->id,
+            'usuario_finalizacao_id' => fn () => $users->random()->id,
         ]);
 
         // Create annual conferences using factory
         Conferencia::factory(2)->annual()->finalized()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
-            'usuario_criacao_id' => fn() => $users->random()->id,
-            'usuario_finalizacao_id' => fn() => $users->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
+            'usuario_criacao_id' => fn () => $users->random()->id,
+            'usuario_finalizacao_id' => fn () => $users->random()->id,
         ]);
 
         // Create some in-progress conferences
         Conferencia::factory(6)->inProgress()->recent()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
-            'usuario_criacao_id' => fn() => $users->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
+            'usuario_criacao_id' => fn () => $users->random()->id,
         ]);
 
         // Create high-value conferences
         Conferencia::factory(3)->highValue()->finalized()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
-            'usuario_criacao_id' => fn() => $users->random()->id,
-            'usuario_finalizacao_id' => fn() => $users->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
+            'usuario_criacao_id' => fn () => $users->random()->id,
+            'usuario_finalizacao_id' => fn () => $users->random()->id,
         ]);
 
         // Create low-value conferences
         Conferencia::factory(5)->lowValue()->finalized()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
-            'usuario_criacao_id' => fn() => $users->random()->id,
-            'usuario_finalizacao_id' => fn() => $users->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
+            'usuario_criacao_id' => fn () => $users->random()->id,
+            'usuario_finalizacao_id' => fn () => $users->random()->id,
         ]);
 
         // Create conferences with observations
         Conferencia::factory(4)->withObservations()->finalized()->create([
-            'fornecedor_id' => fn() => $fornecedores->random()->id,
-            'usuario_criacao_id' => fn() => $users->random()->id,
-            'usuario_finalizacao_id' => fn() => $users->random()->id,
+            'fornecedor_id' => fn () => $fornecedores->random()->id,
+            'usuario_criacao_id' => fn () => $users->random()->id,
+            'usuario_finalizacao_id' => fn () => $users->random()->id,
         ]);
 
         $this->command->info('Conferências criadas com sucesso!');
-        $this->command->info('Total: ' . Conferencia::count() . ' conferências');
+        $this->command->info('Total: '.Conferencia::count().' conferências');
 
         // Show statistics
         $stats = [
@@ -205,20 +203,20 @@ class ConferenciaSeeder extends Seeder
         $avgValue = Conferencia::avg('total_geral');
 
         $this->command->info("\nEstatísticas financeiras:");
-        $this->command->info("Total geral: R$ " . number_format($totalGeral, 2, ',', '.'));
-        $this->command->info("Total requisições: R$ " . number_format($totalRequisicoes, 2, ',', '.'));
-        $this->command->info("Total pedidos manuais: R$ " . number_format($totalPedidosManuais, 2, ',', '.'));
-        $this->command->info("Valor médio por conferência: R$ " . number_format($avgValue, 2, ',', '.'));
+        $this->command->info('Total geral: R$ '.number_format($totalGeral, 2, ',', '.'));
+        $this->command->info('Total requisições: R$ '.number_format($totalRequisicoes, 2, ',', '.'));
+        $this->command->info('Total pedidos manuais: R$ '.number_format($totalPedidosManuais, 2, ',', '.'));
+        $this->command->info('Valor médio por conferência: R$ '.number_format($avgValue, 2, ',', '.'));
 
         $this->command->info("\nConferências por fornecedor:");
         $fornecedores->each(function ($fornecedor) {
             $count = Conferencia::where('fornecedor_id', $fornecedor->id)->count();
             if ($count > 0) {
                 $total = Conferencia::where('fornecedor_id', $fornecedor->id)->sum('total_geral');
-                $this->command->line("- {$fornecedor->razao_social}: {$count} conferências (R$ " . number_format($total, 2, ',', '.') . ")");
+                $this->command->line("- {$fornecedor->razao_social}: {$count} conferências (R$ ".number_format($total, 2, ',', '.').')');
             }
         });
 
-        $this->command->info("\nConferências com observações: " . Conferencia::whereNotNull('observacoes')->count());
+        $this->command->info("\nConferências com observações: ".Conferencia::whereNotNull('observacoes')->count());
     }
 }
