@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from "@inertiajs/react";
 import { ArrowLeft, Building, Save } from "lucide-react";
 import type { FormEventHandler } from "react";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -16,45 +17,215 @@ import AppLayout from "@/layouts/app-layout";
 import { emitentes } from "@/routes";
 import type { BreadcrumbItem, Emitente } from "@/types";
 
+// Types
 interface EmitentesEditProps {
 	emitente: Emitente;
 }
 
+type FormData = {
+	nome: string;
+	sigla: string;
+	endereco: string;
+	telefone: string;
+	email: string;
+	observacoes: string;
+};
+
+// Constants
+const FORM_FIELDS = [
+	{
+		name: "nome" as const,
+		label: "Nome",
+		type: "text",
+		placeholder: "Nome completo do órgão",
+		required: true,
+		gridClass: "md:col-span-1",
+		transform: undefined,
+	},
+	{
+		name: "sigla" as const,
+		label: "Sigla",
+		type: "text",
+		placeholder: "Ex: SECOM, SEMEC, etc.",
+		required: true,
+		gridClass: "md:col-span-1",
+		transform: (value: string) => value.toUpperCase(),
+	},
+	{
+		name: "endereco" as const,
+		label: "Endereço",
+		type: "text",
+		placeholder: "Endereço completo do órgão",
+		required: false,
+		gridClass: "md:col-span-2",
+		transform: undefined,
+	},
+	{
+		name: "telefone" as const,
+		label: "Telefone",
+		type: "tel",
+		placeholder: "(XX) XXXXX-XXXX",
+		required: false,
+		gridClass: "md:col-span-1",
+		transform: undefined,
+	},
+	{
+		name: "email" as const,
+		label: "E-mail",
+		type: "email",
+		placeholder: "contato@orgao.gov.br",
+		required: false,
+		gridClass: "md:col-span-1",
+		transform: undefined,
+	},
+] as const;
+
+const TIPS = [
+	"Alterações nos dados do emitente podem afetar relatórios existentes",
+	"A sigla é usada para identificação rápida em listas e relatórios",
+	"Requisições vinculadas a este emitente não serão alteradas",
+];
+
+// Utility Functions
+const getBreadcrumbs = (emitente: Emitente): BreadcrumbItem[] => [
+	{
+		title: "Emitentes",
+		href: emitentes.index(),
+	},
+	{
+		title: emitente.nome,
+		href: emitentes.show(emitente.id),
+	},
+	{
+		title: "Editar",
+		href: emitentes.edit(emitente.id),
+	},
+];
+
+const getInitialFormData = (emitente: Emitente): FormData => ({
+	nome: emitente.nome || "",
+	sigla: emitente.sigla || "",
+	endereco: emitente.endereco || "",
+	telefone: emitente.telefone || "",
+	email: emitente.email || "",
+	observacoes: emitente.observacoes || "",
+});
+
+// Components
+interface InputFieldProps {
+	field: (typeof FORM_FIELDS)[number];
+	value: string;
+	onChange: (name: string, value: string) => void;
+	error?: string;
+	className?: string;
+}
+
+function InputField({
+	field,
+	value,
+	onChange,
+	error,
+	className,
+}: InputFieldProps) {
+	const handleChange = useMemo(
+		() => (e: React.ChangeEvent<HTMLInputElement>) => {
+			const newValue = field.transform
+				? field.transform(e.target.value)
+				: e.target.value;
+			onChange(field.name, newValue);
+		},
+		[field, onChange],
+	);
+
+	return (
+		<div className={`space-y-2 ${className || ""}`}>
+			<Label htmlFor={field.name}>
+				{field.label} {field.required && "*"}
+			</Label>
+			<Input
+				id={field.name}
+				type={field.type}
+				value={value}
+				onChange={handleChange}
+				placeholder={field.placeholder}
+				required={field.required}
+				className={error ? "border-red-500" : ""}
+			/>
+			{error && <p className="text-sm text-red-500">{error}</p>}
+		</div>
+	);
+}
+
+interface InfoCardProps {
+	tips: string[];
+}
+
+function InfoCard({ tips }: InfoCardProps) {
+	return (
+		<Card className="bg-blue-50 dark:bg-blue-950/20">
+			<CardContent className="pt-6">
+				<div className="flex">
+					<div className="flex-shrink-0">
+						<Building className="h-5 w-5 text-blue-400" />
+					</div>
+					<div className="ml-3">
+						<h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
+							Informações
+						</h3>
+						<div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
+							<p>
+								{tips.map((tip) => (
+									<span key={tip}>
+										• {tip}
+										<br />
+									</span>
+								))}
+							</p>
+						</div>
+					</div>
+				</div>
+			</CardContent>
+		</Card>
+	);
+}
+
+// Main Component
 export default function EmitentesEdit({ emitente }: EmitentesEditProps) {
-	const breadcrumbs: BreadcrumbItem[] = [
-		{
-			title: "Emitentes",
-			href: emitentes.index(),
-		},
-		{
-			title: emitente.nome,
-			href: emitentes.show(emitente.id),
-		},
-		{
-			title: "Editar",
-			href: emitentes.edit(emitente.id),
-		},
-	];
+	const breadcrumbs = useMemo(() => getBreadcrumbs(emitente), [emitente]);
+	const initialData = useMemo(() => getInitialFormData(emitente), [emitente]);
 
-	const { data, setData, put, processing, errors } = useForm({
-		nome: emitente.nome || "",
-		sigla: emitente.sigla || "",
-		endereco: emitente.endereco || "",
-		telefone: emitente.telefone || "",
-		email: emitente.email || "",
-		observacoes: emitente.observacoes || "",
-	});
+	const { data, setData, put, processing, errors } =
+		useForm<FormData>(initialData);
 
-	const handleSubmit: FormEventHandler = (e) => {
-		e.preventDefault();
-		put(emitentes.edit(emitente.id));
-	};
+	// Event handlers
+	const handleFieldChange = useMemo(
+		() => (name: string, value: string) => {
+			setData(name as keyof FormData, value);
+		},
+		[setData],
+	);
+
+	const handleSubmit: FormEventHandler = useMemo(
+		() => (e) => {
+			e.preventDefault();
+			put(emitentes.update(emitente.id));
+		},
+		[put, emitente.id],
+	);
+
+	const handleObservacoesChange = useMemo(
+		() => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+			setData("observacoes", e.target.value);
+		},
+		[setData],
+	);
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
 			<Head title={`Editar: ${emitente.nome}`} />
 
 			<div className="flex h-full flex-1 flex-col gap-6 p-6">
+				{/* Header */}
 				<div className="flex items-center justify-between">
 					<div>
 						<h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -74,6 +245,7 @@ export default function EmitentesEdit({ emitente }: EmitentesEditProps) {
 					</div>
 				</div>
 
+				{/* Form */}
 				<form onSubmit={handleSubmit} className="space-y-6">
 					<Card>
 						<CardHeader>
@@ -86,95 +258,55 @@ export default function EmitentesEdit({ emitente }: EmitentesEditProps) {
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
+							{/* Basic Info Grid */}
 							<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-								<div className="space-y-2">
-									<Label htmlFor="nome">Nome *</Label>
-									<Input
-										id="nome"
-										type="text"
-										value={data.nome}
-										onChange={(e) => setData("nome", e.target.value)}
-										placeholder="Nome completo do órgão"
-										required
-										className={errors.nome ? "border-red-500" : ""}
+								{FORM_FIELDS.filter((field) =>
+									["nome", "sigla"].includes(field.name),
+								).map((field) => (
+									<InputField
+										key={field.name}
+										field={field}
+										value={data[field.name]}
+										onChange={handleFieldChange}
+										error={errors[field.name]}
 									/>
-									{errors.nome && (
-										<p className="text-sm text-red-500">{errors.nome}</p>
-									)}
-								</div>
-
-								<div className="space-y-2">
-									<Label htmlFor="sigla">Sigla *</Label>
-									<Input
-										id="sigla"
-										type="text"
-										value={data.sigla}
-										onChange={(e) =>
-											setData("sigla", e.target.value.toUpperCase())
-										}
-										placeholder="Ex: SECOM, SEMEC, etc."
-										required
-										className={errors.sigla ? "border-red-500" : ""}
-									/>
-									{errors.sigla && (
-										<p className="text-sm text-red-500">{errors.sigla}</p>
-									)}
-								</div>
+								))}
 							</div>
 
-							<div className="space-y-2">
-								<Label htmlFor="endereco">Endereço</Label>
-								<Input
-									id="endereco"
-									type="text"
-									value={data.endereco}
-									onChange={(e) => setData("endereco", e.target.value)}
-									placeholder="Endereço completo do órgão"
-									className={errors.endereco ? "border-red-500" : ""}
-								/>
-								{errors.endereco && (
-									<p className="text-sm text-red-500">{errors.endereco}</p>
-								)}
-							</div>
+							{/* Address */}
+							{FORM_FIELDS.filter((field) => field.name === "endereco").map(
+								(field) => (
+									<InputField
+										key={field.name}
+										field={field}
+										value={data[field.name]}
+										onChange={handleFieldChange}
+										error={errors[field.name]}
+									/>
+								),
+							)}
 
+							{/* Contact Info Grid */}
 							<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-								<div className="space-y-2">
-									<Label htmlFor="telefone">Telefone</Label>
-									<Input
-										id="telefone"
-										type="tel"
-										value={data.telefone}
-										onChange={(e) => setData("telefone", e.target.value)}
-										placeholder="(XX) XXXXX-XXXX"
-										className={errors.telefone ? "border-red-500" : ""}
+								{FORM_FIELDS.filter((field) =>
+									["telefone", "email"].includes(field.name),
+								).map((field) => (
+									<InputField
+										key={field.name}
+										field={field}
+										value={data[field.name]}
+										onChange={handleFieldChange}
+										error={errors[field.name]}
 									/>
-									{errors.telefone && (
-										<p className="text-sm text-red-500">{errors.telefone}</p>
-									)}
-								</div>
-
-								<div className="space-y-2">
-									<Label htmlFor="email">E-mail</Label>
-									<Input
-										id="email"
-										type="email"
-										value={data.email}
-										onChange={(e) => setData("email", e.target.value)}
-										placeholder="contato@orgao.gov.br"
-										className={errors.email ? "border-red-500" : ""}
-									/>
-									{errors.email && (
-										<p className="text-sm text-red-500">{errors.email}</p>
-									)}
-								</div>
+								))}
 							</div>
 
+							{/* Observations */}
 							<div className="space-y-2">
 								<Label htmlFor="observacoes">Observações</Label>
 								<Textarea
-									id="observacoes"
 									value={data.observacoes}
-									onChange={(e) => setData("observacoes", e.target.value)}
+									onChange={handleObservacoesChange}
 									placeholder="Informações adicionais sobre o órgão emitente..."
 									rows={4}
 									className={errors.observacoes ? "border-red-500" : ""}
@@ -186,6 +318,7 @@ export default function EmitentesEdit({ emitente }: EmitentesEditProps) {
 						</CardContent>
 					</Card>
 
+					{/* Actions */}
 					<div className="flex items-center justify-end space-x-4">
 						<Link href={emitentes.show(emitente.id)}>
 							<Button type="button" variant="outline">
@@ -199,30 +332,8 @@ export default function EmitentesEdit({ emitente }: EmitentesEditProps) {
 					</div>
 				</form>
 
-				<Card className="bg-blue-50 dark:bg-blue-950/20">
-					<CardContent className="pt-6">
-						<div className="flex">
-							<div className="flex-shrink-0">
-								<Building className="h-5 w-5 text-blue-400" />
-							</div>
-							<div className="ml-3">
-								<h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
-									Informações
-								</h3>
-								<div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
-									<p>
-										• Alterações nos dados do emitente podem afetar relatórios
-										existentes
-										<br />• A sigla é usada para identificação rápida em listas
-										e relatórios
-										<br />• Requisições vinculadas a este emitente não serão
-										alteradas
-									</p>
-								</div>
-							</div>
-						</div>
-					</CardContent>
-				</Card>
+				{/* Info */}
+				<InfoCard tips={TIPS} />
 			</div>
 		</AppLayout>
 	);

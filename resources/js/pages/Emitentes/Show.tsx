@@ -9,6 +9,7 @@ import {
 	Phone,
 	Trash2,
 } from "lucide-react";
+import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +31,7 @@ import AppLayout from "@/layouts/app-layout";
 import { emitentes } from "@/routes";
 import type { BreadcrumbItem, Emitente, Requisicao } from "@/types";
 
+// Types
 interface EmitentesShowProps {
 	emitente: Emitente & {
 		requisicoes?: Requisicao[];
@@ -44,48 +46,287 @@ interface EmitentesShowProps {
 	};
 }
 
+// Constants
+const STATUS_CONFIG = {
+	pendente: { label: "Pendente", variant: "secondary" as const },
+	aprovado: { label: "Aprovado", variant: "default" as const },
+	rejeitado: { label: "Rejeitado", variant: "destructive" as const },
+};
+
+const STAT_CARDS = [
+	{
+		key: "total_requisicoes" as const,
+		title: "Requisições totais",
+		color: "text-blue-600",
+		format: (value: number) => value.toString(),
+	},
+	{
+		key: "requisicoes_concretizadas" as const,
+		title: "Concretizadas",
+		color: "text-green-600",
+		format: (value: number) => value.toString(),
+	},
+	{
+		key: "valor_total" as const,
+		title: "Valor total",
+		color: "text-purple-600",
+		format: (value: number) =>
+			new Intl.NumberFormat("pt-BR", {
+				style: "currency",
+				currency: "BRL",
+				minimumFractionDigits: 0,
+				maximumFractionDigits: 0,
+			}).format(value),
+	},
+	{
+		key: "requisicoes_mes_atual" as const,
+		title: "Este mês",
+		color: "text-amber-600",
+		format: (value: number) => value.toString(),
+	},
+];
+
+const MESSAGES = {
+	noValue: "-",
+	noRequisicoes: "Nenhuma requisição",
+	noRequisicoesDescription:
+		"Este emitente ainda não possui requisições registradas.",
+} as const;
+
+// Utility Functions
+const getBreadcrumbs = (emitente: Emitente): BreadcrumbItem[] => [
+	{
+		title: "Emitentes",
+		href: emitentes.index(),
+	},
+	{
+		title: emitente.nome,
+		href: emitentes.show(emitente.id),
+	},
+];
+
+const getStatusBadge = (status: string) => {
+	return (
+		STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] || {
+			label: status,
+			variant: "secondary" as const,
+		}
+	);
+};
+
+const formatCurrency = (value: string | number | null | undefined) => {
+	if (!value || Number(value) === 0) return MESSAGES.noValue;
+	return new Intl.NumberFormat("pt-BR", {
+		style: "currency",
+		currency: "BRL",
+	}).format(Number(value));
+};
+
+const formatDate = (date: string | null | undefined) => {
+	return date || MESSAGES.noValue;
+};
+
+// Components
+interface InfoFieldProps {
+	label: string;
+	value: string | undefined | null;
+	icon?: React.ComponentType<{ className?: string }>;
+	fallback?: string;
+}
+
+function InfoField({
+	label,
+	value,
+	icon: Icon,
+	fallback = MESSAGES.noValue,
+}: InfoFieldProps) {
+	return (
+		<div>
+			<h3
+				className={`text-sm font-medium text-gray-500 dark:text-gray-400 ${Icon ? "flex items-center" : ""}`}
+			>
+				{Icon && <Icon className="mr-1 h-4 w-4" />}
+				{label}
+			</h3>
+			<p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+				{value || fallback}
+			</p>
+		</div>
+	);
+}
+
+interface StatCardProps {
+	title: string;
+	value: number;
+	color: string;
+	formatter: (value: number) => string;
+}
+
+function StatCard({ title, value, color, formatter }: StatCardProps) {
+	return (
+		<div className="text-center">
+			<div className={`text-2xl font-bold ${color}`}>{formatter(value)}</div>
+			<div className="text-sm text-gray-500">{title}</div>
+		</div>
+	);
+}
+
+interface RequisicoesTableProps {
+	requisicoes: Requisicao[];
+	totalCount: number;
+	emitenteId: number;
+}
+
+function RequisicoesTable({
+	requisicoes,
+	totalCount,
+	emitenteId,
+}: RequisicoesTableProps) {
+	if (!requisicoes || requisicoes.length === 0) {
+		return (
+			<div className="py-8 text-center">
+				<FileText className="mx-auto h-12 w-12 text-gray-400" />
+				<h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+					{MESSAGES.noRequisicoes}
+				</h3>
+				<p className="mt-1 text-sm text-gray-500">
+					{MESSAGES.noRequisicoesDescription}
+				</p>
+			</div>
+		);
+	}
+
+	return (
+		<div className="space-y-4">
+			<div className="rounded-md border">
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead>Número</TableHead>
+							<TableHead>Solicitante</TableHead>
+							<TableHead>Data</TableHead>
+							<TableHead>Status</TableHead>
+							<TableHead>Valor</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{requisicoes.slice(0, 10).map((requisicao) => {
+							const statusConfig = getStatusBadge(requisicao.status);
+							return (
+								<TableRow key={requisicao.id}>
+									<TableCell>
+										<div className="font-medium text-blue-600">
+											{requisicao.numero_completo}
+										</div>
+									</TableCell>
+									<TableCell>{requisicao.solicitante}</TableCell>
+									<TableCell>
+										{formatDate(requisicao.data_recebimento)}
+									</TableCell>
+									<TableCell>
+										<Badge
+											variant={statusConfig.variant}
+											className={
+												requisicao.status_color
+													? `bg-${requisicao.status_color}-100 text-${requisicao.status_color}-800 border-${requisicao.status_color}-200`
+													: ""
+											}
+										>
+											{requisicao.status_display}
+										</Badge>
+									</TableCell>
+									<TableCell>
+										{formatCurrency(requisicao.valor_final)}
+									</TableCell>
+								</TableRow>
+							);
+						})}
+					</TableBody>
+				</Table>
+			</div>
+			{totalCount > 10 && (
+				<div className="text-center">
+					<Link href={`/requisicoes?emitente_id=${emitenteId}`}>
+						<Button variant="outline" size="sm">
+							Ver todas as requisições ({totalCount})
+						</Button>
+					</Link>
+				</div>
+			)}
+		</div>
+	);
+}
+
+interface ActionButtonProps {
+	href?: string;
+	onClick?: () => void;
+	variant?: "default" | "outline" | "destructive";
+	icon: React.ComponentType<{ className?: string }>;
+	children: React.ReactNode;
+}
+
+function ActionButton({
+	href,
+	onClick,
+	variant = "outline",
+	icon: Icon,
+	children,
+}: ActionButtonProps) {
+	const buttonContent = (
+		<Button
+			variant={variant}
+			className="w-full justify-start"
+			onClick={onClick}
+		>
+			<Icon className="mr-2 h-4 w-4" />
+			{children}
+		</Button>
+	);
+
+	if (href) {
+		return (
+			<Link href={href} className="block">
+				{buttonContent}
+			</Link>
+		);
+	}
+
+	return buttonContent;
+}
+
+// Main Component
 export default function EmitentesShow({
 	emitente,
 	requisicoes,
 	stats,
 }: EmitentesShowProps) {
-	const breadcrumbs: BreadcrumbItem[] = [
-		{
-			title: "Emitentes",
-			href: emitentes.index(),
-		},
-		{
-			title: emitente.nome,
-			href: emitentes.show(emitente.id),
-		},
-	];
+	const breadcrumbs = useMemo(() => getBreadcrumbs(emitente), [emitente]);
 
-	const handleDelete = () => {
-		if (confirm("Tem certeza que deseja excluir este emitente?")) {
-			router.delete(emitentes.show(emitente.id));
-		}
-	};
-
-	const getStatusBadge = (status: string) => {
-		const statusConfig = {
-			pendente: { label: "Pendente", variant: "secondary" as const },
-			aprovado: { label: "Aprovado", variant: "default" as const },
-			rejeitado: { label: "Rejeitado", variant: "destructive" as const },
-		};
-
-		return (
-			statusConfig[status as keyof typeof statusConfig] || {
-				label: status,
-				variant: "secondary" as const,
+	const handleDelete = useMemo(
+		() => () => {
+			if (confirm("Tem certeza que deseja excluir este emitente?")) {
+				router.delete(emitentes.show(emitente.id));
 			}
-		);
-	};
+		},
+		[emitente.id],
+	);
+
+	const safeStats = useMemo(
+		() => ({
+			total_requisicoes: stats?.total_requisicoes || 0,
+			requisicoes_concretizadas: stats?.requisicoes_concretizadas || 0,
+			valor_total: stats?.valor_total || 0,
+			requisicoes_mes_atual: stats?.requisicoes_mes_atual || 0,
+		}),
+		[stats],
+	);
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
 			<Head title={`Emitente: ${emitente.nome}`} />
 
 			<div className="flex h-full flex-1 flex-col gap-6 p-6">
+				{/* Header */}
 				<div className="flex items-center justify-between">
 					<div>
 						<h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -126,62 +367,40 @@ export default function EmitentesShow({
 								</CardTitle>
 							</CardHeader>
 							<CardContent className="space-y-6">
+								{/* Basic Info */}
 								<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-									<div>
-										<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-											Nome
-										</h3>
-										<p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-											{emitente.nome}
-										</p>
-									</div>
-									<div>
-										<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-											Sigla
-										</h3>
-										<p className="mt-1 font-mono text-sm text-gray-900 dark:text-gray-100">
-											{emitente.sigla}
-										</p>
-									</div>
+									<InfoField label="Nome" value={emitente.nome} />
+									<InfoField label="Sigla" value={emitente.sigla} />
 								</div>
 
+								{/* Address */}
 								{emitente.endereco && (
-									<div>
-										<h3 className="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400">
-											<MapPin className="mr-1 h-4 w-4" />
-											Endereço
-										</h3>
-										<p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-											{emitente.endereco}
-										</p>
-									</div>
+									<InfoField
+										label="Endereço"
+										value={emitente.endereco}
+										icon={MapPin}
+									/>
 								)}
 
+								{/* Contact Info */}
 								<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 									{emitente.telefone && (
-										<div>
-											<h3 className="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400">
-												<Phone className="mr-1 h-4 w-4" />
-												Telefone
-											</h3>
-											<p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-												{emitente.telefone}
-											</p>
-										</div>
+										<InfoField
+											label="Telefone"
+											value={emitente.telefone}
+											icon={Phone}
+										/>
 									)}
 									{emitente.email && (
-										<div>
-											<h3 className="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400">
-												<Mail className="mr-1 h-4 w-4" />
-												E-mail
-											</h3>
-											<p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-												{emitente.email}
-											</p>
-										</div>
+										<InfoField
+											label="E-mail"
+											value={emitente.email}
+											icon={Mail}
+										/>
 									)}
 								</div>
 
+								{/* Observations */}
 								{emitente.observacoes && (
 									<div>
 										<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -193,23 +412,13 @@ export default function EmitentesShow({
 									</div>
 								)}
 
+								{/* Timestamps */}
 								<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-									<div>
-										<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-											Criado em
-										</h3>
-										<p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-											{emitente.created_at}
-										</p>
-									</div>
-									<div>
-										<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-											Última atualização
-										</h3>
-										<p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-											{emitente.updated_at}
-										</p>
-									</div>
+									<InfoField label="Criado em" value={emitente.created_at} />
+									<InfoField
+										label="Última atualização"
+										value={emitente.updated_at}
+									/>
 								</div>
 							</CardContent>
 						</Card>
@@ -219,89 +428,20 @@ export default function EmitentesShow({
 							<CardHeader>
 								<CardTitle className="flex items-center">
 									<FileText className="mr-2 h-5 w-5" />
-									Requisições ({stats.total_requisicoes})
+									Requisições ({safeStats.total_requisicoes})
 								</CardTitle>
 								<CardDescription>
-									Últimas requisições emitidas por este órgão
+									{safeStats.total_requisicoes > 0
+										? "Últimas requisições emitidas por este órgão"
+										: "Nenhuma requisição encontrada para este órgão"}
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
-								{requisicoes && requisicoes.length > 0 ? (
-									<div className="space-y-4">
-										<div className="rounded-md border">
-											<Table>
-												<TableHeader>
-													<TableRow>
-														<TableHead>Número</TableHead>
-														<TableHead>Solicitante</TableHead>
-														<TableHead>Data</TableHead>
-														<TableHead>Status</TableHead>
-														<TableHead>Valor</TableHead>
-													</TableRow>
-												</TableHeader>
-												<TableBody>
-													{requisicoes.slice(0, 10).map((requisicao) => {
-														const statusConfig = getStatusBadge(
-															requisicao.status,
-														);
-														return (
-															<TableRow key={requisicao.id}>
-																<TableCell>
-																	<div className="font-medium text-blue-600">
-																		{requisicao.numero_completo}
-																	</div>
-																</TableCell>
-																<TableCell>{requisicao.solicitante}</TableCell>
-																<TableCell>
-																	{requisicao.data_recebimento}
-																</TableCell>
-																<TableCell>
-																	<Badge
-																		variant={statusConfig.variant}
-																		className={
-																			requisicao.status_color
-																				? `bg-${requisicao.status_color}-100 text-${requisicao.status_color}-800 border-${requisicao.status_color}-200`
-																				: ""
-																		}
-																	>
-																		{requisicao.status_display}
-																	</Badge>
-																</TableCell>
-																<TableCell>
-																	{requisicao.valor_final
-																		? new Intl.NumberFormat("pt-BR", {
-																				style: "currency",
-																				currency: "BRL",
-																			}).format(Number(requisicao.valor_final))
-																		: "-"}
-																</TableCell>
-															</TableRow>
-														);
-													})}
-												</TableBody>
-											</Table>
-										</div>
-										{stats.total_requisicoes > 10 && (
-											<div className="text-center">
-												<Link href={`/requisicoes?emitente_id=${emitente.id}`}>
-													<Button variant="outline" size="sm">
-														Ver todas as requisições ({stats.total_requisicoes})
-													</Button>
-												</Link>
-											</div>
-										)}
-									</div>
-								) : (
-									<div className="py-8 text-center">
-										<FileText className="mx-auto h-12 w-12 text-gray-400" />
-										<h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-											Nenhuma requisição
-										</h3>
-										<p className="mt-1 text-sm text-gray-500">
-											Este emitente ainda não possui requisições registradas.
-										</p>
-									</div>
-								)}
+								<RequisicoesTable
+									requisicoes={requisicoes}
+									totalCount={safeStats.total_requisicoes}
+									emitenteId={emitente.id}
+								/>
 							</CardContent>
 						</Card>
 					</div>
@@ -313,46 +453,19 @@ export default function EmitentesShow({
 								<CardTitle className="text-lg">Estatísticas</CardTitle>
 							</CardHeader>
 							<CardContent className="space-y-4">
-								<div className="text-center">
-									<div className="text-3xl font-bold text-blue-600">
-										{stats.total_requisicoes}
+								{STAT_CARDS.map(({ key, title, color, format }, index) => (
+									<div key={key}>
+										<StatCard
+											title={title}
+											value={safeStats[key]}
+											color={color}
+											formatter={format}
+										/>
+										{index < STAT_CARDS.length - 1 && (
+											<div className="border-t pt-4" />
+										)}
 									</div>
-									<div className="text-sm text-gray-500">
-										Requisições totais
-									</div>
-								</div>
-
-								<div className="border-t pt-4">
-									<div className="text-center">
-										<div className="text-2xl font-bold text-green-600">
-											{stats.requisicoes_concretizadas}
-										</div>
-										<div className="text-sm text-gray-500">Concretizadas</div>
-									</div>
-								</div>
-
-								<div className="border-t pt-4">
-									<div className="text-center">
-										<div className="text-2xl font-bold text-purple-600">
-											{new Intl.NumberFormat("pt-BR", {
-												style: "currency",
-												currency: "BRL",
-												minimumFractionDigits: 0,
-												maximumFractionDigits: 0,
-											}).format(stats.valor_total)}
-										</div>
-										<div className="text-sm text-gray-500">Valor total</div>
-									</div>
-								</div>
-
-								<div className="border-t pt-4">
-									<div className="text-center">
-										<div className="text-2xl font-bold text-amber-600">
-											{stats.requisicoes_mes_atual}
-										</div>
-										<div className="text-sm text-gray-500">Este mês</div>
-									</div>
-								</div>
+								))}
 							</CardContent>
 						</Card>
 
@@ -361,29 +474,22 @@ export default function EmitentesShow({
 								<CardTitle className="text-lg">Ações</CardTitle>
 							</CardHeader>
 							<CardContent className="space-y-2">
-								<Link href={emitentes.edit(emitente.id)} className="block">
-									<Button variant="outline" className="w-full justify-start">
-										<Edit className="mr-2 h-4 w-4" />
-										Editar emitente
-									</Button>
-								</Link>
-								<Link
+								<ActionButton href={emitentes.edit(emitente.id)} icon={Edit}>
+									Editar emitente
+								</ActionButton>
+								<ActionButton
 									href={`/requisicoes?emitente_id=${emitente.id}`}
-									className="block"
+									icon={FileText}
 								>
-									<Button variant="outline" className="w-full justify-start">
-										<FileText className="mr-2 h-4 w-4" />
-										Ver requisições
-									</Button>
-								</Link>
-								<Button
-									variant="destructive"
-									className="w-full justify-start"
+									Ver requisições
+								</ActionButton>
+								<ActionButton
 									onClick={handleDelete}
+									variant="destructive"
+									icon={Trash2}
 								>
-									<Trash2 className="mr-2 h-4 w-4" />
 									Excluir emitente
-								</Button>
+								</ActionButton>
 							</CardContent>
 						</Card>
 					</div>

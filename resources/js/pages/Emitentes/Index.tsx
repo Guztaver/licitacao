@@ -1,6 +1,7 @@
 import { Head, Link, router, useForm } from "@inertiajs/react";
 import { Building, FileDown, Plus, Search } from "lucide-react";
 import type { FormEventHandler } from "react";
+import { useMemo } from "react";
 import CreateEmitenteModal from "@/components/modals/CreateEmitenteModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,13 +24,7 @@ import AppLayout from "@/layouts/app-layout";
 import { emitentes } from "@/routes";
 import type { BreadcrumbItem, Emitente } from "@/types";
 
-const breadcrumbs: BreadcrumbItem[] = [
-	{
-		title: "Emitentes",
-		href: emitentes.index(),
-	},
-];
-
+// Types
 interface PaginationLink {
 	url: string | null;
 	label: string;
@@ -61,12 +56,161 @@ interface EmitentesIndexProps {
 	};
 }
 
+// Constants
+const BREADCRUMBS: BreadcrumbItem[] = [
+	{
+		title: "Emitentes",
+		href: emitentes.index(),
+	},
+];
+
+const STATS_CONFIG = [
+	{
+		key: "total_emitentes" as const,
+		title: "Total Emitentes",
+		icon: Building,
+		color: "text-gray-900",
+		getDescription: (isFiltered: boolean) =>
+			isFiltered ? "nos resultados filtrados" : "cadastrados no sistema",
+	},
+	{
+		key: "com_requisicoes" as const,
+		title: "Com Requisições",
+		icon: Building,
+		color: "text-green-600",
+		getDescription: () => "emitentes ativos",
+	},
+	{
+		key: "total_requisicoes" as const,
+		title: "Total Requisições",
+		icon: Building,
+		color: "text-blue-600",
+		getDescription: () => "requisições emitidas",
+	},
+	{
+		key: "sem_atividade" as const,
+		title: "Sem Atividade",
+		icon: Building,
+		color: "text-amber-600",
+		getDescription: () => "sem requisições",
+	},
+];
+
+const MESSAGES = {
+	noResults: "Nenhum emitente encontrado com os filtros aplicados",
+	noData: "Nenhum emitente cadastrado",
+	searchPlaceholder: "Buscar por nome ou sigla...",
+	contactNotProvided: "-",
+} as const;
+
+// Utility Functions
+const formatContactInfo = (telefone?: string, email?: string) => {
+	if (!telefone && !email) return MESSAGES.contactNotProvided;
+
+	return (
+		<div className="text-sm">
+			{telefone && <p>{telefone}</p>}
+			{email && <p className="text-gray-500">{email}</p>}
+		</div>
+	);
+};
+
+const formatRequisicoesCount = (count: number) => (
+	<div className="text-sm">
+		<span className="font-medium">{count || 0}</span>
+		<span className="text-gray-500"> requisições</span>
+	</div>
+);
+
+const formatPaginationLabel = (label: string) => {
+	if (label.includes("&laquo;")) return "«";
+	if (label.includes("&raquo;")) return "»";
+	if (label.includes("&hellip;")) return "...";
+	return label;
+};
+
+// Components
+interface StatCardProps {
+	title: string;
+	value: number;
+	description: string;
+	icon: React.ComponentType<{ className?: string }>;
+	color?: string;
+}
+
+function StatCard({
+	title,
+	value,
+	description,
+	icon: Icon,
+	color = "text-gray-900",
+}: StatCardProps) {
+	return (
+		<Card>
+			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+				<CardTitle className="text-sm font-medium">{title}</CardTitle>
+				<Icon
+					className={`h-4 w-4 ${color === "text-gray-900" ? "text-muted-foreground" : color}`}
+				/>
+			</CardHeader>
+			<CardContent>
+				<div className={`text-2xl font-bold ${color}`}>{value}</div>
+				<p className="text-xs text-muted-foreground">{description}</p>
+			</CardContent>
+		</Card>
+	);
+}
+
+interface EmptyStateProps {
+	isFiltered: boolean;
+	onClearFilters: () => void;
+	onSuccess: () => void;
+}
+
+function EmptyState({
+	isFiltered,
+	onClearFilters,
+	onSuccess,
+}: EmptyStateProps) {
+	return (
+		<TableRow>
+			<TableCell colSpan={4} className="py-8 text-center">
+				<div className="flex flex-col items-center space-y-2">
+					<Building className="h-8 w-8 text-gray-400" />
+					{isFiltered ? (
+						<>
+							<p className="text-gray-500">{MESSAGES.noResults}</p>
+							<Button variant="outline" size="sm" onClick={onClearFilters}>
+								Limpar filtros
+							</Button>
+						</>
+					) : (
+						<>
+							<p className="text-gray-500">{MESSAGES.noData}</p>
+							<CreateEmitenteModal
+								trigger={
+									<Button size="sm">
+										<Plus className="mr-2 h-4 w-4" />
+										Adicionar Primeiro Emitente
+									</Button>
+								}
+								onSuccess={onSuccess}
+							/>
+						</>
+					)}
+				</div>
+			</TableCell>
+		</TableRow>
+	);
+}
+
+// Main Component
 export default function EmitentesIndex({
 	emitentes: emitentesPaginated,
 	stats,
 	filters,
 }: EmitentesIndexProps) {
-	// Add safety checks for data
+	// Safe data extraction
 	const safeEmitentes = emitentesPaginated || {
 		data: [],
 		links: [],
@@ -92,32 +236,56 @@ export default function EmitentesIndex({
 		search: filters?.search || "",
 	});
 
-	const handleSearch: FormEventHandler = (e) => {
-		e.preventDefault();
-		get(emitentes.index(), {
-			preserveState: true,
-			replace: true,
-		});
-	};
+	// Memoized values
+	const isFiltered = useMemo(() => data.search !== "", [data.search]);
+	const hasResults = useMemo(() => safeData.length > 0, [safeData.length]);
 
-	const handleReset = () => {
-		setData({
-			search: "",
-		});
-		get(emitentes.index(), {
-			preserveState: true,
-			replace: true,
-		});
-	};
+	// Event handlers
+	const handleSearch: FormEventHandler = useMemo(
+		() => (e) => {
+			e.preventDefault();
+			get(emitentes.index(), {
+				preserveState: true,
+				replace: true,
+			});
+		},
+		[get],
+	);
 
-	const isFiltered = data.search !== "";
-	const hasResults = safeData.length > 0;
+	const handleReset = useMemo(
+		() => () => {
+			setData({ search: "" });
+			get(emitentes.index(), {
+				preserveState: true,
+				replace: true,
+			});
+		},
+		[setData, get],
+	);
+
+	const handleExport = useMemo(
+		() => () => {
+			const params = new URLSearchParams(filters as Record<string, string>);
+			window.location.href = `${emitentes.export()}?${params.toString()}`;
+		},
+		[filters],
+	);
+
+	const handleReload = useMemo(() => () => router.reload(), []);
+
+	const handlePaginationClick = useMemo(
+		() => (url: string) => {
+			router.get(url);
+		},
+		[],
+	);
 
 	return (
-		<AppLayout breadcrumbs={breadcrumbs}>
+		<AppLayout breadcrumbs={BREADCRUMBS}>
 			<Head title="Emitentes" />
 
 			<div className="flex h-full flex-1 flex-col gap-6 p-6">
+				{/* Header */}
 				<div className="flex items-center justify-between">
 					<div>
 						<h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -128,89 +296,26 @@ export default function EmitentesIndex({
 						</p>
 					</div>
 					<div className="flex items-center space-x-2">
-						<Button
-							variant="outline"
-							onClick={() => {
-								const params = new URLSearchParams(
-									filters as Record<string, string>,
-								);
-								window.location.href = `${emitentes.export()}?${params.toString()}`;
-							}}
-						>
+						<Button variant="outline" onClick={handleExport}>
 							<FileDown className="mr-2 h-4 w-4" />
 							Exportar
 						</Button>
-						<CreateEmitenteModal onSuccess={() => router.reload()} />
+						<CreateEmitenteModal onSuccess={handleReload} />
 					</div>
 				</div>
 
 				{/* Statistics Cards */}
 				<div className="grid gap-4 md:grid-cols-4">
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Total Emitentes
-							</CardTitle>
-							<Building className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">
-								{safeStats.total_emitentes}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								{isFiltered
-									? "nos resultados filtrados"
-									: "cadastrados no sistema"}
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Com Requisições
-							</CardTitle>
-							<Building className="h-4 w-4 text-green-600" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold text-green-600">
-								{safeStats.com_requisicoes}
-							</div>
-							<p className="text-xs text-muted-foreground">emitentes ativos</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Total Requisições
-							</CardTitle>
-							<Building className="h-4 w-4 text-blue-600" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold text-blue-600">
-								{safeStats.total_requisicoes}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								requisições emitidas
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Sem Atividade
-							</CardTitle>
-							<Building className="h-4 w-4 text-amber-600" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold text-amber-600">
-								{safeStats.sem_atividade}
-							</div>
-							<p className="text-xs text-muted-foreground">sem requisições</p>
-						</CardContent>
-					</Card>
+					{STATS_CONFIG.map(({ key, title, icon, color, getDescription }) => (
+						<StatCard
+							key={key}
+							title={title}
+							value={safeStats[key]}
+							description={getDescription(isFiltered)}
+							icon={icon}
+							color={color}
+						/>
+					))}
 				</div>
 
 				{/* Filters */}
@@ -227,7 +332,7 @@ export default function EmitentesIndex({
 								<div className="relative">
 									<Search className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
 									<Input
-										placeholder="Buscar por nome ou sigla..."
+										placeholder={MESSAGES.searchPlaceholder}
 										value={data.search}
 										onChange={(e) => setData("search", e.target.value)}
 										className="pl-10"
@@ -279,7 +384,7 @@ export default function EmitentesIndex({
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{safeData.length > 0 ? (
+									{hasResults ? (
 										safeData.map((emitente) => (
 											<TableRow key={emitente.id}>
 												<TableCell>
@@ -304,23 +409,12 @@ export default function EmitentesIndex({
 													</div>
 												</TableCell>
 												<TableCell>
-													<div className="text-sm">
-														{emitente.telefone && <p>{emitente.telefone}</p>}
-														{emitente.email && (
-															<p className="text-gray-500">{emitente.email}</p>
-														)}
-														{!emitente.telefone && !emitente.email && (
-															<span className="text-gray-400">-</span>
-														)}
-													</div>
+													{formatContactInfo(emitente.telefone, emitente.email)}
 												</TableCell>
 												<TableCell>
-													<div className="text-sm">
-														<span className="font-medium">
-															{emitente.requisicoes_count || 0}
-														</span>
-														<span className="text-gray-500"> requisições</span>
-													</div>
+													{formatRequisicoesCount(
+														emitente.requisicoes_count || 0,
+													)}
 												</TableCell>
 												<TableCell>
 													<div className="flex items-center space-x-2">
@@ -339,43 +433,11 @@ export default function EmitentesIndex({
 											</TableRow>
 										))
 									) : (
-										<TableRow>
-											<TableCell colSpan={4} className="py-8 text-center">
-												<div className="flex flex-col items-center space-y-2">
-													<Building className="h-8 w-8 text-gray-400" />
-													{isFiltered ? (
-														<>
-															<p className="text-gray-500">
-																Nenhum emitente encontrado com os filtros
-																aplicados
-															</p>
-															<Button
-																variant="outline"
-																size="sm"
-																onClick={handleReset}
-															>
-																Limpar filtros
-															</Button>
-														</>
-													) : (
-														<>
-															<p className="text-gray-500">
-																Nenhum emitente cadastrado
-															</p>
-															<CreateEmitenteModal
-																trigger={
-																	<Button size="sm">
-																		<Plus className="mr-2 h-4 w-4" />
-																		Adicionar Primeiro Emitente
-																	</Button>
-																}
-																onSuccess={() => router.reload()}
-															/>
-														</>
-													)}
-												</div>
-											</TableCell>
-										</TableRow>
+										<EmptyState
+											isFiltered={isFiltered}
+											onClearFilters={handleReset}
+											onSuccess={handleReload}
+										/>
 									)}
 								</TableBody>
 							</Table>
@@ -411,15 +473,11 @@ export default function EmitentesIndex({
 											variant={link.active ? "default" : "outline"}
 											size="sm"
 											disabled={!link.url}
-											onClick={() => link.url && router.get(link.url)}
+											onClick={() =>
+												link.url && handlePaginationClick(link.url)
+											}
 										>
-											{link.label.includes("&laquo;")
-												? "«"
-												: link.label.includes("&raquo;")
-													? "»"
-													: link.label.includes("&hellip;")
-														? "..."
-														: link.label}
+											{formatPaginationLabel(link.label)}
 										</Button>
 									))}
 								</div>

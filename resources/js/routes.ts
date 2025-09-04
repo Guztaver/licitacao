@@ -48,8 +48,11 @@ export const conferencias = {
 export const emitentes = {
 	index: () => "/emitentes",
 	create: () => "/emitentes/create",
+	store: () => "/emitentes",
 	show: (id: number) => `/emitentes/${id}`,
 	edit: (id: number) => `/emitentes/${id}/edit`,
+	update: (id: number) => `/emitentes/${id}`,
+	destroy: (id: number) => `/emitentes/${id}`,
 	export: () => "/emitentes-export",
 };
 
