@@ -8,6 +8,7 @@ import {
 	Trash2,
 	User,
 } from "lucide-react";
+import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +17,7 @@ import AppLayout from "@/layouts/app-layout";
 import { conferencias } from "@/routes";
 import type { BreadcrumbItem, Fornecedor } from "@/types";
 
+// Types
 interface ShowConferencia {
 	id: number;
 	periodo_inicio: string;
@@ -47,40 +49,340 @@ interface ConferenciaShowProps {
 	> | null;
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
+// Constants
+const BASE_BREADCRUMBS: BreadcrumbItem[] = [
 	{
 		title: "Conferências",
 		href: conferencias.index(),
 	},
 ];
 
+const SUMMARY_CONFIG = [
+	{
+		key: "total_requisicoes" as const,
+		title: "Total Requisições",
+		color: "bg-blue-50 dark:bg-blue-900/20",
+		textColor: "text-blue-800 dark:text-blue-400",
+		valueColor: "text-blue-900 dark:text-blue-100",
+	},
+	{
+		key: "total_pedidos_manuais" as const,
+		title: "Total Pedidos Manuais",
+		color: "bg-green-50 dark:bg-green-900/20",
+		textColor: "text-green-600 dark:text-green-400",
+		valueColor: "text-green-900 dark:text-green-100",
+	},
+	{
+		key: "total_geral" as const,
+		title: "Total Geral",
+		color: "bg-purple-50 dark:bg-purple-900/20",
+		textColor: "text-purple-600 dark:text-purple-400",
+		valueColor: "text-purple-900 dark:text-purple-100",
+	},
+];
+
+const FORNECEDOR_FIELDS = [
+	{
+		key: "razao_social" as const,
+		label: "Razão Social",
+		format: (value: string | number | null | undefined) =>
+			value?.toString() || MESSAGES.noValue,
+		isBold: true,
+	},
+	{
+		key: "cnpj_formatado" as const,
+		label: "CNPJ",
+		format: (value: string | number | null | undefined) =>
+			value?.toString() || MESSAGES.noValue,
+		isMonospace: true,
+	},
+	{
+		key: "telefone_formatado" as const,
+		label: "Telefone",
+		format: (value: string | number | null | undefined) =>
+			value?.toString() || MESSAGES.noValue,
+	},
+	{
+		key: "email" as const,
+		label: "Email",
+		format: (value: string | number | null | undefined) =>
+			value?.toString() || MESSAGES.noValue,
+	},
+	{
+		key: "endereco_completo" as const,
+		label: "Endereço",
+		format: (value: string | number | null | undefined) =>
+			value?.toString() || MESSAGES.noValue,
+	},
+];
+
+const SYSTEM_FIELDS = [
+	{
+		key: "created_at" as const,
+		label: "Data de Criação",
+		format: (value: string | number | null | undefined) =>
+			value?.toString() || MESSAGES.noValue,
+	},
+	{
+		key: "updated_at" as const,
+		label: "Última Atualização",
+		format: (value: string | number | null | undefined) =>
+			value?.toString() || MESSAGES.noValue,
+	},
+	{
+		key: "id" as const,
+		label: "ID da Conferência",
+		format: (value: string | number | null | undefined) => `#${value}`,
+		isMonospace: true,
+	},
+];
+
+const MESSAGES = {
+	noValue: "-",
+} as const;
+
+// Utility Functions
+const getBreadcrumbs = (conferencia: ShowConferencia): BreadcrumbItem[] => [
+	...BASE_BREADCRUMBS,
+	{
+		title: `Conferência #${conferencia.id}`,
+		href: conferencias.show(conferencia.id),
+	},
+];
+
+const formatCurrency = (value: number): string => {
+	if (!value || value === 0) return MESSAGES.noValue;
+	return new Intl.NumberFormat("pt-BR", {
+		style: "currency",
+		currency: "BRL",
+	}).format(value);
+};
+
+// Components
+interface InfoFieldProps {
+	label: string;
+	value: string | number | undefined | null;
+	format?: (value: string | number | null | undefined) => string;
+	isBold?: boolean;
+	isMonospace?: boolean;
+}
+
+function InfoField({
+	label,
+	value,
+	format = (v: string | number | null | undefined) =>
+		v?.toString() || MESSAGES.noValue,
+	isBold = false,
+	isMonospace = false,
+}: InfoFieldProps) {
+	if (!value) return null;
+
+	const formattedValue = format(value);
+	const valueClasses = `text-sm ${isBold ? "font-semibold" : ""} ${
+		isMonospace ? "font-mono" : ""
+	}`;
+
+	return (
+		<div>
+			<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+				{label}
+			</p>
+			<p className={valueClasses}>{formattedValue}</p>
+		</div>
+	);
+}
+
+interface FinancialSummaryProps {
+	conferencia: ShowConferencia;
+}
+
+function FinancialSummary({ conferencia }: FinancialSummaryProps) {
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle className="flex items-center">
+					<DollarSign className="mr-2 h-5 w-5" />
+					Resumo Financeiro
+				</CardTitle>
+			</CardHeader>
+			<CardContent className="space-y-4">
+				<div className="grid gap-4 md:grid-cols-3">
+					{SUMMARY_CONFIG.map(
+						({ key, title, color, textColor, valueColor }) => (
+							<div key={key} className={`rounded-lg p-4 ${color}`}>
+								<p className={`text-sm font-medium ${textColor}`}>{title}</p>
+								<p className={`text-2xl font-bold ${valueColor}`}>
+									{formatCurrency(conferencia[key])}
+								</p>
+							</div>
+						),
+					)}
+				</div>
+			</CardContent>
+		</Card>
+	);
+}
+
+interface PeriodInfoProps {
+	conferencia: ShowConferencia;
+}
+
+function PeriodInfo({ conferencia }: PeriodInfoProps) {
+	const periodFields = [
+		{
+			label: "Período Início",
+			value: conferencia.periodo_inicio,
+		},
+		{
+			label: "Período Fim",
+			value: conferencia.periodo_fim,
+		},
+		{
+			label: "Período Completo",
+			value: conferencia.periodo_display,
+		},
+	];
+
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle className="flex items-center">
+					<Calendar className="mr-2 h-5 w-5" />
+					Informações do Período
+				</CardTitle>
+			</CardHeader>
+			<CardContent className="space-y-4">
+				<div className="grid gap-4 md:grid-cols-2">
+					{periodFields.slice(0, 2).map((field) => (
+						<div key={field.label}>
+							<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+								{field.label}
+							</p>
+							<p className="text-lg font-semibold">{field.value}</p>
+						</div>
+					))}
+				</div>
+				<div>
+					<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+						{periodFields[2].label}
+					</p>
+					<p className="text-lg font-semibold">{periodFields[2].value}</p>
+				</div>
+			</CardContent>
+		</Card>
+	);
+}
+
+interface ObservationsCardProps {
+	observacoes: string;
+}
+
+function ObservationsCard({ observacoes }: ObservationsCardProps) {
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle className="flex items-center">
+					<FileText className="mr-2 h-5 w-5" />
+					Observações
+				</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
+					{observacoes}
+				</p>
+			</CardContent>
+		</Card>
+	);
+}
+
+interface FornecedorCardProps {
+	fornecedor: NonNullable<ConferenciaShowProps["fornecedor"]>;
+}
+
+function FornecedorCard({ fornecedor }: FornecedorCardProps) {
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle className="flex items-center">
+					<Building2 className="mr-2 h-5 w-5" />
+					Fornecedor
+				</CardTitle>
+			</CardHeader>
+			<CardContent className="space-y-4">
+				{FORNECEDOR_FIELDS.map(
+					({ key, label, format, isBold, isMonospace }) => (
+						<InfoField
+							key={key}
+							label={label}
+							value={fornecedor[key]}
+							format={format}
+							isBold={isBold}
+							isMonospace={isMonospace}
+						/>
+					),
+				)}
+
+				<Separator />
+
+				<Button variant="outline" size="sm" asChild className="w-full">
+					<Link href={`/fornecedores/${fornecedor.id}`}>Ver Fornecedor</Link>
+				</Button>
+			</CardContent>
+		</Card>
+	);
+}
+
+interface SystemInfoCardProps {
+	conferencia: ShowConferencia;
+}
+
+function SystemInfoCard({ conferencia }: SystemInfoCardProps) {
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle className="flex items-center">
+					<User className="mr-2 h-5 w-5" />
+					Informações do Sistema
+				</CardTitle>
+			</CardHeader>
+			<CardContent className="space-y-3">
+				{SYSTEM_FIELDS.map(({ key, label, format, isMonospace }) => (
+					<InfoField
+						key={key}
+						label={label}
+						value={conferencia[key]}
+						format={format}
+						isMonospace={isMonospace}
+					/>
+				))}
+			</CardContent>
+		</Card>
+	);
+}
+
+// Main Component
 export default function ConferenciaShow({
 	conferencia,
 	fornecedor,
 }: ConferenciaShowProps) {
-	const dynamicBreadcrumbs: BreadcrumbItem[] = [
-		...breadcrumbs,
-		{
-			title: `Conferência #${conferencia.id}`,
-			href: conferencias.show(conferencia.id),
+	const breadcrumbs = useMemo(() => getBreadcrumbs(conferencia), [conferencia]);
+
+	const handleDelete = useMemo(
+		() => () => {
+			if (confirm("Tem certeza que deseja excluir esta conferência?")) {
+				router.delete(conferencias.destroy(conferencia.id));
+			}
 		},
-	];
+		[conferencia.id],
+	);
 
-	const handleDelete = () => {
-		if (confirm("Tem certeza que deseja excluir esta conferência?")) {
-			router.delete(conferencias.destroy(conferencia.id));
-		}
-	};
-
-	const formatCurrency = (value: number): string => {
-		return new Intl.NumberFormat("pt-BR", {
-			style: "currency",
-			currency: "BRL",
-		}).format(value);
-	};
+	const canDelete = useMemo(
+		() => conferencia.status === "em_andamento",
+		[conferencia.status],
+	);
 
 	return (
-		<AppLayout breadcrumbs={dynamicBreadcrumbs}>
+		<AppLayout breadcrumbs={breadcrumbs}>
 			<Head title={`Conferência #${conferencia.id}`} />
 
 			<div className="flex h-full flex-1 flex-col gap-6 p-6">
@@ -102,7 +404,7 @@ export default function ConferenciaShow({
 						</div>
 					</div>
 					<div className="flex items-center space-x-2">
-						{conferencia.status === "em_andamento" && (
+						{canDelete && (
 							<Button variant="destructive" onClick={handleDelete}>
 								<Trash2 className="mr-2 h-4 w-4" />
 								Excluir
@@ -122,201 +424,24 @@ export default function ConferenciaShow({
 					{/* Main Information */}
 					<div className="space-y-6 lg:col-span-2">
 						{/* Period Information */}
-						<Card>
-							<CardHeader>
-								<CardTitle className="flex items-center">
-									<Calendar className="mr-2 h-5 w-5" />
-									Informações do Período
-								</CardTitle>
-							</CardHeader>
-							<CardContent className="space-y-4">
-								<div className="grid gap-4 md:grid-cols-2">
-									<div>
-										<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-											Período Início
-										</p>
-										<p className="text-lg font-semibold">
-											{conferencia.periodo_inicio}
-										</p>
-									</div>
-									<div>
-										<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-											Período Fim
-										</p>
-										<p className="text-lg font-semibold">
-											{conferencia.periodo_fim}
-										</p>
-									</div>
-								</div>
-								<div>
-									<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-										Período Completo
-									</p>
-									<p className="text-lg font-semibold">
-										{conferencia.periodo_display}
-									</p>
-								</div>
-							</CardContent>
-						</Card>
+						<PeriodInfo conferencia={conferencia} />
 
 						{/* Financial Summary */}
-						<Card>
-							<CardHeader>
-								<CardTitle className="flex items-center">
-									<DollarSign className="mr-2 h-5 w-5" />
-									Resumo Financeiro
-								</CardTitle>
-							</CardHeader>
-							<CardContent className="space-y-4">
-								<div className="grid gap-4 md:grid-cols-3">
-									<div className="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
-										<p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-											Total Requisições
-										</p>
-										<p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-											{formatCurrency(conferencia.total_requisicoes)}
-										</p>
-									</div>
-									<div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
-										<p className="text-sm font-medium text-green-600 dark:text-green-400">
-											Total Pedidos Manuais
-										</p>
-										<p className="text-2xl font-bold text-green-900 dark:text-green-100">
-											{formatCurrency(conferencia.total_pedidos_manuais)}
-										</p>
-									</div>
-									<div className="rounded-lg bg-purple-50 p-4 dark:bg-purple-900/20">
-										<p className="text-sm font-medium text-purple-600 dark:text-purple-400">
-											Total Geral
-										</p>
-										<p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
-											{formatCurrency(conferencia.total_geral)}
-										</p>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
+						<FinancialSummary conferencia={conferencia} />
 
 						{/* Observations */}
 						{conferencia.observacoes && (
-							<Card>
-								<CardHeader>
-									<CardTitle className="flex items-center">
-										<FileText className="mr-2 h-5 w-5" />
-										Observações
-									</CardTitle>
-								</CardHeader>
-								<CardContent>
-									<p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
-										{conferencia.observacoes}
-									</p>
-								</CardContent>
-							</Card>
+							<ObservationsCard observacoes={conferencia.observacoes} />
 						)}
 					</div>
 
 					{/* Sidebar */}
 					<div className="space-y-6">
 						{/* Fornecedor Information */}
-						{fornecedor && (
-							<Card>
-								<CardHeader>
-									<CardTitle className="flex items-center">
-										<Building2 className="mr-2 h-5 w-5" />
-										Fornecedor
-									</CardTitle>
-								</CardHeader>
-								<CardContent className="space-y-4">
-									<div>
-										<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-											Razão Social
-										</p>
-										<p className="font-semibold">{fornecedor.razao_social}</p>
-									</div>
-
-									{fornecedor.cnpj_formatado && (
-										<div>
-											<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-												CNPJ
-											</p>
-											<p className="font-mono text-sm">
-												{fornecedor.cnpj_formatado}
-											</p>
-										</div>
-									)}
-
-									{fornecedor.telefone_formatado && (
-										<div>
-											<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-												Telefone
-											</p>
-											<p className="text-sm">{fornecedor.telefone_formatado}</p>
-										</div>
-									)}
-
-									{fornecedor.email && (
-										<div>
-											<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-												Email
-											</p>
-											<p className="text-sm">{fornecedor.email}</p>
-										</div>
-									)}
-
-									{fornecedor.endereco_completo && (
-										<div>
-											<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-												Endereço
-											</p>
-											<p className="text-sm">{fornecedor.endereco_completo}</p>
-										</div>
-									)}
-
-									<Separator />
-
-									<Button
-										variant="outline"
-										size="sm"
-										asChild
-										className="w-full"
-									>
-										<Link href={`/fornecedores/${fornecedor.id}`}>
-											Ver Fornecedor
-										</Link>
-									</Button>
-								</CardContent>
-							</Card>
-						)}
+						{fornecedor && <FornecedorCard fornecedor={fornecedor} />}
 
 						{/* System Information */}
-						<Card>
-							<CardHeader>
-								<CardTitle className="flex items-center">
-									<User className="mr-2 h-5 w-5" />
-									Informações do Sistema
-								</CardTitle>
-							</CardHeader>
-							<CardContent className="space-y-3">
-								<div>
-									<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-										Data de Criação
-									</p>
-									<p className="text-sm">{conferencia.created_at}</p>
-								</div>
-								<div>
-									<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-										Última Atualização
-									</p>
-									<p className="text-sm">{conferencia.updated_at}</p>
-								</div>
-								<div>
-									<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-										ID da Conferência
-									</p>
-									<p className="font-mono text-sm">#{conferencia.id}</p>
-								</div>
-							</CardContent>
-						</Card>
+						<SystemInfoCard conferencia={conferencia} />
 					</div>
 				</div>
 			</div>

@@ -236,10 +236,10 @@ export default function RelatorioRequisicoes({
 							<CardTitle className="text-sm font-medium">
 								Concretizadas
 							</CardTitle>
-							<BarChart3 className="h-4 w-4 text-blue-600" />
+							<BarChart3 className="h-4 w-4 text-blue-800" />
 						</CardHeader>
 						<CardContent>
-							<div className="text-2xl font-bold text-blue-600">
+							<div className="text-2xl font-bold text-blue-800">
 								{stats.requisicoes_por_status.concretizada || 0}
 							</div>
 							<p className="text-xs text-muted-foreground">

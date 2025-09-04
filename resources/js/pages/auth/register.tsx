@@ -1,21 +1,25 @@
 import { Form, Head } from "@inertiajs/react";
-import { LoaderCircle } from "lucide-react";
 import RegisteredUserController from "@/actions/App/Http/Controllers/Auth/RegisteredUserController";
-import InputError from "@/components/input-error";
-import TextLink from "@/components/text-link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+	AuthFormField,
+	AuthSubmitButton,
+	AuthNavigationLink,
+} from "@/components/auth";
 import AuthLayout from "@/layouts/auth-layout";
 import { login } from "@/routes";
+import { AUTH_MESSAGES, FORM_FIELD_CONFIGS } from "@/constants/auth/constants";
 
 export default function Register() {
+	const { name, email, password, password_confirmation } =
+		FORM_FIELD_CONFIGS.REGISTER;
+
 	return (
 		<AuthLayout
-			title="Create an account"
-			description="Enter your details below to create your account"
+			title={AUTH_MESSAGES.REGISTER_TITLE}
+			description={AUTH_MESSAGES.REGISTER_DESCRIPTION}
 		>
 			<Head title="Register" />
+
 			<Form
 				{...RegisteredUserController.store.form()}
 				resetOnSuccess={["password", "password_confirmation"]}
@@ -25,76 +29,27 @@ export default function Register() {
 				{({ processing, errors }) => (
 					<>
 						<div className="grid gap-6">
-							<div className="grid gap-2">
-								<Label htmlFor="name">Name</Label>
-								<Input
-									id="name"
-									type="text"
-									required
-									autoFocus
-									tabIndex="0"
-									autoComplete="name"
-									name="name"
-									placeholder="Full name"
-								/>
-								<InputError message={errors.name} className="mt-2" />
-							</div>
+							<AuthFormField config={name} error={errors.name} />
 
-							<div className="grid gap-2">
-								<Label htmlFor="email">Email address</Label>
-								<Input
-									id="email"
-									type="email"
-									required
-									tabIndex="0"
-									autoComplete="email"
-									name="email"
-									placeholder="email@example.com"
-								/>
-								<InputError message={errors.email} />
-							</div>
+							<AuthFormField config={email} error={errors.email} />
 
-							<div className="grid gap-2">
-								<Label htmlFor="password">Password</Label>
-								<Input
-									id="password"
-									type="password"
-									required
-									tabIndex="0"
-									autoComplete="new-password"
-									name="password"
-									placeholder="Password"
-								/>
-								<InputError message={errors.password} />
-							</div>
+							<AuthFormField config={password} error={errors.password} />
 
-							<div className="grid gap-2">
-								<Label htmlFor="password_confirmation">Confirm password</Label>
-								<Input
-									id="password_confirmation"
-									type="password"
-									required
-									tabIndex="0"
-									autoComplete="new-password"
-									name="password_confirmation"
-									placeholder="Confirm password"
-								/>
-								<InputError message={errors.password_confirmation} />
-							</div>
+							<AuthFormField
+								config={password_confirmation}
+								error={errors.password_confirmation}
+							/>
 
-							<Button type="submit" className="mt-2 w-full" tabIndex="0">
-								{processing && (
-									<LoaderCircle className="h-4 w-4 animate-spin" />
-								)}
-								Create account
-							</Button>
+							<AuthSubmitButton processing={processing} className="mt-2">
+								{AUTH_MESSAGES.REGISTER_BUTTON}
+							</AuthSubmitButton>
 						</div>
 
 						<div className="text-center text-sm text-muted-foreground">
-							Already have an account?{" "}
-							<TextLink href={login()} tabIndex="0">
-								Log in
-							</TextLink>
+							{AUTH_MESSAGES.LOGIN_TEXT}{" "}
+							<AuthNavigationLink href={login()}>
+								{AUTH_MESSAGES.LOGIN_LINK}
+							</AuthNavigationLink>
 						</div>
 					</>
 				)}

@@ -167,7 +167,7 @@ const AlertCard = ({ type, title, message, action }: AlertCardProps) => {
 			case "info":
 				return {
 					bg: "bg-blue-50 dark:bg-blue-900/20",
-					title: "text-blue-800 dark:text-blue-200",
+					title: "text-blue-900 dark:text-blue-200",
 					message: "text-blue-700 dark:text-blue-300",
 				};
 			case "success":
@@ -566,7 +566,7 @@ export default function RequisicoesIndex({
 													<div>
 														<Link
 															href={requisicoes.show(requisicao.id)}
-															className="font-medium text-blue-600 hover:text-blue-800"
+															className="font-medium text-blue-800 hover:text-blue-900"
 														>
 															{requisicao.numero_completo}
 														</Link>

@@ -1,17 +1,16 @@
 import { Form, Head } from "@inertiajs/react";
-import { LoaderCircle } from "lucide-react";
 import ConfirmablePasswordController from "@/actions/App/Http/Controllers/Auth/ConfirmablePasswordController";
-import InputError from "@/components/input-error";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { AuthFormField, AuthSubmitButton } from "@/components/auth";
+import { AUTH_MESSAGES, FORM_FIELD_CONFIGS } from "@/constants/auth/constants";
 import AuthLayout from "@/layouts/auth-layout";
 
 export default function ConfirmPassword() {
+	const { password: passwordConfig } = FORM_FIELD_CONFIGS.CONFIRM_PASSWORD;
+
 	return (
 		<AuthLayout
-			title="Confirm your password"
-			description="This is a secure area of the application. Please confirm your password before continuing."
+			title={AUTH_MESSAGES.CONFIRM_PASSWORD_TITLE}
+			description={AUTH_MESSAGES.CONFIRM_PASSWORD_DESCRIPTION}
 		>
 			<Head title="Confirm password" />
 
@@ -21,27 +20,12 @@ export default function ConfirmPassword() {
 			>
 				{({ processing, errors }) => (
 					<div className="space-y-6">
-						<div className="grid gap-2">
-							<Label htmlFor="password">Password</Label>
-							<Input
-								id="password"
-								type="password"
-								name="password"
-								placeholder="Password"
-								autoComplete="current-password"
-								autoFocus
-							/>
-
-							<InputError message={errors.password} />
-						</div>
+						<AuthFormField config={passwordConfig} error={errors.password} />
 
 						<div className="flex items-center">
-							<Button className="w-full" disabled={processing}>
-								{processing && (
-									<LoaderCircle className="h-4 w-4 animate-spin" />
-								)}
-								Confirm password
-							</Button>
+							<AuthSubmitButton processing={processing}>
+								{AUTH_MESSAGES.CONFIRM_PASSWORD_BUTTON}
+							</AuthSubmitButton>
 						</div>
 					</div>
 				)}

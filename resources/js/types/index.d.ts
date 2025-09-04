@@ -96,6 +96,7 @@ export interface Destinatario {
 	endereco?: string;
 	telefone?: string;
 	email?: string;
+	observacoes?: string;
 	created_at: string;
 	updated_at: string;
 	// Relationships

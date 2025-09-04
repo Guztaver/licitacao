@@ -11,6 +11,7 @@ import {
 	Users,
 } from "lucide-react";
 import type { FormEventHandler } from "react";
+import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,13 +34,7 @@ import AppLayout from "@/layouts/app-layout";
 import { conferencias } from "@/routes";
 import type { BreadcrumbItem, Conferencia, Fornecedor } from "@/types";
 
-const breadcrumbs: BreadcrumbItem[] = [
-	{
-		title: "Conferências",
-		href: conferencias.index(),
-	},
-];
-
+// Types
 interface PaginationLink {
 	url: string | null;
 	label: string;
@@ -77,13 +72,330 @@ interface ConferenciasIndexProps {
 	};
 }
 
+// Constants
+const BREADCRUMBS: BreadcrumbItem[] = [
+	{
+		title: "Conferências",
+		href: conferencias.index(),
+	},
+];
+
+const STATS_CONFIG = [
+	{
+		key: "total_conferencias" as const,
+		title: "Total",
+		icon: CheckCircle,
+		color: "text-gray-900",
+		getDescription: (isFiltered: boolean) =>
+			isFiltered ? "encontradas com filtros" : "conferências realizadas",
+	},
+	{
+		key: "este_mes" as const,
+		title: "Este Mês",
+		icon: Calendar,
+		color: "text-gray-900",
+		getDescription: (isFiltered: boolean) =>
+			isFiltered ? "deste mês nos resultados" : "conferências no mês",
+	},
+	{
+		key: "fornecedores_unicos" as const,
+		title: "Fornecedores",
+		icon: Users,
+		color: "text-gray-900",
+		getDescription: (isFiltered: boolean) =>
+			isFiltered ? "únicos nos resultados" : "únicos conferidos",
+	},
+	{
+		key: "valor_total" as const,
+		title: "Valor Total",
+		icon: DollarSign,
+		color: "text-gray-900",
+		getDescription: (isFiltered: boolean) =>
+			isFiltered ? "valor dos resultados" : "valor conferido",
+		format: (value: number) => formatCurrency(value),
+	},
+	{
+		key: "em_andamento" as const,
+		title: "Em Andamento",
+		icon: Clock,
+		color: "text-gray-900",
+		getDescription: (isFiltered: boolean) =>
+			isFiltered ? "em andamento nos resultados" : "aguardando finalização",
+	},
+];
+
+const MESSAGES = {
+	noResults: "Nenhuma conferência encontrada com os filtros aplicados",
+	noData: "Nenhuma conferência cadastrada",
+	searchPlaceholder: "Buscar por período ou fornecedor...",
+	allFornecedores: "Todos os fornecedores",
+	noValue: "-",
+} as const;
+
+// Utility Functions
+const formatCurrency = (value: number | null | undefined) => {
+	if (!value || value === 0) return MESSAGES.noValue;
+	return new Intl.NumberFormat("pt-BR", {
+		style: "currency",
+		currency: "BRL",
+	}).format(value);
+};
+
+const formatPaginationLabel = (label: string) => {
+	if (label.includes("&laquo;")) return "«";
+	if (label.includes("&raquo;")) return "»";
+	if (label.includes("&hellip;")) return "...";
+	return label;
+};
+
+const formatFornecedorInfo = (fornecedor: Fornecedor | null | undefined) => {
+	if (!fornecedor) return null;
+	return (
+		<div>
+			<p className="font-medium">{fornecedor.razao_social}</p>
+			{fornecedor.cnpj_formatado && (
+				<p className="text-sm text-gray-500">{fornecedor.cnpj_formatado}</p>
+			)}
+		</div>
+	);
+};
+
+const formatRequisicaoInfo = (count: number, value: number) => (
+	<div className="text-sm">
+		<p className="font-medium">{count || 0}</p>
+		<p className="text-gray-500">{formatCurrency(value)}</p>
+	</div>
+);
+
+// Components
+interface StatCardProps {
+	title: string;
+	value: number;
+	description: string;
+	icon: React.ComponentType<{ className?: string }>;
+	color?: string;
+	formatter?: (value: number) => string;
+}
+
+function StatCard({
+	title,
+	value,
+	description,
+	icon: Icon,
+	color = "text-gray-900",
+	formatter = (v) => v.toString(),
+}: StatCardProps) {
+	return (
+		<Card>
+			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+				<CardTitle className="text-sm font-medium">{title}</CardTitle>
+				<Icon className="h-4 w-4 text-muted-foreground" />
+			</CardHeader>
+			<CardContent>
+				<div className={`text-2xl font-bold ${color}`}>{formatter(value)}</div>
+				<p className="text-xs text-muted-foreground">{description}</p>
+			</CardContent>
+		</Card>
+	);
+}
+
+interface FilterSummaryProps {
+	isFiltered: boolean;
+	hasResults: boolean;
+	totalCount: number;
+	onClearFilters: () => void;
+}
+
+function FilterSummary({
+	isFiltered,
+	hasResults,
+	totalCount,
+	onClearFilters,
+}: FilterSummaryProps) {
+	if (!isFiltered) return null;
+
+	if (!hasResults) {
+		return (
+			<div className="rounded-lg bg-yellow-50 p-4 dark:bg-yellow-900/20">
+				<div className="flex">
+					<div className="ml-3">
+						<h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+							Nenhuma conferência encontrada
+						</h3>
+						<p className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
+							Não foram encontradas conferências que correspondam aos filtros
+							aplicados. Tente ajustar os critérios de busca.
+						</p>
+						<div className="mt-3">
+							<Button variant="outline" size="sm" onClick={onClearFilters}>
+								Limpar Filtros
+							</Button>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	return (
+		<div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
+			<div className="flex items-center justify-between">
+				<div>
+					<h3 className="text-sm font-medium text-green-800 dark:text-green-200">
+						Filtros aplicados
+					</h3>
+					<p className="mt-1 text-sm text-green-700 dark:text-green-300">
+						Mostrando {totalCount} conferências que correspondem aos critérios
+						de busca
+					</p>
+				</div>
+				<Button variant="outline" size="sm" onClick={onClearFilters}>
+					Limpar Filtros
+				</Button>
+			</div>
+		</div>
+	);
+}
+
+interface EmptyStateProps {
+	isFiltered: boolean;
+	stats: {
+		total_conferencias: number;
+		finalizadas: number;
+		em_andamento: number;
+	};
+}
+
+function EmptyState({ isFiltered, stats }: EmptyStateProps) {
+	if (isFiltered) return null;
+
+	if (stats.total_conferencias === 0) {
+		return (
+			<div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900/20">
+				<div className="flex">
+					<div className="ml-3">
+						<h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">
+							Nenhuma conferência cadastrada
+						</h3>
+						<p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+							Não há conferências no sistema ainda. Clique em "Nova Conferência"
+							para começar.
+						</p>
+						<div className="mt-3">
+							<Button asChild>
+								<Link href={conferencias.create()}>
+									<Plus className="mr-2 h-4 w-4" />
+									Nova Conferência
+								</Link>
+							</Button>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	if (stats.finalizadas === 0) {
+		return (
+			<div className="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
+				<div className="flex">
+					<div className="ml-3">
+						<h3 className="text-sm font-medium text-blue-900 dark:text-blue-200">
+							Conferências em andamento
+						</h3>
+						<p className="mt-2 text-sm text-blue-700 dark:text-blue-300">
+							Existem {stats.total_conferencias} conferências cadastradas, sendo{" "}
+							{stats.em_andamento} em andamento. Finalize as conferências para
+							consolidar os dados.
+						</p>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	return null;
+}
+
+interface ConferenciaRowProps {
+	conferencia: Conferencia;
+}
+
+function ConferenciaRow({ conferencia }: ConferenciaRowProps) {
+	const extendedConferencia = conferencia as Conferencia & {
+		periodo_display?: string;
+		status_color?: string;
+		status_display?: string;
+	};
+
+	return (
+		<TableRow>
+			<TableCell>{formatFornecedorInfo(conferencia.fornecedor)}</TableCell>
+			<TableCell>
+				<Badge variant="outline">{extendedConferencia.periodo_display}</Badge>
+			</TableCell>
+			<TableCell>
+				<Badge className={extendedConferencia.status_color}>
+					{extendedConferencia.status_display}
+				</Badge>
+			</TableCell>
+			<TableCell>
+				{formatRequisicaoInfo(
+					conferencia.total_requisicoes || 0,
+					conferencia.total_requisicoes || 0,
+				)}
+			</TableCell>
+			<TableCell>
+				{formatRequisicaoInfo(
+					conferencia.total_pedidos_manuais || 0,
+					conferencia.total_pedidos_manuais || 0,
+				)}
+			</TableCell>
+			<TableCell>
+				<div className="text-sm font-semibold">
+					{formatCurrency(conferencia.total_geral || 0)}
+				</div>
+			</TableCell>
+			<TableCell>
+				<div className="flex items-center space-x-2">
+					<Link href={conferencias.show(conferencia.id)}>
+						<Button variant="outline" size="sm">
+							Ver
+						</Button>
+					</Link>
+				</div>
+			</TableCell>
+		</TableRow>
+	);
+}
+
+function EmptyTableRow() {
+	return (
+		<TableRow>
+			<TableCell colSpan={7} className="py-8 text-center">
+				<div className="flex flex-col items-center space-y-2">
+					<CheckSquare className="h-8 w-8 text-gray-400" />
+					<p className="text-gray-500">Nenhuma conferência encontrada</p>
+					<Link href={conferencias.create()}>
+						<Button size="sm">
+							<Plus className="mr-2 h-4 w-4" />
+							Adicionar Conferência
+						</Button>
+					</Link>
+				</div>
+			</TableCell>
+		</TableRow>
+	);
+}
+
+// Main Component
 export default function ConferenciasIndex({
 	conferencias: conferenciasPaginated,
 	fornecedores,
 	stats,
 	filters,
 }: ConferenciasIndexProps) {
-	// Add safety checks for data
+	// Safe data extraction
 	const safeConferencias = conferenciasPaginated || {
 		data: [],
 		links: [],
@@ -115,40 +427,65 @@ export default function ConferenciasIndex({
 		data_fim: filters?.data_fim || "",
 	});
 
-	const handleSearch: FormEventHandler = (e) => {
-		e.preventDefault();
-		get(conferencias.index(), {
-			preserveState: true,
-			replace: true,
-		});
-	};
+	// Memoized values
+	const isFiltered = useMemo(
+		() =>
+			Boolean(
+				data.search || data.fornecedor_id || data.data_inicio || data.data_fim,
+			),
+		[data],
+	);
+	const hasResults = useMemo(() => safeData.length > 0, [safeData.length]);
 
-	const handleReset = () => {
-		setData({
-			search: "",
-			fornecedor_id: "",
-			data_inicio: "",
-			data_fim: "",
-		});
-		get(conferencias.index(), {
-			preserveState: true,
-			replace: true,
-		});
-	};
+	// Event handlers
+	const handleSearch: FormEventHandler = useMemo(
+		() => (e) => {
+			e.preventDefault();
+			get(conferencias.index(), {
+				preserveState: true,
+				replace: true,
+			});
+		},
+		[get],
+	);
 
-	const formatCurrency = (value: number | null) => {
-		if (value === null || value === undefined) return "-";
-		return new Intl.NumberFormat("pt-BR", {
-			style: "currency",
-			currency: "BRL",
-		}).format(value);
-	};
+	const handleReset = useMemo(
+		() => () => {
+			setData({
+				search: "",
+				fornecedor_id: "",
+				data_inicio: "",
+				data_fim: "",
+			});
+			get(conferencias.index(), {
+				preserveState: true,
+				replace: true,
+			});
+		},
+		[setData, get],
+	);
+
+	const handleExport = useMemo(
+		() => () => {
+			const params = new URLSearchParams(filters as Record<string, string>);
+			window.location.href = `${conferencias.export()}?${params.toString()}`;
+		},
+		[filters],
+	);
+
+	const handlePaginationClick = useMemo(
+		() => (url: string) => {
+			router.get(url);
+		},
+		[],
+	);
 
 	return (
-		<AppLayout breadcrumbs={breadcrumbs}>
+		<AppLayout breadcrumbs={BREADCRUMBS}>
 			<Head title="Conferências" />
 
 			<div className="flex h-full flex-1 flex-col gap-6 p-6">
+				{/* Header */}
 				<div className="flex items-center justify-between">
 					<div>
 						<h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -159,15 +496,7 @@ export default function ConferenciasIndex({
 						</p>
 					</div>
 					<div className="flex items-center space-x-2">
-						<Button
-							variant="outline"
-							onClick={() => {
-								const params = new URLSearchParams(
-									filters as Record<string, string>,
-								);
-								window.location.href = `${conferencias.export()}?${params.toString()}`;
-							}}
-						>
+						<Button variant="outline" onClick={handleExport}>
 							<FileDown className="mr-2 h-4 w-4" />
 							Exportar
 						</Button>
@@ -182,214 +511,30 @@ export default function ConferenciasIndex({
 
 				{/* Statistics Cards */}
 				<div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">Total</CardTitle>
-							<CheckCircle className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">
-								{safeStats.total_conferencias}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								{data.search ||
-								data.fornecedor_id ||
-								data.data_inicio ||
-								data.data_fim
-									? "encontradas com filtros"
-									: "conferências realizadas"}
-							</p>
-							{safeData.length > 0 &&
-								safeMeta.total !== safeStats.total_conferencias && (
-									<p className="mt-1 text-xs text-gray-400">
-										Mostrando {safeData.length} de {safeMeta.total} na página
-									</p>
-								)}
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">Este Mês</CardTitle>
-							<Calendar className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">{safeStats.este_mes}</div>
-							<p className="text-xs text-muted-foreground">
-								{data.search ||
-								data.fornecedor_id ||
-								data.data_inicio ||
-								data.data_fim
-									? "deste mês nos resultados"
-									: "conferências no mês"}
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Fornecedores
-							</CardTitle>
-							<Users className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">
-								{safeStats.fornecedores_unicos}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								{data.search ||
-								data.fornecedor_id ||
-								data.data_inicio ||
-								data.data_fim
-									? "únicos nos resultados"
-									: "únicos conferidos"}
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">Valor Total</CardTitle>
-							<DollarSign className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">
-								{formatCurrency(safeStats.valor_total)}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								{data.search ||
-								data.fornecedor_id ||
-								data.data_inicio ||
-								data.data_fim
-									? "valor dos resultados"
-									: "valor conferido"}
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Em Andamento
-							</CardTitle>
-							<Clock className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">{safeStats.em_andamento}</div>
-							<p className="text-xs text-muted-foreground">
-								{data.search ||
-								data.fornecedor_id ||
-								data.data_inicio ||
-								data.data_fim
-									? "em andamento nos resultados"
-									: "aguardando finalização"}
-							</p>
-						</CardContent>
-					</Card>
+					{STATS_CONFIG.map(
+						({ key, title, icon, color, getDescription, format }) => (
+							<StatCard
+								key={key}
+								title={title}
+								value={safeStats[key]}
+								description={getDescription(isFiltered)}
+								icon={icon}
+								color={color}
+								formatter={format}
+							/>
+						),
+					)}
 				</div>
 
-				{/* Filter Summary */}
-				{(data.search ||
-					data.fornecedor_id ||
-					data.data_inicio ||
-					data.data_fim) &&
-					safeStats.total_conferencias > 0 && (
-						<div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
-							<div className="flex items-center justify-between">
-								<div>
-									<h3 className="text-sm font-medium text-green-800 dark:text-green-200">
-										Filtros aplicados
-									</h3>
-									<p className="mt-1 text-sm text-green-700 dark:text-green-300">
-										Mostrando {safeStats.total_conferencias} conferências que
-										correspondem aos critérios de busca
-									</p>
-								</div>
-								<Button variant="outline" size="sm" onClick={handleReset}>
-									Limpar Filtros
-								</Button>
-							</div>
-						</div>
-					)}
+				{/* Filter Summary and Empty States */}
+				<FilterSummary
+					isFiltered={isFiltered}
+					hasResults={hasResults}
+					totalCount={safeStats.total_conferencias}
+					onClearFilters={handleReset}
+				/>
 
-				{/* Empty State Message */}
-				{safeStats.total_conferencias === 0 &&
-					(data.search ||
-						data.fornecedor_id ||
-						data.data_inicio ||
-						data.data_fim) && (
-						<div className="rounded-lg bg-yellow-50 p-4 dark:bg-yellow-900/20">
-							<div className="flex">
-								<div className="ml-3">
-									<h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-										Nenhuma conferência encontrada
-									</h3>
-									<p className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
-										Não foram encontradas conferências que correspondam aos
-										filtros aplicados. Tente ajustar os critérios de busca.
-									</p>
-									<div className="mt-3">
-										<Button variant="outline" size="sm" onClick={handleReset}>
-											Limpar Filtros
-										</Button>
-									</div>
-								</div>
-							</div>
-						</div>
-					)}
-
-				{/* Low Data Notice */}
-				{safeStats.total_conferencias > 0 &&
-					safeStats.finalizadas === 0 &&
-					!data.search &&
-					!data.fornecedor_id &&
-					!data.data_inicio &&
-					!data.data_fim && (
-						<div className="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
-							<div className="flex">
-								<div className="ml-3">
-									<h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
-										Conferências em andamento
-									</h3>
-									<p className="mt-2 text-sm text-blue-700 dark:text-blue-300">
-										Existem {safeStats.total_conferencias} conferências
-										cadastradas, sendo {safeStats.em_andamento} em andamento.
-										Finalize as conferências para consolidar os dados.
-									</p>
-								</div>
-							</div>
-						</div>
-					)}
-
-				{/* No Data Notice */}
-				{safeStats.total_conferencias === 0 &&
-					!data.search &&
-					!data.fornecedor_id &&
-					!data.data_inicio &&
-					!data.data_fim && (
-						<div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900/20">
-							<div className="flex">
-								<div className="ml-3">
-									<h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">
-										Nenhuma conferência cadastrada
-									</h3>
-									<p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
-										Não há conferências no sistema ainda. Clique em "Nova
-										Conferência" para começar.
-									</p>
-									<div className="mt-3">
-										<Button asChild>
-											<Link href={conferencias.create()}>
-												<Plus className="mr-2 h-4 w-4" />
-												Nova Conferência
-											</Link>
-										</Button>
-									</div>
-								</div>
-							</div>
-						</div>
-					)}
+				<EmptyState isFiltered={isFiltered} stats={safeStats} />
 
 				{/* Filters */}
 				<Card>
@@ -405,7 +550,7 @@ export default function ConferenciasIndex({
 								<div className="relative">
 									<Search className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
 									<Input
-										placeholder="Buscar por período ou fornecedor..."
+										placeholder={MESSAGES.searchPlaceholder}
 										value={data.search}
 										onChange={(e) => setData("search", e.target.value)}
 										className="pl-10"
@@ -418,7 +563,7 @@ export default function ConferenciasIndex({
 									onChange={(e) => setData("fornecedor_id", e.target.value)}
 									className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 								>
-									<option value="">Todos os fornecedores</option>
+									<option value="">{MESSAGES.allFornecedores}</option>
 									{safeFornecedores.map((fornecedor) => (
 										<option key={fornecedor.id} value={fornecedor.id}>
 											{fornecedor.razao_social}
@@ -458,8 +603,7 @@ export default function ConferenciasIndex({
 					<CardHeader>
 						<CardTitle className="text-lg">Lista de Conferências</CardTitle>
 						<CardDescription>
-							Mostrando {conferenciasPaginated.data.length} de{" "}
-							{conferenciasPaginated.meta?.total || 0} conferências
+							Mostrando {safeData.length} de {safeMeta.total || 0} conferências
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
@@ -477,102 +621,26 @@ export default function ConferenciasIndex({
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{safeData.length > 0 ? (
+									{hasResults ? (
 										safeData.map((conferencia) => (
-											<TableRow key={conferencia.id}>
-												<TableCell>
-													{conferencia.fornecedor && (
-														<div>
-															<p className="font-medium">
-																{conferencia.fornecedor.razao_social}
-															</p>
-															{conferencia.fornecedor.cnpj_formatado && (
-																<p className="text-sm text-gray-500">
-																	{conferencia.fornecedor.cnpj_formatado}
-																</p>
-															)}
-														</div>
-													)}
-												</TableCell>
-												<TableCell>
-													<Badge variant="outline">
-														{conferencia.periodo_display}
-													</Badge>
-												</TableCell>
-												<TableCell>
-													<Badge className={conferencia.status_color}>
-														{conferencia.status_display}
-													</Badge>
-												</TableCell>
-												<TableCell>
-													<div className="text-sm">
-														<p className="font-medium">
-															{conferencia.total_requisicoes || 0}
-														</p>
-														<p className="text-gray-500">
-															{formatCurrency(
-																conferencia.total_requisicoes || 0,
-															)}
-														</p>
-													</div>
-												</TableCell>
-												<TableCell>
-													<div className="text-sm">
-														<p className="font-medium">
-															{conferencia.total_pedidos_manuais || 0}
-														</p>
-														<p className="text-gray-500">
-															{formatCurrency(
-																conferencia.total_pedidos_manuais || 0,
-															)}
-														</p>
-													</div>
-												</TableCell>
-												<TableCell>
-													<div className="text-sm font-semibold">
-														{formatCurrency(conferencia.total_geral || 0)}
-													</div>
-												</TableCell>
-												<TableCell>
-													<div className="flex items-center space-x-2">
-														<Link href={conferencias.show(conferencia.id)}>
-															<Button variant="outline" size="sm">
-																Ver
-															</Button>
-														</Link>
-													</div>
-												</TableCell>
-											</TableRow>
+											<ConferenciaRow
+												key={conferencia.id}
+												conferencia={conferencia}
+											/>
 										))
 									) : (
-										<TableRow>
-											<TableCell colSpan={7} className="py-8 text-center">
-												<div className="flex flex-col items-center space-y-2">
-													<CheckSquare className="h-8 w-8 text-gray-400" />
-													<p className="text-gray-500">
-														Nenhuma conferência encontrada
-													</p>
-													<Link href={conferencias.create()}>
-														<Button size="sm">
-															<Plus className="mr-2 h-4 w-4" />
-															Adicionar Conferência
-														</Button>
-													</Link>
-												</div>
-											</TableCell>
-										</TableRow>
+										<EmptyTableRow />
 									)}
 								</TableBody>
 							</Table>
 						</div>
 
 						{/* Pagination */}
-						{conferenciasPaginated.meta?.last_page > 1 && (
+						{safeMeta.last_page > 1 && (
 							<div className="flex items-center justify-between px-2 py-4">
 								<div className="text-sm text-gray-700">
-									Mostrando {conferenciasPaginated.meta?.from || 0} até{" "}
-									{conferenciasPaginated.meta?.to || 0} de{" "}
-									{conferenciasPaginated.meta?.total || 0} resultados
+									Mostrando {safeMeta.from || 0} até {safeMeta.to || 0} de{" "}
+									{safeMeta.total || 0} resultados
 								</div>
 								<div className="flex items-center space-x-2">
 									{safeLinks.map((link) => (
@@ -581,15 +649,11 @@ export default function ConferenciasIndex({
 											variant={link.active ? "default" : "outline"}
 											size="sm"
 											disabled={!link.url}
-											onClick={() => link.url && router.get(link.url)}
+											onClick={() =>
+												link.url && handlePaginationClick(link.url)
+											}
 										>
-											{link.label.includes("&laquo;")
-												? "«"
-												: link.label.includes("&raquo;")
-													? "»"
-													: link.label.includes("&hellip;")
-														? "..."
-														: link.label}
+											{formatPaginationLabel(link.label)}
 										</Button>
 									))}
 								</div>

@@ -151,7 +151,7 @@ const AlertCard = ({ type, title, message, action }: AlertCardProps) => {
 	const titleColor =
 		type === "warning"
 			? "text-yellow-800 dark:text-yellow-200"
-			: "text-blue-800 dark:text-blue-200";
+			: "text-blue-900 dark:text-blue-200";
 	const messageColor =
 		type === "warning"
 			? "text-yellow-700 dark:text-yellow-300"
@@ -471,7 +471,7 @@ export default function FornecedoresIndex({
 													<div>
 														<Link
 															href={fornecedores.show(fornecedor.id)}
-															className="font-medium text-blue-600 hover:text-blue-800"
+															className="font-medium text-blue-800 hover:text-blue-900"
 														>
 															{fornecedor.razao_social}
 														</Link>

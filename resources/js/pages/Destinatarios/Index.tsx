@@ -1,6 +1,5 @@
-import { Head, Link, router, useForm } from "@inertiajs/react";
-import { FileDown, MapPin, Plus, Search } from "lucide-react";
-import type { FormEventHandler } from "react";
+import { Head, router } from "@inertiajs/react";
+import { FileDown, MapPin } from "lucide-react";
 import CreateDestinatarioModal from "@/components/modals/CreateDestinatarioModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,22 +9,25 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 import AppLayout from "@/layouts/app-layout";
 import { destinatarios } from "@/routes";
 import type { BreadcrumbItem, Destinatario } from "@/types";
+import {
+	DestinatarisStatsCard,
+	DestinatarisFilters,
+	DestinatarisTable,
+	DestinatarissPagination,
+} from "@/components/destinatarios";
+import {
+	useDestinatarisFilters,
+	useDestinatarisActions,
+	DESTINATARIOS_LABELS,
+	DESTINATARIOS_MESSAGES,
+} from "@/hooks/use-destinatarios";
 
 const breadcrumbs: BreadcrumbItem[] = [
 	{
-		title: "Destinatários",
+		title: DESTINATARIOS_LABELS.destinatarios,
 		href: destinatarios.index(),
 	},
 ];
@@ -61,6 +63,37 @@ interface DestinatariosIndexProps {
 	};
 }
 
+const statsConfig = [
+	{
+		key: "total_destinatarios" as const,
+		title: DESTINATARIOS_LABELS.totalDestinatarios,
+		icon: MapPin,
+		description: DESTINATARIOS_MESSAGES.cadastradosNoSistema,
+		color: "blue",
+	},
+	{
+		key: "com_requisicoes" as const,
+		title: DESTINATARIOS_LABELS.comRequisicoes,
+		icon: MapPin,
+		description: DESTINATARIOS_LABELS.destinatariosAtivos,
+		color: "green",
+	},
+	{
+		key: "total_requisicoes" as const,
+		title: DESTINATARIOS_LABELS.totalRequisicoes,
+		icon: MapPin,
+		description: DESTINATARIOS_LABELS.requisicoesRecebidas,
+		color: "purple",
+	},
+	{
+		key: "sem_atividade" as const,
+		title: DESTINATARIOS_LABELS.semAtividade,
+		icon: MapPin,
+		description: DESTINATARIOS_LABELS.semRequisicoes,
+		color: "gray",
+	},
+];
+
 export default function DestinatariosIndex({
 	destinatarios: destinatariosPaginated,
 	stats,
@@ -88,351 +121,125 @@ export default function DestinatariosIndex({
 		sem_atividade: 0,
 	};
 
-	const { data, setData, get, processing } = useForm({
-		search: filters?.search || "",
+	const {
+		filters: currentFilters,
+		setFilters,
+		applyFilters,
+		resetFilters,
+		isFiltered,
+		processing,
+	} = useDestinatarisFilters({
+		initialFilters: filters,
 	});
 
-	const handleSearch: FormEventHandler = (e) => {
-		e.preventDefault();
-		get(destinatarios.index(), {
-			preserveState: true,
-			replace: true,
-		});
+	const { exportDestinatarios } = useDestinatarisActions();
+
+	const handleExport = () => {
+		exportDestinatarios(currentFilters);
 	};
 
-	const isFiltered = data.search !== "";
-	const hasResults = safeData.length > 0;
+	const handleReload = () => {
+		router.reload();
+	};
 
-	const handleReset = () => {
-		setData({
-			search: "",
-		});
-		get(destinatarios.index(), {
-			preserveState: true,
-			replace: true,
-		});
+	const handlePageClick = (url: string) => {
+		router.get(url);
 	};
 
 	return (
 		<AppLayout breadcrumbs={breadcrumbs}>
-			<Head title="Destinatários" />
+			<Head title={DESTINATARIOS_LABELS.pageTitle} />
 
 			<div className="flex h-full flex-1 flex-col gap-6 p-6">
+				{/* Header */}
 				<div className="flex items-center justify-between">
 					<div>
 						<h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-							Destinatários
+							{DESTINATARIOS_LABELS.pageTitle}
 						</h1>
 						<p className="text-gray-600 dark:text-gray-400">
-							Gerencie os órgãos destinatários de requisições
+							{DESTINATARIOS_LABELS.pageSubtitle}
 						</p>
 					</div>
 					<div className="flex items-center space-x-2">
-						<Button
-							variant="outline"
-							onClick={() => {
-								const params = new URLSearchParams(
-									filters as Record<string, string>,
-								);
-								window.location.href = `${destinatarios.export()}?${params.toString()}`;
-							}}
-						>
+						<Button variant="outline" onClick={handleExport}>
 							<FileDown className="mr-2 h-4 w-4" />
-							Exportar
+							{DESTINATARIOS_LABELS.exportar}
 						</Button>
-						<CreateDestinatarioModal onSuccess={() => router.reload()} />
+						<CreateDestinatarioModal onSuccess={handleReload} />
 					</div>
 				</div>
 
 				{/* Statistics Cards */}
 				<div className="grid gap-4 md:grid-cols-4">
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Total Destinatários
-							</CardTitle>
-							<MapPin className="h-4 w-4 text-muted-foreground" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">
-								{safeStats.total_destinatarios}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								{isFiltered
-									? "nos resultados filtrados"
-									: "cadastrados no sistema"}
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Com Requisições
-							</CardTitle>
-							<MapPin className="h-4 w-4 text-green-600" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold text-green-600">
-								{safeStats.com_requisicoes}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								destinatários ativos
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Total Requisições
-							</CardTitle>
-							<MapPin className="h-4 w-4 text-blue-600" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold text-blue-600">
-								{safeStats.total_requisicoes}
-							</div>
-							<p className="text-xs text-muted-foreground">
-								requisições recebidas
-							</p>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">
-								Sem Atividade
-							</CardTitle>
-							<MapPin className="h-4 w-4 text-amber-600" />
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold text-amber-600">
-								{safeStats.sem_atividade}
-							</div>
-							<p className="text-xs text-muted-foreground">sem requisições</p>
-						</CardContent>
-					</Card>
+					{statsConfig.map((config) => (
+						<DestinatarisStatsCard
+							key={config.key}
+							title={config.title}
+							value={safeStats[config.key]}
+							description={
+								isFiltered && config.key === "total_destinatarios"
+									? DESTINATARIOS_MESSAGES.resultadosFiltrados
+									: config.description
+							}
+							icon={config.icon}
+							color={config.color}
+						/>
+					))}
 				</div>
 
 				{/* Filters */}
-				<Card>
-					<CardHeader>
-						<CardTitle className="text-lg">Filtros</CardTitle>
-						<CardDescription>
-							Use os filtros abaixo para refinar sua busca
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<form onSubmit={handleSearch} className="flex flex-wrap gap-4">
-							<div className="min-w-[200px] flex-1">
-								<div className="relative">
-									<Search className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
-									<Input
-										placeholder="Buscar por nome ou sigla..."
-										value={data.search}
-										onChange={(e) => setData("search", e.target.value)}
-										className="pl-10"
-									/>
-								</div>
-							</div>
-							<div className="flex gap-2">
-								<Button type="submit" disabled={processing}>
-									<Search className="mr-2 h-4 w-4" />
-									Buscar
-								</Button>
-								<Button type="button" variant="outline" onClick={handleReset}>
-									Limpar
-								</Button>
-							</div>
-						</form>
-					</CardContent>
-				</Card>
+				<DestinatarisFilters
+					search={currentFilters.search}
+					onSearchChange={(value) => setFilters({ search: value })}
+					onSubmit={applyFilters}
+					onReset={resetFilters}
+					processing={processing}
+				/>
 
 				{/* Table */}
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-lg">Lista de Destinatários</CardTitle>
+						<CardTitle className="text-lg">
+							{DESTINATARIOS_MESSAGES.listaDestinatarios}
+						</CardTitle>
 						<CardDescription>
 							{isFiltered ? (
 								<>
-									Mostrando {safeMeta.from || 0} a {safeMeta.to || 0} de{" "}
-									{safeStats.total_destinatarios} destinatários encontrados
+									{DESTINATARIOS_MESSAGES.mostrando} {safeMeta.from || 0}{" "}
+									{DESTINATARIOS_MESSAGES.ate} {safeMeta.to || 0}{" "}
+									{DESTINATARIOS_MESSAGES.de} {safeStats.total_destinatarios}{" "}
+									{DESTINATARIOS_MESSAGES.destinatariosEncontrados}
 									{safeStats.total_destinatarios === 0 &&
-										" (nenhum resultado encontrado)"}
+										` ${DESTINATARIOS_MESSAGES.nenhumResultadoEncontrado}`}
 								</>
 							) : (
 								<>
-									Mostrando {safeMeta.from || 0} a {safeMeta.to || 0} de{" "}
-									{safeMeta.total || 0} destinatários
+									{DESTINATARIOS_MESSAGES.mostrando} {safeMeta.from || 0}{" "}
+									{DESTINATARIOS_MESSAGES.ate} {safeMeta.to || 0}{" "}
+									{DESTINATARIOS_MESSAGES.de} {safeMeta.total || 0}{" "}
+									{DESTINATARIOS_LABELS.destinatarios.toLowerCase()}
 								</>
 							)}
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<div className="rounded-md border">
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead>Nome / Sigla</TableHead>
-										<TableHead>Contato</TableHead>
-										<TableHead>Requisições</TableHead>
-										<TableHead>Ações</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{safeData.length > 0 ? (
-										safeData.map((destinatario) => (
-											<TableRow key={destinatario.id}>
-												<TableCell>
-													<div>
-														<Link
-															href={destinatarios.show(destinatario.id)}
-															className="font-medium text-blue-600 hover:text-blue-800"
-														>
-															{destinatario.nome}
-														</Link>
-														<p className="text-sm text-gray-500">
-															Sigla:{" "}
-															<span className="font-mono">
-																{destinatario.sigla}
-															</span>
-														</p>
-														{destinatario.endereco && (
-															<p className="text-sm text-gray-500">
-																{destinatario.endereco}
-															</p>
-														)}
-													</div>
-												</TableCell>
-												<TableCell>
-													<div className="text-sm">
-														{destinatario.telefone && (
-															<p>{destinatario.telefone}</p>
-														)}
-														{destinatario.email && (
-															<p className="text-gray-500">
-																{destinatario.email}
-															</p>
-														)}
-														{!destinatario.telefone && !destinatario.email && (
-															<span className="text-gray-400">-</span>
-														)}
-													</div>
-												</TableCell>
-												<TableCell>
-													<div className="text-sm">
-														<span className="font-medium">
-															{destinatario.requisicoes_count || 0}
-														</span>
-														<span className="text-gray-500"> requisições</span>
-													</div>
-												</TableCell>
-												<TableCell>
-													<div className="flex items-center space-x-2">
-														<Link href={destinatarios.show(destinatario.id)}>
-															<Button variant="outline" size="sm">
-																Ver
-															</Button>
-														</Link>
-														<Link href={destinatarios.edit(destinatario.id)}>
-															<Button variant="outline" size="sm">
-																Editar
-															</Button>
-														</Link>
-													</div>
-												</TableCell>
-											</TableRow>
-										))
-									) : (
-										<TableRow>
-											<TableCell colSpan={4} className="py-8 text-center">
-												<div className="flex flex-col items-center space-y-2">
-													<MapPin className="h-8 w-8 text-gray-400" />
-													{isFiltered ? (
-														<>
-															<p className="text-gray-500">
-																Nenhum destinatário encontrado com os filtros
-																aplicados
-															</p>
-															<Button
-																variant="outline"
-																size="sm"
-																onClick={handleReset}
-															>
-																Limpar filtros
-															</Button>
-														</>
-													) : (
-														<>
-															<p className="text-gray-500">
-																Nenhum destinatário cadastrado
-															</p>
-															<CreateDestinatarioModal
-																trigger={
-																	<Button size="sm">
-																		<Plus className="mr-2 h-4 w-4" />
-																		Adicionar Primeiro Destinatário
-																	</Button>
-																}
-																onSuccess={() => router.reload()}
-															/>
-														</>
-													)}
-												</div>
-											</TableCell>
-										</TableRow>
-									)}
-								</TableBody>
-							</Table>
-						</div>
-
-						{/* Filter Summary */}
-						{isFiltered && hasResults && (
-							<div className="border-t px-4 py-3">
-								<div className="flex items-center justify-between text-sm text-gray-600">
-									<div>
-										Filtros ativos:{" "}
-										<span className="font-medium">"{data.search}"</span>
-									</div>
-									<Button variant="ghost" size="sm" onClick={handleReset}>
-										Limpar filtros
-									</Button>
-								</div>
-							</div>
-						)}
+						<DestinatarisTable
+							destinatarios={safeData}
+							isFiltered={isFiltered}
+							onReset={resetFilters}
+							onReload={handleReload}
+						/>
 
 						{/* Pagination */}
-						{safeMeta.last_page > 1 && (
-							<div className="flex items-center justify-between px-2 py-4">
-								<div className="text-sm text-gray-700">
-									Mostrando {safeMeta.from || 0} até {safeMeta.to || 0} de{" "}
-									{isFiltered
-										? safeStats.total_destinatarios
-										: safeMeta.total || 0}{" "}
-									resultados
-								</div>
-								<div className="flex items-center space-x-2">
-									{safeLinks.map((link) => (
-										<Button
-											key={link.label}
-											variant={link.active ? "default" : "outline"}
-											size="sm"
-											disabled={!link.url}
-											onClick={() => link.url && router.get(link.url)}
-										>
-											{link.label.includes("&laquo;")
-												? "«"
-												: link.label.includes("&raquo;")
-													? "»"
-													: link.label.includes("&hellip;")
-														? "..."
-														: link.label}
-										</Button>
-									))}
-								</div>
-							</div>
-						)}
+						<DestinatarissPagination
+							links={safeLinks}
+							meta={safeMeta}
+							isFiltered={isFiltered}
+							totalFiltered={safeStats.total_destinatarios}
+							onPageClick={handlePageClick}
+							onReset={resetFilters}
+						/>
 					</CardContent>
 				</Card>
 			</div>

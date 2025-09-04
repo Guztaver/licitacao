@@ -1,6 +1,6 @@
 import { Head, Link, useForm } from "@inertiajs/react";
 import { ArrowLeft, CheckSquare, Save } from "lucide-react";
-import { useId } from "react";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -24,17 +24,7 @@ import AppLayout from "@/layouts/app-layout";
 import { conferencias } from "@/routes";
 import type { BreadcrumbItem, Fornecedor } from "@/types";
 
-const breadcrumbs: BreadcrumbItem[] = [
-	{
-		title: "Conferências",
-		href: conferencias.index(),
-	},
-	{
-		title: "Nova Conferência",
-		href: conferencias.create(),
-	},
-];
-
+// Types
 interface CreateProps {
 	fornecedores: Fornecedor[];
 }
@@ -45,25 +35,225 @@ interface FormData {
 	observacoes: string;
 }
 
-export default function ConferenciaCreate({ fornecedores }: CreateProps) {
-	const fornecedorId = useId();
-	const periodoId = useId();
+// Constants
+const BREADCRUMBS: BreadcrumbItem[] = [
+	{
+		title: "Conferências",
+		href: conferencias.index(),
+	},
+	{
+		title: "Nova Conferência",
+		href: conferencias.create(),
+	},
+];
 
-	const observacoesId = useId();
+const FORM_FIELDS = [
+	{
+		name: "fornecedor_id" as const,
+		label: "Fornecedor",
+		type: "select",
+		placeholder: "Selecione um fornecedor",
+		required: true,
+		helper: undefined,
+	},
+	{
+		name: "periodo" as const,
+		label: "Período",
+		type: "text",
+		placeholder: "Ex: 01/2024",
+		required: true,
+		helper: "Formato: MM/AAAA",
+	},
+] as const;
 
-	const { data, setData, post, processing, errors, reset } = useForm<FormData>({
-		fornecedor_id: "",
-		periodo: "",
-		observacoes: "",
-	});
+const INFO_CARDS = [
+	{
+		type: "info" as const,
+		title: "Informação",
+		content:
+			"Os totais (requisições, pedidos manuais e total geral) serão calculados automaticamente com base no fornecedor selecionado no momento da criação da conferência.",
+		bgColor: "bg-blue-50 dark:bg-blue-900/20",
+		textColor: "text-blue-900 dark:text-blue-100",
+		contentColor: "text-blue-700 dark:text-blue-300",
+	},
+	{
+		type: "detailed" as const,
+		title: "Conferência Detalhada",
+		content:
+			"Para adicionar valores manualmente e fazer conferência detalhada, acesse diretamente a conferência por fornecedor.",
+		bgColor: "bg-green-50 dark:bg-green-900/20",
+		textColor: "text-green-900 dark:text-green-100",
+		contentColor: "text-green-700 dark:text-green-300",
+		examples: [
+			"Janeiro 2024: /conferencias/fornecedor/1/2024-01",
+			"Dezembro 2023: /conferencias/fornecedor/2/2023-12",
+			"Formato: /conferencias/fornecedor/[ID]/[ANO-MES]",
+		],
+	},
+];
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		post(conferencias.index());
-	};
+const MESSAGES = {
+	noFornecedores: "Nenhum fornecedor disponível",
+	maxChars: "Máximo de 1000 caracteres",
+	observacoesPlaceholder: "Observações adicionais sobre a conferência...",
+} as const;
+
+// Utility Functions
+const getInitialFormData = (): FormData => ({
+	fornecedor_id: "",
+	periodo: "",
+	observacoes: "",
+});
+
+// Components
+interface InputFieldProps {
+	field: (typeof FORM_FIELDS)[number];
+	value: string;
+	onChange: (name: string, value: string) => void;
+	error?: string;
+	children?: React.ReactNode;
+}
+
+function InputField({
+	field,
+	value,
+	onChange,
+	error,
+	children,
+}: InputFieldProps) {
+	const handleChange = useMemo(
+		() => (newValue: string) => {
+			onChange(field.name, newValue);
+		},
+		[field.name, onChange],
+	);
 
 	return (
-		<AppLayout breadcrumbs={breadcrumbs}>
+		<div className="space-y-2">
+			<Label htmlFor={field.name}>
+				{field.label} {field.required && "*"}
+			</Label>
+			{field.type === "select" ? (
+				<Select
+					value={value}
+					onValueChange={handleChange}
+					required={field.required}
+				>
+					<SelectTrigger className={error ? "border-red-500" : ""}>
+						<SelectValue placeholder={field.placeholder} />
+					</SelectTrigger>
+					{children}
+				</Select>
+			) : (
+				<Input
+					type={field.type}
+					value={value}
+					onChange={(e) => handleChange(e.target.value)}
+					placeholder={field.placeholder}
+					required={field.required}
+					className={error ? "border-red-500" : ""}
+				/>
+			)}
+			{error && <p className="text-sm text-red-500">{error}</p>}
+			{field.helper && <p className="text-xs text-gray-500">{field.helper}</p>}
+		</div>
+	);
+}
+
+interface FornecedorSelectOptionsProps {
+	fornecedores: Fornecedor[];
+}
+
+function FornecedorSelectOptions({
+	fornecedores,
+}: FornecedorSelectOptionsProps) {
+	if (!fornecedores || fornecedores.length === 0) {
+		return (
+			<SelectItem value="no-fornecedor" disabled>
+				{MESSAGES.noFornecedores}
+			</SelectItem>
+		);
+	}
+
+	return (
+		<SelectContent>
+			{fornecedores.map((fornecedor) => (
+				<SelectItem key={fornecedor.id} value={fornecedor.id.toString()}>
+					{fornecedor.razao_social}
+				</SelectItem>
+			))}
+		</SelectContent>
+	);
+}
+
+interface InfoCardProps {
+	card: (typeof INFO_CARDS)[number];
+}
+
+function InfoCard({ card }: InfoCardProps) {
+	return (
+		<div className={`rounded-lg p-4 ${card.bgColor}`}>
+			<h4 className={`font-medium ${card.textColor}`}>{card.title}</h4>
+			<p className={`text-sm ${card.contentColor}`}>{card.content}</p>
+			{card.examples && (
+				<>
+					<p className="mb-3 text-sm font-medium text-green-600 dark:text-green-400">
+						Exemplos de acesso direto:
+					</p>
+					<div className="space-y-1 text-xs text-green-600 dark:text-green-400">
+						{card.examples.map((example) => (
+							<p key={example}>
+								• {example.split(": ")[0]}:{" "}
+								<code className="rounded bg-green-100 px-1 dark:bg-green-800">
+									{example.split(": ")[1] || example.split(": ")[0]}
+								</code>
+							</p>
+						))}
+					</div>
+				</>
+			)}
+		</div>
+	);
+}
+
+// Main Component
+export default function ConferenciaCreate({ fornecedores }: CreateProps) {
+	const { data, setData, post, processing, errors, reset } = useForm<FormData>(
+		getInitialFormData(),
+	);
+
+	// Event handlers
+	const handleFieldChange = useMemo(
+		() => (name: string, value: string) => {
+			setData(name as keyof FormData, value);
+		},
+		[setData],
+	);
+
+	const handleSubmit = useMemo(
+		() => (e: React.FormEvent) => {
+			e.preventDefault();
+			post(conferencias.index());
+		},
+		[post],
+	);
+
+	const handleObservacoesChange = useMemo(
+		() => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+			setData("observacoes", e.target.value);
+		},
+		[setData],
+	);
+
+	const handleReset = useMemo(
+		() => () => {
+			reset();
+		},
+		[reset],
+	);
+
+	return (
+		<AppLayout breadcrumbs={BREADCRUMBS}>
 			<Head title="Nova Conferência" />
 
 			<div className="flex h-full flex-1 flex-col gap-6 p-6">
@@ -98,126 +288,44 @@ export default function ConferenciaCreate({ fornecedores }: CreateProps) {
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
-							{/* Fornecedor */}
-							<div className="space-y-2">
-								<Label htmlFor={fornecedorId}>Fornecedor *</Label>
-								<Select
-									value={data.fornecedor_id}
-									onValueChange={(value) => setData("fornecedor_id", value)}
-									required
+							{/* Form Fields */}
+							{FORM_FIELDS.map((field) => (
+								<InputField
+									key={field.name}
+									field={field}
+									value={data[field.name]}
+									onChange={handleFieldChange}
+									error={errors[field.name]}
 								>
-									<SelectTrigger
-										className={errors.fornecedor_id ? "border-red-500" : ""}
-									>
-										<SelectValue placeholder="Selecione um fornecedor" />
-									</SelectTrigger>
-									<SelectContent>
-										{fornecedores && fornecedores.length > 0 ? (
-											fornecedores.map((fornecedor) => (
-												<SelectItem
-													key={fornecedor.id}
-													value={fornecedor.id.toString()}
-												>
-													{fornecedor.razao_social}
-												</SelectItem>
-											))
-										) : (
-											<SelectItem value="no-fornecedor" disabled>
-												Nenhum fornecedor disponível
-											</SelectItem>
-										)}
-									</SelectContent>
-								</Select>
-								{errors.fornecedor_id && (
-									<p className="text-sm text-red-500">{errors.fornecedor_id}</p>
-								)}
-							</div>
-
-							{/* Período */}
-							<div className="space-y-2">
-								<Label htmlFor={periodoId}>Período *</Label>
-								<Input
-									id={periodoId}
-									type="text"
-									value={data.periodo}
-									onChange={(e) => setData("periodo", e.target.value)}
-									placeholder="Ex: 01/2024"
-									required
-									className={errors.periodo ? "border-red-500" : ""}
-								/>
-								{errors.periodo && (
-									<p className="text-sm text-red-500">{errors.periodo}</p>
-								)}
-								<p className="text-xs text-gray-500">Formato: MM/AAAA</p>
-							</div>
+									{field.name === "fornecedor_id" && (
+										<FornecedorSelectOptions fornecedores={fornecedores} />
+									)}
+								</InputField>
+							))}
 
 							<Separator />
 
 							{/* Observações */}
 							<div className="space-y-2">
-								<Label htmlFor={observacoesId}>Observações</Label>
+								<Label htmlFor="observacoes">Observações</Label>
 								<Textarea
-									id={observacoesId}
 									value={data.observacoes}
-									onChange={(e) => setData("observacoes", e.target.value)}
-									placeholder="Observações adicionais sobre a conferência..."
+									onChange={handleObservacoesChange}
+									placeholder={MESSAGES.observacoesPlaceholder}
 									rows={4}
 									className={errors.observacoes ? "border-red-500" : ""}
 								/>
 								{errors.observacoes && (
 									<p className="text-sm text-red-500">{errors.observacoes}</p>
 								)}
-								<p className="text-xs text-gray-500">
-									Máximo de 1000 caracteres
-								</p>
+								<p className="text-xs text-gray-500">{MESSAGES.maxChars}</p>
 							</div>
 
-							{/* Information about totals */}
-							<div className="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
-								<h4 className="font-medium text-blue-900 dark:text-blue-100">
-									Informação
-								</h4>
-								<p className="text-sm text-blue-700 dark:text-blue-300">
-									Os totais (requisições, pedidos manuais e total geral) serão
-									calculados automaticamente com base no fornecedor selecionado
-									no momento da criação da conferência.
-								</p>
-							</div>
-
-							{/* Alternative: Detailed Conference Workflow */}
-							<div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
-								<h4 className="font-medium text-green-900 dark:text-green-100">
-									Conferência Detalhada
-								</h4>
-								<p className="mb-3 text-sm text-green-700 dark:text-green-300">
-									Para adicionar valores manualmente e fazer conferência
-									detalhada, acesse diretamente a conferência por fornecedor.
-								</p>
-								<div className="space-y-2">
-									<p className="text-xs font-medium text-green-600 dark:text-green-400">
-										Exemplos de acesso direto:
-									</p>
-									<div className="space-y-1 text-xs text-green-600 dark:text-green-400">
-										<p>
-											• Janeiro 2024:{" "}
-											<code className="rounded bg-green-100 px-1 dark:bg-green-800">
-												/conferencias/fornecedor/1/2024-01
-											</code>
-										</p>
-										<p>
-											• Dezembro 2023:{" "}
-											<code className="rounded bg-green-100 px-1 dark:bg-green-800">
-												/conferencias/fornecedor/2/2023-12
-											</code>
-										</p>
-										<p>
-											Formato:{" "}
-											<code className="rounded bg-green-100 px-1 dark:bg-green-800">
-												/conferencias/fornecedor/[ID]/[ANO-MES]
-											</code>
-										</p>
-									</div>
-								</div>
+							{/* Information Cards */}
+							<div className="space-y-4">
+								{INFO_CARDS.map((card) => (
+									<InfoCard key={card.title} card={card} />
+								))}
 							</div>
 						</CardContent>
 					</Card>
@@ -227,7 +335,7 @@ export default function ConferenciaCreate({ fornecedores }: CreateProps) {
 						<Button
 							type="button"
 							variant="outline"
-							onClick={() => reset()}
+							onClick={handleReset}
 							disabled={processing}
 						>
 							Limpar

@@ -16,7 +16,13 @@ const setCookie = (name: string, value: string, days = 365) => {
 	}
 
 	const maxAge = days * 24 * 60 * 60;
-	document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
+	const cookieString = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
+	Object.defineProperty(document, "cookie", {
+		writable: true,
+		value: document.cookie
+			? `${document.cookie}; ${cookieString}`
+			: cookieString,
+	});
 };
 
 const applyTheme = (appearance: Appearance) => {

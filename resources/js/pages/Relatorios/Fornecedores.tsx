@@ -234,10 +234,10 @@ export default function RelatorioFornecedores({
 							<CardTitle className="text-sm font-medium">
 								Com Movimento
 							</CardTitle>
-							<TrendingUp className="h-4 w-4 text-blue-600" />
+							<TrendingUp className="h-4 w-4 text-blue-800" />
 						</CardHeader>
 						<CardContent>
-							<div className="text-2xl font-bold text-blue-600">
+							<div className="text-2xl font-bold text-blue-800">
 								{stats.fornecedores_com_movimento}
 							</div>
 							<p className="text-xs text-muted-foreground">com requisições</p>
@@ -450,7 +450,7 @@ export default function RelatorioFornecedores({
 												className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
 											>
 												<div className="flex items-center space-x-3">
-													<div className="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-600 rounded-full text-xs font-medium">
+													<div className="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
 														{index + 1}
 													</div>
 													<div>

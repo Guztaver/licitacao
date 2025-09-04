@@ -57,19 +57,19 @@ const STAT_CARDS = [
 	{
 		key: "total_requisicoes" as const,
 		title: "Requisições totais",
-		color: "text-blue-600",
+		color: "text-grey-600",
 		format: (value: number) => value.toString(),
 	},
 	{
 		key: "requisicoes_concretizadas" as const,
 		title: "Concretizadas",
-		color: "text-green-600",
+		color: "text-grey-600",
 		format: (value: number) => value.toString(),
 	},
 	{
 		key: "valor_total" as const,
 		title: "Valor total",
-		color: "text-purple-600",
+		color: "text-grey-600",
 		format: (value: number) =>
 			new Intl.NumberFormat("pt-BR", {
 				style: "currency",
@@ -81,7 +81,7 @@ const STAT_CARDS = [
 	{
 		key: "requisicoes_mes_atual" as const,
 		title: "Este mês",
-		color: "text-amber-600",
+		color: "text-grey-600",
 		format: (value: number) => value.toString(),
 	},
 ];
@@ -215,7 +215,7 @@ function RequisicoesTable({
 							return (
 								<TableRow key={requisicao.id}>
 									<TableCell>
-										<div className="font-medium text-blue-600">
+										<div className="font-medium text-blue-800">
 											{requisicao.numero_completo}
 										</div>
 									</TableCell>

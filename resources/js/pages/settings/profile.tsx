@@ -35,8 +35,8 @@ export default function Profile({
 			<SettingsLayout>
 				<div className="space-y-6">
 					<HeadingSmall
-						title="Profile information"
-						description="Update your name and email address"
+						title="Informações de perfil"
+						description="Atualize suas informações de perfil e endereço de e-mail."
 					/>
 
 					<Form
@@ -49,7 +49,7 @@ export default function Profile({
 						{({ processing, recentlySuccessful, errors }) => (
 							<>
 								<div className="grid gap-2">
-									<Label htmlFor="name">Name</Label>
+									<Label htmlFor="name">Nome</Label>
 
 									<Input
 										id="name"
@@ -58,14 +58,14 @@ export default function Profile({
 										name="name"
 										required
 										autoComplete="name"
-										placeholder="Full name"
+										placeholder="Nome Completo"
 									/>
 
 									<InputError className="mt-2" message={errors.name} />
 								</div>
 
 								<div className="grid gap-2">
-									<Label htmlFor="email">Email address</Label>
+									<Label htmlFor="email">Endereço de E-mail</Label>
 
 									<Input
 										id="email"
@@ -75,7 +75,7 @@ export default function Profile({
 										name="email"
 										required
 										autoComplete="username"
-										placeholder="Email address"
+										placeholder="Endereço de E-mail"
 									/>
 
 									<InputError className="mt-2" message={errors.email} />
@@ -104,7 +104,7 @@ export default function Profile({
 								)}
 
 								<div className="flex items-center gap-4">
-									<Button disabled={processing}>Save</Button>
+									<Button disabled={processing}>Salvar</Button>
 
 									<Transition
 										show={recentlySuccessful}

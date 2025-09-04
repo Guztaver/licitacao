@@ -137,7 +137,7 @@ const SectionHeader = ({
 		</div>
 		<Link
 			href={linkHref}
-			className="inline-flex items-center text-sm text-blue-800 hover:text-blue-900"
+			className="inline-flex items-center text-sm text-blue-900 hover:text-blue-900"
 		>
 			{linkText}
 			<ArrowRight className="ml-1 h-4 w-4" />
@@ -268,7 +268,7 @@ export default function Dashboard({
 	const quickActions = [
 		{
 			href: requisicoes.create(),
-			icon: <FileText className="mr-3 h-5 w-5 text-blue-800" />,
+			icon: <FileText className="mr-3 h-5 w-5 text-blue-900" />,
 			title: "Nova Requisição",
 			description: "Criar nova requisição",
 		},
@@ -379,7 +379,7 @@ export default function Dashboard({
 											<div className="flex-1">
 												<Link
 													href={fornecedores.show(fornecedor.id)}
-													className="font-medium text-blue-800 hover:text-blue-900"
+													className="font-medium text-blue-900 hover:text-blue-900"
 												>
 													{fornecedor.razao_social}
 												</Link>

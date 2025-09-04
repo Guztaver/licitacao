@@ -77,21 +77,21 @@ const STATS_CONFIG = [
 		key: "com_requisicoes" as const,
 		title: "Com Requisições",
 		icon: Building,
-		color: "text-green-600",
+		color: "text-gray-900",
 		getDescription: () => "emitentes ativos",
 	},
 	{
 		key: "total_requisicoes" as const,
 		title: "Total Requisições",
 		icon: Building,
-		color: "text-blue-600",
+		color: "text-gray-900",
 		getDescription: () => "requisições emitidas",
 	},
 	{
 		key: "sem_atividade" as const,
 		title: "Sem Atividade",
 		icon: Building,
-		color: "text-amber-600",
+		color: "text-gray-900",
 		getDescription: () => "sem requisições",
 	},
 ];
@@ -391,7 +391,7 @@ export default function EmitentesIndex({
 													<div>
 														<Link
 															href={emitentes.show(emitente.id)}
-															className="font-medium text-blue-600 hover:text-blue-800"
+															className="font-medium text-blue-800 hover:text-blue-900"
 														>
 															{emitente.nome}
 														</Link>

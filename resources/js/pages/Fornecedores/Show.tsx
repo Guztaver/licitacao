@@ -194,7 +194,7 @@ const RequisicoesTable = ({
 							<TableCell>
 								<Link
 									href={requisicoes.show(requisicao.id)}
-									className="font-medium text-blue-600 hover:text-blue-800"
+									className="font-medium text-blue-800 hover:text-blue-900"
 								>
 									{requisicao.numero_completo || requisicao.numero}
 								</Link>
@@ -457,7 +457,7 @@ export default function FornecedoresShow({
 								<StatCard
 									label="Total"
 									value={stats.total}
-									color="text-blue-600"
+									color="text-blue-800"
 									description="requisições"
 								/>
 

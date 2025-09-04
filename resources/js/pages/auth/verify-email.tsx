@@ -1,26 +1,30 @@
-// Components
-
 import { Form, Head } from "@inertiajs/react";
-import { LoaderCircle } from "lucide-react";
 import EmailVerificationNotificationController from "@/actions/App/Http/Controllers/Auth/EmailVerificationNotificationController";
-import TextLink from "@/components/text-link";
-import { Button } from "@/components/ui/button";
+import {
+	AuthSubmitButton,
+	AuthNavigationLink,
+	AuthStatusMessage,
+} from "@/components/auth";
 import AuthLayout from "@/layouts/auth-layout";
 import { logout } from "@/routes";
+import { AUTH_MESSAGES } from "@/constants/auth/constants";
 
-export default function VerifyEmail({ status }: { status?: string }) {
+interface VerifyEmailProps {
+	status?: string;
+}
+
+export default function VerifyEmail({ status }: VerifyEmailProps) {
+	const isVerificationLinkSent = status === "verification-link-sent";
+
 	return (
 		<AuthLayout
-			title="Verify email"
-			description="Please verify your email address by clicking on the link we just emailed to you."
+			title={AUTH_MESSAGES.VERIFY_EMAIL_TITLE}
+			description={AUTH_MESSAGES.VERIFY_EMAIL_DESCRIPTION}
 		>
 			<Head title="Email verification" />
 
-			{status === "verification-link-sent" && (
-				<div className="mb-4 text-center text-sm font-medium text-green-600">
-					A new verification link has been sent to the email address you
-					provided during registration.
-				</div>
+			{isVerificationLinkSent && (
+				<AuthStatusMessage message={AUTH_MESSAGES.VERIFICATION_LINK_SENT} />
 			)}
 
 			<Form
@@ -29,14 +33,16 @@ export default function VerifyEmail({ status }: { status?: string }) {
 			>
 				{({ processing }) => (
 					<>
-						<Button disabled={processing} variant="secondary">
-							{processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-							Resend verification email
-						</Button>
+						<AuthSubmitButton processing={processing} variant="secondary">
+							{AUTH_MESSAGES.RESEND_VERIFICATION_BUTTON}
+						</AuthSubmitButton>
 
-						<TextLink href={logout()} className="mx-auto block text-sm">
-							Log out
-						</TextLink>
+						<AuthNavigationLink
+							href={logout()}
+							className="mx-auto block text-sm"
+						>
+							{AUTH_MESSAGES.LOGOUT_LINK}
+						</AuthNavigationLink>
 					</>
 				)}
 			</Form>

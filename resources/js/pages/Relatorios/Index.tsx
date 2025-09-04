@@ -261,7 +261,7 @@ export default function RelatoriosIndex({
 											}}
 										>
 											<div className="flex items-start space-x-3">
-												<tipo.icon className="mt-1 h-6 w-6 text-blue-600" />
+												<tipo.icon className="mt-1 h-6 w-6 text-blue-800" />
 												<div>
 													<h3 className="font-medium text-gray-900 dark:text-gray-100">
 														{tipo.nome}
@@ -467,7 +467,7 @@ export default function RelatoriosIndex({
 							</CardHeader>
 							<CardContent className="space-y-4">
 								<div className="text-center">
-									<div className="text-2xl font-bold text-blue-600">
+									<div className="text-2xl font-bold">
 										{stats.requisicoes_este_mes}
 									</div>
 									<div className="text-sm text-gray-500">
@@ -476,7 +476,7 @@ export default function RelatoriosIndex({
 								</div>
 								<div className="border-t pt-4">
 									<div className="text-center">
-										<div className="text-2xl font-bold text-green-600">
+										<div className="text-2xl font-bold ">
 											{stats.concretizadas}
 										</div>
 										<div className="text-sm text-gray-500">Concretizadas</div>
@@ -484,23 +484,19 @@ export default function RelatoriosIndex({
 								</div>
 								<div className="border-t pt-4">
 									<div className="text-center">
-										<div className="text-2xl font-bold text-yellow-600">
-											{stats.pendentes}
-										</div>
+										<div className="text-2xl font-bold">{stats.pendentes}</div>
 										<div className="text-sm text-gray-500">Pendentes</div>
 									</div>
 								</div>
 								<div className="border-t pt-4">
 									<div className="text-center">
-										<div className="text-2xl font-bold text-red-600">
-											{stats.rejeitadas}
-										</div>
+										<div className="text-2xl font-bold">{stats.rejeitadas}</div>
 										<div className="text-sm text-gray-500">Canceladas</div>
 									</div>
 								</div>
 								<div className="border-t pt-4">
 									<div className="text-center">
-										<div className="text-2xl font-bold text-purple-600">
+										<div className="text-2xl font-bold">
 											{formatCurrency(stats.valor_total_mes)}
 										</div>
 										<div className="text-sm text-gray-500">Valor total</div>
