@@ -155,7 +155,13 @@ php artisan migrate
 php artisan db:seed
 ```
 
-#### 6. Inicie o Ambiente de Desenvolvimento
+#### 6. Gerar os Tipos TypeScript (Wayfinder)
+```bash
+# Gerar bindings TypeScript para os controladores Laravel
+php artisan wayfinder:generate
+```
+
+#### 7. Inicie o Ambiente de Desenvolvimento
 ```bash
 # Opção 1: Usar o comando composer personalizado (recomendado)
 composer run dev
@@ -220,6 +226,9 @@ npm run lint            # ESLint com auto-fix
 npm run format          # Prettier para formatação
 npm run types           # Verificação de tipos TypeScript
 
+# Wayfinder (Geração de Tipos TypeScript)
+php artisan wayfinder:generate       # Gerar bindings TypeScript
+
 # Docker
 docker build -t licitacao-project .  # Build da imagem Docker
 docker-compose up -d                  # Iniciar com Docker Compose
@@ -241,12 +250,14 @@ app/
 ### Frontend (React)
 ```
 resources/js/
-├── components/         # Componentes reutilizáveis
-├── pages/             # Páginas da aplicação (Inertia.js)
-├── layouts/           # Layouts da aplicação
-├── hooks/             # Custom hooks
-├── lib/               # Utilitários e configurações
-└── types/             # Definições de tipos TypeScript
+├── actions/           # Bindings TypeScript gerados pelo Wayfinder
+├── components/        # Componentes reutilizáveis
+├── pages/            # Páginas da aplicação (Inertia.js)
+├── layouts/          # Layouts da aplicação
+├── hooks/            # Custom hooks
+├── lib/              # Utilitários e configurações
+├── wayfinder/        # Tipos base do Wayfinder
+└── types/            # Definições de tipos TypeScript
 ```
 
 ## 🔒 Segurança
@@ -259,6 +270,37 @@ O sistema implementa várias camadas de segurança:
 - **CSRF Protection**: Proteção contra ataques CSRF
 - **SQL Injection**: Prevenção através do Eloquent ORM
 - **XSS Protection**: Sanitização automática de dados de entrada
+
+## 🔗 Laravel Wayfinder
+
+O projeto utiliza o **Laravel Wayfinder** para gerar automaticamente bindings TypeScript dos controladores Laravel, proporcionando type safety entre frontend e backend.
+
+### Características do Wayfinder:
+- **Type Safety**: Bindings TypeScript automáticos
+- **Form Variants**: Integração com Inertia.js Forms
+- **Route Generation**: Geração automática de rotas tipadas
+- **Auto-sync**: Sincronização automática com mudanças no backend
+
+### Comandos Importantes:
+```bash
+# Gerar bindings TypeScript
+php artisan wayfinder:generate
+
+# Os arquivos são gerados em:
+# - resources/js/actions/     # Controladores tipados
+# - resources/js/wayfinder/   # Tipos base
+# - resources/js/routes.ts    # Rotas tipadas
+```
+
+### Uso nos Componentes:
+```typescript
+import RegisteredUserController from "@/actions/App/Http/Controllers/Auth/RegisteredUserController";
+
+// Uso com Inertia Form
+<Form {...RegisteredUserController.store.form()}>
+  {/* form fields */}
+</Form>
+```
 
 ## 📈 Monitoramento e Logs
 

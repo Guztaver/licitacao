@@ -77,8 +77,10 @@ install: ## Install dependencies locally
 	composer install
 	@echo "📦 Installing Node.js dependencies..."
 	npm install
+	@echo "🔗 Generating Wayfinder types..."
+	php artisan wayfinder:generate
 
-dev: ## Start development environment locally
+dev: wayfinder ## Start development environment locally
 	@echo "🔧 Starting development environment..."
 	composer run dev
 
@@ -100,6 +102,10 @@ format: ## Format code
 	@echo "✨ Formatting code..."
 	./vendor/bin/pint
 	npm run format
+
+wayfinder: ## Generate Wayfinder TypeScript bindings
+	@echo "🔗 Generating Wayfinder TypeScript bindings..."
+	php artisan wayfinder:generate
 
 # Production commands
 prod: ## Build and run production container

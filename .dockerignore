@@ -121,3 +121,7 @@ webpack.mix.js
 
 # Cache and temporary Laravel files
 server.php
+
+# Keep Wayfinder generated files (needed for build)
+!resources/js/actions/
+!resources/js/wayfinder/

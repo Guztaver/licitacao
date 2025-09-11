@@ -1,4 +1,51 @@
 # Multi-stage Dockerfile for Laravel React Application
+# Stage 1: PHP Setup and Wayfinder Generation
+FROM php:8.4-fpm-alpine AS php-wayfinder
+
+# Create non-root user first
+RUN addgroup -g 1000 -S www && \
+    adduser -u 1000 -D -S -G www www
+
+# Install system dependencies needed for Laravel
+RUN apk add --no-cache \
+    git \
+    curl \
+    libpng-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    sqlite \
+    sqlite-dev \
+    oniguruma-dev
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_sqlite gd xml mbstring
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Create application directory
+WORKDIR /var/www/html
+
+# Copy composer files first for better layer caching
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies (with dev dependencies for artisan commands)
+RUN composer install --optimize-autoloader --no-scripts --no-interaction
+
+# Copy Laravel application files
+COPY --chown=www:www . .
+
+# Run composer post-install scripts
+RUN composer run-script post-autoload-dump
+
+# Generate Laravel app key for wayfinder generation
+RUN php artisan key:generate --force
+
+# Generate Wayfinder types
+RUN php artisan wayfinder:generate
+
+# Stage 2: Frontend Build
 FROM node:22-alpine AS frontend-builder
 
 WORKDIR /app
@@ -15,10 +62,15 @@ COPY public/ ./public/
 COPY vite.config.ts ./
 COPY tsconfig.json ./
 
+# Copy generated Wayfinder types from previous stage
+COPY --from=php-wayfinder /var/www/html/resources/js/wayfinder ./resources/js/wayfinder
+COPY --from=php-wayfinder /var/www/html/resources/js/actions ./resources/js/actions
+COPY --from=php-wayfinder /var/www/html/resources/js/routes.ts ./resources/js/routes.ts
+
 # Build frontend assets
 RUN npm run build
 
-# PHP Application Stage
+# Stage 3: Production PHP Application
 FROM php:8.4-fpm-alpine AS php-base
 
 # Create non-root user first
@@ -52,11 +104,13 @@ WORKDIR /var/www/html
 # Copy composer files first for better layer caching
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies
+# Install PHP dependencies (production only)
 RUN composer install --optimize-autoloader --no-dev --no-scripts --no-interaction
 
-# Copy application files
-COPY --chown=www:www . .
+# Copy application files from wayfinder stage (includes generated types)
+COPY --from=php-wayfinder --chown=www:www /var/www/html .
+
+# Copy built frontend assets
 COPY --from=frontend-builder --chown=www:www /app/public/build ./public/build
 
 # Create required directories and set permissions
