@@ -74,7 +74,6 @@ pids
 Dockerfile*
 docker-compose*.yml
 .dockerignore
-docker/
 
 # CI/CD
 .github/
@@ -107,8 +106,6 @@ phpstan.neon
 .prettierignore
 biome.json
 eslint.config.js
-tsconfig.json
-vite.config.ts
 postcss.config.js
 tailwind.config.js
 components.json
