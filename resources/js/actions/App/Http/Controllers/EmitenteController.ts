@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\EmitenteController::index
 * @see app/Http/Controllers/EmitenteController.php:16
@@ -42,6 +42,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\EmitenteController::index
+* @see app/Http/Controllers/EmitenteController.php:16
+* @route '/emitentes'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::index
+* @see app/Http/Controllers/EmitenteController.php:16
+* @route '/emitentes'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::index
+* @see app/Http/Controllers/EmitenteController.php:16
+* @route '/emitentes'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\EmitenteController::create
@@ -88,6 +125,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\EmitenteController::create
+* @see app/Http/Controllers/EmitenteController.php:67
+* @route '/emitentes/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::create
+* @see app/Http/Controllers/EmitenteController.php:67
+* @route '/emitentes/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::create
+* @see app/Http/Controllers/EmitenteController.php:67
+* @route '/emitentes/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Http\Controllers\EmitenteController::store
 * @see app/Http/Controllers/EmitenteController.php:75
 * @route '/emitentes'
@@ -120,6 +194,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\EmitenteController::store
+* @see app/Http/Controllers/EmitenteController.php:75
+* @route '/emitentes'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::store
+* @see app/Http/Controllers/EmitenteController.php:75
+* @route '/emitentes'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\EmitenteController::show
@@ -190,6 +286,43 @@ show.head = (args: { emitente: number | { id: number } } | [emitente: number | {
 })
 
 /**
+* @see \App\Http\Controllers\EmitenteController::show
+* @see app/Http/Controllers/EmitenteController.php:95
+* @route '/emitentes/{emitente}'
+*/
+const showForm = (args: { emitente: number | { id: number } } | [emitente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::show
+* @see app/Http/Controllers/EmitenteController.php:95
+* @route '/emitentes/{emitente}'
+*/
+showForm.get = (args: { emitente: number | { id: number } } | [emitente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::show
+* @see app/Http/Controllers/EmitenteController.php:95
+* @route '/emitentes/{emitente}'
+*/
+showForm.head = (args: { emitente: number | { id: number } } | [emitente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\EmitenteController::edit
 * @see app/Http/Controllers/EmitenteController.php:157
 * @route '/emitentes/{emitente}/edit'
@@ -256,6 +389,43 @@ edit.head = (args: { emitente: number | { id: number } } | [emitente: number | {
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\EmitenteController::edit
+* @see app/Http/Controllers/EmitenteController.php:157
+* @route '/emitentes/{emitente}/edit'
+*/
+const editForm = (args: { emitente: number | { id: number } } | [emitente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::edit
+* @see app/Http/Controllers/EmitenteController.php:157
+* @route '/emitentes/{emitente}/edit'
+*/
+editForm.get = (args: { emitente: number | { id: number } } | [emitente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::edit
+* @see app/Http/Controllers/EmitenteController.php:157
+* @route '/emitentes/{emitente}/edit'
+*/
+editForm.head = (args: { emitente: number | { id: number } } | [emitente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\EmitenteController::update
@@ -326,6 +496,53 @@ update.patch = (args: { emitente: number | { id: number } } | [emitente: number 
 })
 
 /**
+* @see \App\Http\Controllers\EmitenteController::update
+* @see app/Http/Controllers/EmitenteController.php:174
+* @route '/emitentes/{emitente}'
+*/
+const updateForm = (args: { emitente: number | { id: number } } | [emitente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::update
+* @see app/Http/Controllers/EmitenteController.php:174
+* @route '/emitentes/{emitente}'
+*/
+updateForm.put = (args: { emitente: number | { id: number } } | [emitente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::update
+* @see app/Http/Controllers/EmitenteController.php:174
+* @route '/emitentes/{emitente}'
+*/
+updateForm.patch = (args: { emitente: number | { id: number } } | [emitente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\EmitenteController::destroy
 * @see app/Http/Controllers/EmitenteController.php:193
 * @route '/emitentes/{emitente}'
@@ -384,6 +601,38 @@ destroy.delete = (args: { emitente: number | { id: number } } | [emitente: numbe
 })
 
 /**
+* @see \App\Http\Controllers\EmitenteController::destroy
+* @see app/Http/Controllers/EmitenteController.php:193
+* @route '/emitentes/{emitente}'
+*/
+const destroyForm = (args: { emitente: number | { id: number } } | [emitente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::destroy
+* @see app/Http/Controllers/EmitenteController.php:193
+* @route '/emitentes/{emitente}'
+*/
+destroyForm.delete = (args: { emitente: number | { id: number } } | [emitente: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
+
+/**
 * @see \App\Http\Controllers\EmitenteController::exportMethod
 * @see app/Http/Controllers/EmitenteController.php:210
 * @route '/emitentes-export'
@@ -426,6 +675,43 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: exportMethod.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\EmitenteController::exportMethod
+* @see app/Http/Controllers/EmitenteController.php:210
+* @route '/emitentes-export'
+*/
+const exportMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportMethod.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::exportMethod
+* @see app/Http/Controllers/EmitenteController.php:210
+* @route '/emitentes-export'
+*/
+exportMethodForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportMethod.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\EmitenteController::exportMethod
+* @see app/Http/Controllers/EmitenteController.php:210
+* @route '/emitentes-export'
+*/
+exportMethodForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportMethod.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+exportMethod.form = exportMethodForm
 
 const EmitenteController = { index, create, store, show, edit, update, destroy, exportMethod, export: exportMethod }
 

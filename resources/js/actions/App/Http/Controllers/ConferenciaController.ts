@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ConferenciaController::index
 * @see app/Http/Controllers/ConferenciaController.php:20
@@ -42,6 +42,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::index
+* @see app/Http/Controllers/ConferenciaController.php:20
+* @route '/conferencias'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::index
+* @see app/Http/Controllers/ConferenciaController.php:20
+* @route '/conferencias'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::index
+* @see app/Http/Controllers/ConferenciaController.php:20
+* @route '/conferencias'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::create
@@ -88,6 +125,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\ConferenciaController::create
+* @see app/Http/Controllers/ConferenciaController.php:103
+* @route '/conferencias/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::create
+* @see app/Http/Controllers/ConferenciaController.php:103
+* @route '/conferencias/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::create
+* @see app/Http/Controllers/ConferenciaController.php:103
+* @route '/conferencias/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Http\Controllers\ConferenciaController::store
 * @see app/Http/Controllers/ConferenciaController.php:115
 * @route '/conferencias'
@@ -120,6 +194,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::store
+* @see app/Http/Controllers/ConferenciaController.php:115
+* @route '/conferencias'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::store
+* @see app/Http/Controllers/ConferenciaController.php:115
+* @route '/conferencias'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::show
@@ -190,6 +286,43 @@ show.head = (args: { conferencia: number | { id: number } } | [conferencia: numb
 })
 
 /**
+* @see \App\Http\Controllers\ConferenciaController::show
+* @see app/Http/Controllers/ConferenciaController.php:164
+* @route '/conferencias/{conferencia}'
+*/
+const showForm = (args: { conferencia: number | { id: number } } | [conferencia: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::show
+* @see app/Http/Controllers/ConferenciaController.php:164
+* @route '/conferencias/{conferencia}'
+*/
+showForm.get = (args: { conferencia: number | { id: number } } | [conferencia: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::show
+* @see app/Http/Controllers/ConferenciaController.php:164
+* @route '/conferencias/{conferencia}'
+*/
+showForm.head = (args: { conferencia: number | { id: number } } | [conferencia: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\ConferenciaController::edit
 * @see app/Http/Controllers/ConferenciaController.php:0
 * @route '/conferencias/{conferencia}/edit'
@@ -250,6 +383,43 @@ edit.head = (args: { conferencia: string | number } | [conferencia: string | num
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::edit
+* @see app/Http/Controllers/ConferenciaController.php:0
+* @route '/conferencias/{conferencia}/edit'
+*/
+const editForm = (args: { conferencia: string | number } | [conferencia: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::edit
+* @see app/Http/Controllers/ConferenciaController.php:0
+* @route '/conferencias/{conferencia}/edit'
+*/
+editForm.get = (args: { conferencia: string | number } | [conferencia: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::edit
+* @see app/Http/Controllers/ConferenciaController.php:0
+* @route '/conferencias/{conferencia}/edit'
+*/
+editForm.head = (args: { conferencia: string | number } | [conferencia: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::update
@@ -314,8 +484,55 @@ update.patch = (args: { conferencia: string | number } | [conferencia: string | 
 })
 
 /**
+* @see \App\Http\Controllers\ConferenciaController::update
+* @see app/Http/Controllers/ConferenciaController.php:0
+* @route '/conferencias/{conferencia}'
+*/
+const updateForm = (args: { conferencia: string | number } | [conferencia: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::update
+* @see app/Http/Controllers/ConferenciaController.php:0
+* @route '/conferencias/{conferencia}'
+*/
+updateForm.put = (args: { conferencia: string | number } | [conferencia: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::update
+* @see app/Http/Controllers/ConferenciaController.php:0
+* @route '/conferencias/{conferencia}'
+*/
+updateForm.patch = (args: { conferencia: string | number } | [conferencia: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\ConferenciaController::destroy
-* @see app/Http/Controllers/ConferenciaController.php:375
+* @see app/Http/Controllers/ConferenciaController.php:372
 * @route '/conferencias/{conferencia}'
 */
 export const destroy = (args: { conferencia: number | { id: number } } | [conferencia: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -330,7 +547,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::destroy
-* @see app/Http/Controllers/ConferenciaController.php:375
+* @see app/Http/Controllers/ConferenciaController.php:372
 * @route '/conferencias/{conferencia}'
 */
 destroy.url = (args: { conferencia: number | { id: number } } | [conferencia: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -363,7 +580,7 @@ destroy.url = (args: { conferencia: number | { id: number } } | [conferencia: nu
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::destroy
-* @see app/Http/Controllers/ConferenciaController.php:375
+* @see app/Http/Controllers/ConferenciaController.php:372
 * @route '/conferencias/{conferencia}'
 */
 destroy.delete = (args: { conferencia: number | { id: number } } | [conferencia: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -372,8 +589,40 @@ destroy.delete = (args: { conferencia: number | { id: number } } | [conferencia:
 })
 
 /**
+* @see \App\Http\Controllers\ConferenciaController::destroy
+* @see app/Http/Controllers/ConferenciaController.php:372
+* @route '/conferencias/{conferencia}'
+*/
+const destroyForm = (args: { conferencia: number | { id: number } } | [conferencia: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::destroy
+* @see app/Http/Controllers/ConferenciaController.php:372
+* @route '/conferencias/{conferencia}'
+*/
+destroyForm.delete = (args: { conferencia: number | { id: number } } | [conferencia: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
+
+/**
 * @see \App\Http\Controllers\ConferenciaController::exportMethod
-* @see app/Http/Controllers/ConferenciaController.php:294
+* @see app/Http/Controllers/ConferenciaController.php:291
 * @route '/conferencias-export'
 */
 export const exportMethod = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -388,7 +637,7 @@ exportMethod.definition = {
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::exportMethod
-* @see app/Http/Controllers/ConferenciaController.php:294
+* @see app/Http/Controllers/ConferenciaController.php:291
 * @route '/conferencias-export'
 */
 exportMethod.url = (options?: RouteQueryOptions) => {
@@ -397,7 +646,7 @@ exportMethod.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::exportMethod
-* @see app/Http/Controllers/ConferenciaController.php:294
+* @see app/Http/Controllers/ConferenciaController.php:291
 * @route '/conferencias-export'
 */
 exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -407,7 +656,7 @@ exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::exportMethod
-* @see app/Http/Controllers/ConferenciaController.php:294
+* @see app/Http/Controllers/ConferenciaController.php:291
 * @route '/conferencias-export'
 */
 exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -416,8 +665,45 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\ConferenciaController::exportMethod
+* @see app/Http/Controllers/ConferenciaController.php:291
+* @route '/conferencias-export'
+*/
+const exportMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportMethod.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::exportMethod
+* @see app/Http/Controllers/ConferenciaController.php:291
+* @route '/conferencias-export'
+*/
+exportMethodForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportMethod.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::exportMethod
+* @see app/Http/Controllers/ConferenciaController.php:291
+* @route '/conferencias-export'
+*/
+exportMethodForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportMethod.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+exportMethod.form = exportMethodForm
+
+/**
 * @see \App\Http\Controllers\ConferenciaController::fornecedor
-* @see app/Http/Controllers/ConferenciaController.php:212
+* @see app/Http/Controllers/ConferenciaController.php:209
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}'
 */
 export const fornecedor = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -432,7 +718,7 @@ fornecedor.definition = {
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::fornecedor
-* @see app/Http/Controllers/ConferenciaController.php:212
+* @see app/Http/Controllers/ConferenciaController.php:209
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}'
 */
 fornecedor.url = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions) => {
@@ -458,7 +744,7 @@ fornecedor.url = (args: { fornecedor: string | number, periodo: string | number 
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::fornecedor
-* @see app/Http/Controllers/ConferenciaController.php:212
+* @see app/Http/Controllers/ConferenciaController.php:209
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}'
 */
 fornecedor.get = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -468,7 +754,7 @@ fornecedor.get = (args: { fornecedor: string | number, periodo: string | number 
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::fornecedor
-* @see app/Http/Controllers/ConferenciaController.php:212
+* @see app/Http/Controllers/ConferenciaController.php:209
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}'
 */
 fornecedor.head = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -477,8 +763,45 @@ fornecedor.head = (args: { fornecedor: string | number, periodo: string | number
 })
 
 /**
+* @see \App\Http\Controllers\ConferenciaController::fornecedor
+* @see app/Http/Controllers/ConferenciaController.php:209
+* @route '/conferencias/fornecedor/{fornecedor}/{periodo}'
+*/
+const fornecedorForm = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: fornecedor.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::fornecedor
+* @see app/Http/Controllers/ConferenciaController.php:209
+* @route '/conferencias/fornecedor/{fornecedor}/{periodo}'
+*/
+fornecedorForm.get = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: fornecedor.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::fornecedor
+* @see app/Http/Controllers/ConferenciaController.php:209
+* @route '/conferencias/fornecedor/{fornecedor}/{periodo}'
+*/
+fornecedorForm.head = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: fornecedor.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+fornecedor.form = fornecedorForm
+
+/**
 * @see \App\Http\Controllers\ConferenciaController::storePedidoManual
-* @see app/Http/Controllers/ConferenciaController.php:391
+* @see app/Http/Controllers/ConferenciaController.php:383
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais'
 */
 export const storePedidoManual = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -493,7 +816,7 @@ storePedidoManual.definition = {
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::storePedidoManual
-* @see app/Http/Controllers/ConferenciaController.php:391
+* @see app/Http/Controllers/ConferenciaController.php:383
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais'
 */
 storePedidoManual.url = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions) => {
@@ -519,7 +842,7 @@ storePedidoManual.url = (args: { fornecedor: string | number, periodo: string | 
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::storePedidoManual
-* @see app/Http/Controllers/ConferenciaController.php:391
+* @see app/Http/Controllers/ConferenciaController.php:383
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais'
 */
 storePedidoManual.post = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -528,8 +851,30 @@ storePedidoManual.post = (args: { fornecedor: string | number, periodo: string |
 })
 
 /**
+* @see \App\Http\Controllers\ConferenciaController::storePedidoManual
+* @see app/Http/Controllers/ConferenciaController.php:383
+* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais'
+*/
+const storePedidoManualForm = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storePedidoManual.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::storePedidoManual
+* @see app/Http/Controllers/ConferenciaController.php:383
+* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais'
+*/
+storePedidoManualForm.post = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storePedidoManual.url(args, options),
+    method: 'post',
+})
+
+storePedidoManual.form = storePedidoManualForm
+
+/**
 * @see \App\Http\Controllers\ConferenciaController::destroyPedidoManual
-* @see app/Http/Controllers/ConferenciaController.php:420
+* @see app/Http/Controllers/ConferenciaController.php:406
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}'
 */
 export const destroyPedidoManual = (args: { fornecedor: string | number, periodo: string | number, pedido: string | number } | [fornecedor: string | number, periodo: string | number, pedido: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -544,7 +889,7 @@ destroyPedidoManual.definition = {
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::destroyPedidoManual
-* @see app/Http/Controllers/ConferenciaController.php:420
+* @see app/Http/Controllers/ConferenciaController.php:406
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}'
 */
 destroyPedidoManual.url = (args: { fornecedor: string | number, periodo: string | number, pedido: string | number } | [fornecedor: string | number, periodo: string | number, pedido: string | number ], options?: RouteQueryOptions) => {
@@ -573,7 +918,7 @@ destroyPedidoManual.url = (args: { fornecedor: string | number, periodo: string 
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::destroyPedidoManual
-* @see app/Http/Controllers/ConferenciaController.php:420
+* @see app/Http/Controllers/ConferenciaController.php:406
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}'
 */
 destroyPedidoManual.delete = (args: { fornecedor: string | number, periodo: string | number, pedido: string | number } | [fornecedor: string | number, periodo: string | number, pedido: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -582,8 +927,40 @@ destroyPedidoManual.delete = (args: { fornecedor: string | number, periodo: stri
 })
 
 /**
+* @see \App\Http\Controllers\ConferenciaController::destroyPedidoManual
+* @see app/Http/Controllers/ConferenciaController.php:406
+* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}'
+*/
+const destroyPedidoManualForm = (args: { fornecedor: string | number, periodo: string | number, pedido: string | number } | [fornecedor: string | number, periodo: string | number, pedido: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroyPedidoManual.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::destroyPedidoManual
+* @see app/Http/Controllers/ConferenciaController.php:406
+* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}'
+*/
+destroyPedidoManualForm.delete = (args: { fornecedor: string | number, periodo: string | number, pedido: string | number } | [fornecedor: string | number, periodo: string | number, pedido: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroyPedidoManual.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroyPedidoManual.form = destroyPedidoManualForm
+
+/**
 * @see \App\Http\Controllers\ConferenciaController::finalizarConferencia
-* @see app/Http/Controllers/ConferenciaController.php:444
+* @see app/Http/Controllers/ConferenciaController.php:425
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}/finalizar'
 */
 export const finalizarConferencia = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -598,7 +975,7 @@ finalizarConferencia.definition = {
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::finalizarConferencia
-* @see app/Http/Controllers/ConferenciaController.php:444
+* @see app/Http/Controllers/ConferenciaController.php:425
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}/finalizar'
 */
 finalizarConferencia.url = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions) => {
@@ -624,13 +1001,35 @@ finalizarConferencia.url = (args: { fornecedor: string | number, periodo: string
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::finalizarConferencia
-* @see app/Http/Controllers/ConferenciaController.php:444
+* @see app/Http/Controllers/ConferenciaController.php:425
 * @route '/conferencias/fornecedor/{fornecedor}/{periodo}/finalizar'
 */
 finalizarConferencia.post = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: finalizarConferencia.url(args, options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::finalizarConferencia
+* @see app/Http/Controllers/ConferenciaController.php:425
+* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/finalizar'
+*/
+const finalizarConferenciaForm = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: finalizarConferencia.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ConferenciaController::finalizarConferencia
+* @see app/Http/Controllers/ConferenciaController.php:425
+* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/finalizar'
+*/
+finalizarConferenciaForm.post = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: finalizarConferencia.url(args, options),
+    method: 'post',
+})
+
+finalizarConferencia.form = finalizarConferenciaForm
 
 const ConferenciaController = { index, create, store, show, edit, update, destroy, exportMethod, fornecedor, storePedidoManual, destroyPedidoManual, finalizarConferencia, export: exportMethod }
 

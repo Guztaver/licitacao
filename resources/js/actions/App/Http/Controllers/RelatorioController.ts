@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\RelatorioController::exportRequisicoes
 * @see app/Http/Controllers/RelatorioController.php:284
@@ -42,6 +42,43 @@ exportRequisicoes.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
     url: exportRequisicoes.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\RelatorioController::exportRequisicoes
+* @see app/Http/Controllers/RelatorioController.php:284
+* @route '/relatorios/requisicoes/export'
+*/
+const exportRequisicoesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportRequisicoes.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::exportRequisicoes
+* @see app/Http/Controllers/RelatorioController.php:284
+* @route '/relatorios/requisicoes/export'
+*/
+exportRequisicoesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportRequisicoes.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::exportRequisicoes
+* @see app/Http/Controllers/RelatorioController.php:284
+* @route '/relatorios/requisicoes/export'
+*/
+exportRequisicoesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportRequisicoes.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+exportRequisicoes.form = exportRequisicoesForm
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportFornecedores
@@ -88,6 +125,43 @@ exportFornecedores.head = (options?: RouteQueryOptions): RouteDefinition<'head'>
 })
 
 /**
+* @see \App\Http\Controllers\RelatorioController::exportFornecedores
+* @see app/Http/Controllers/RelatorioController.php:375
+* @route '/relatorios/fornecedores/export'
+*/
+const exportFornecedoresForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportFornecedores.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::exportFornecedores
+* @see app/Http/Controllers/RelatorioController.php:375
+* @route '/relatorios/fornecedores/export'
+*/
+exportFornecedoresForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportFornecedores.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::exportFornecedores
+* @see app/Http/Controllers/RelatorioController.php:375
+* @route '/relatorios/fornecedores/export'
+*/
+exportFornecedoresForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportFornecedores.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+exportFornecedores.form = exportFornecedoresForm
+
+/**
 * @see \App\Http\Controllers\RelatorioController::exportConferencias
 * @see app/Http/Controllers/RelatorioController.php:474
 * @route '/relatorios/conferencias/export'
@@ -130,6 +204,43 @@ exportConferencias.head = (options?: RouteQueryOptions): RouteDefinition<'head'>
     url: exportConferencias.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\RelatorioController::exportConferencias
+* @see app/Http/Controllers/RelatorioController.php:474
+* @route '/relatorios/conferencias/export'
+*/
+const exportConferenciasForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportConferencias.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::exportConferencias
+* @see app/Http/Controllers/RelatorioController.php:474
+* @route '/relatorios/conferencias/export'
+*/
+exportConferenciasForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportConferencias.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::exportConferencias
+* @see app/Http/Controllers/RelatorioController.php:474
+* @route '/relatorios/conferencias/export'
+*/
+exportConferenciasForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportConferencias.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+exportConferencias.form = exportConferenciasForm
 
 /**
 * @see \App\Http\Controllers\RelatorioController::index
@@ -176,6 +287,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\RelatorioController::index
+* @see app/Http/Controllers/RelatorioController.php:17
+* @route '/relatorios'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::index
+* @see app/Http/Controllers/RelatorioController.php:17
+* @route '/relatorios'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::index
+* @see app/Http/Controllers/RelatorioController.php:17
+* @route '/relatorios'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
+
+/**
 * @see \App\Http\Controllers\RelatorioController::requisicoes
 * @see app/Http/Controllers/RelatorioController.php:51
 * @route '/relatorios/requisicoes'
@@ -218,6 +366,43 @@ requisicoes.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: requisicoes.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\RelatorioController::requisicoes
+* @see app/Http/Controllers/RelatorioController.php:51
+* @route '/relatorios/requisicoes'
+*/
+const requisicoesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: requisicoes.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::requisicoes
+* @see app/Http/Controllers/RelatorioController.php:51
+* @route '/relatorios/requisicoes'
+*/
+requisicoesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: requisicoes.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::requisicoes
+* @see app/Http/Controllers/RelatorioController.php:51
+* @route '/relatorios/requisicoes'
+*/
+requisicoesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: requisicoes.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+requisicoes.form = requisicoesForm
 
 /**
 * @see \App\Http\Controllers\RelatorioController::fornecedores
@@ -264,6 +449,43 @@ fornecedores.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\RelatorioController::fornecedores
+* @see app/Http/Controllers/RelatorioController.php:142
+* @route '/relatorios/fornecedores'
+*/
+const fornecedoresForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: fornecedores.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::fornecedores
+* @see app/Http/Controllers/RelatorioController.php:142
+* @route '/relatorios/fornecedores'
+*/
+fornecedoresForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: fornecedores.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::fornecedores
+* @see app/Http/Controllers/RelatorioController.php:142
+* @route '/relatorios/fornecedores'
+*/
+fornecedoresForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: fornecedores.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+fornecedores.form = fornecedoresForm
+
+/**
 * @see \App\Http\Controllers\RelatorioController::conferencias
 * @see app/Http/Controllers/RelatorioController.php:212
 * @route '/relatorios/conferencias'
@@ -306,6 +528,43 @@ conferencias.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: conferencias.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\RelatorioController::conferencias
+* @see app/Http/Controllers/RelatorioController.php:212
+* @route '/relatorios/conferencias'
+*/
+const conferenciasForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: conferencias.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::conferencias
+* @see app/Http/Controllers/RelatorioController.php:212
+* @route '/relatorios/conferencias'
+*/
+conferenciasForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: conferencias.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::conferencias
+* @see app/Http/Controllers/RelatorioController.php:212
+* @route '/relatorios/conferencias'
+*/
+conferenciasForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: conferencias.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+conferencias.form = conferenciasForm
 
 const RelatorioController = { exportRequisicoes, exportFornecedores, exportConferencias, index, requisicoes, fornecedores, conferencias }
 
