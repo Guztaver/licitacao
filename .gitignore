@@ -6,7 +6,7 @@
 /public/storage
 
 /resources/js/routes
-/resources/js/wayfinder
+
 /storage/*.key
 /storage/pail
 /vendor

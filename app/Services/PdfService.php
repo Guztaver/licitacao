@@ -11,9 +11,7 @@ class PdfService
     /**
      * Generate PDF for requisition with two versions.
      *
-     * @param Requisicao $requisicao
-     * @param string $type 'setor' for sector version, 'fornecedor' for supplier version
-     * @return Response
+     * @param  string  $type  'setor' for sector version, 'fornecedor' for supplier version
      */
     public function generateRequisicaoPdf(Requisicao $requisicao, string $type = 'setor'): Response
     {
@@ -41,8 +39,7 @@ class PdfService
     /**
      * Generate conference report PDF.
      *
-     * @param \App\Models\Conferencia $conferencia
-     * @return Response
+     * @param  \App\Models\Conferencia  $conferencia
      */
     public function generateConferenciaPdf($conferencia): Response
     {
@@ -71,9 +68,7 @@ class PdfService
     /**
      * Generate supplier contact report PDF.
      *
-     * @param \Illuminate\Support\Collection $fornecedores
-     * @param array $filters
-     * @return Response
+     * @param  \Illuminate\Support\Collection  $fornecedores
      */
     public function generateContatosFornecedoresPdf($fornecedores, array $filters = []): Response
     {
@@ -96,10 +91,6 @@ class PdfService
 
     /**
      * Get PDF view data for requisition.
-     *
-     * @param Requisicao $requisicao
-     * @param string $type
-     * @return array
      */
     private function getRequisicaoViewData(Requisicao $requisicao, string $type): array
     {
@@ -114,7 +105,7 @@ class PdfService
                 'data_recebimento' => $requisicao->data_recebimento->format('d/m/Y'),
                 'descricao' => $requisicao->descricao,
                 'status' => $requisicao->status_display,
-                'valor_final' => $requisicao->valor_final ? 'R$ ' . number_format($requisicao->valor_final, 2, ',', '.') : 'Não informado',
+                'valor_final' => $requisicao->valor_final ? 'R$ '.number_format($requisicao->valor_final, 2, ',', '.') : 'Não informado',
                 'numero_pedido_real' => $requisicao->numero_pedido_real ?? 'Não informado',
             ],
             'show_signature' => $type === 'fornecedor',

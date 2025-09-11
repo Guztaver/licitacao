@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RequisicaoController extends Controller
@@ -448,7 +447,7 @@ class RequisicaoController extends Controller
     {
         $type = $request->get('type', 'setor'); // 'setor' or 'fornecedor'
 
-        if (!in_array($type, ['setor', 'fornecedor'])) {
+        if (! in_array($type, ['setor', 'fornecedor'])) {
             $type = 'setor';
         }
 

@@ -17,7 +17,7 @@ class CheckUserType
      */
     public function handle(Request $request, Closure $next, ...$allowedTypes): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 
@@ -27,7 +27,7 @@ class CheckUserType
         $userType = $user->tipo_acesso ?? 'operacional';
 
         // Check if user type is allowed
-        if (!empty($allowedTypes) && !in_array($userType, $allowedTypes)) {
+        if (! empty($allowedTypes) && ! in_array($userType, $allowedTypes)) {
             abort(403, 'Acesso negado. Você não tem permissão para acessar esta área.');
         }
 

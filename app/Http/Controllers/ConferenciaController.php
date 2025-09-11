@@ -204,9 +204,6 @@ class ConferenciaController extends Controller
     /**
      * Display conference details for a specific fornecedor and period.
      *
-     * @param Request $request
-     * @param int $fornecedorId
-     * @param string $periodo
      * @return Response
      */
     public function fornecedor(Request $request, int $fornecedorId, string $periodo): Response|RedirectResponse
@@ -382,11 +379,6 @@ class ConferenciaController extends Controller
 
     /**
      * Store a new pedido manual for conferência.
-     *
-     * @param Request $request
-     * @param int $fornecedorId
-     * @param string $periodo
-     * @return RedirectResponse
      */
     public function storePedidoManual(Request $request, int $fornecedorId, string $periodo): RedirectResponse
     {
@@ -410,12 +402,6 @@ class ConferenciaController extends Controller
 
     /**
      * Delete a pedido manual from conferência.
-     *
-     * @param Request $request
-     * @param int $fornecedorId
-     * @param string $periodo
-     * @param int $pedidoId
-     * @return RedirectResponse
      */
     public function destroyPedidoManual(Request $request, int $fornecedorId, string $periodo, int $pedidoId): RedirectResponse
     {
@@ -435,11 +421,6 @@ class ConferenciaController extends Controller
 
     /**
      * Finalize conferência for a fornecedor and period.
-     *
-     * @param Request $request
-     * @param int $fornecedorId
-     * @param string $periodo
-     * @return RedirectResponse
      */
     public function finalizarConferencia(Request $request, int $fornecedorId, string $periodo): RedirectResponse
     {
