@@ -43,6 +43,11 @@ jobs:
       - name: Copy Environment File
         run: cp .env.example .env
 
+      - name: Update database path in .env file
+        run: |
+          echo "DB_DATABASE=$(pwd)/database/database.sqlite" >> .env
+          cat .env | grep DB_DATABASE
+
       - name: Generate Application Key
         run: php artisan key:generate
 
