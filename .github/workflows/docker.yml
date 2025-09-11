@@ -59,7 +59,7 @@ jobs:
         run: php artisan key:generate
 
       - name: Generate Wayfinder Types
-        run: php artisan wayfinder:generate
+        run: php artisan wayfinder:generate --with-form
 
       - name: Run Tests
         run: ./vendor/bin/pest

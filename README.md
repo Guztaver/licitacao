@@ -158,7 +158,7 @@ php artisan db:seed
 #### 6. Gerar os Tipos TypeScript (Wayfinder)
 ```bash
 # Gerar bindings TypeScript para os controladores Laravel
-php artisan wayfinder:generate
+php artisan wayfinder:generate --with-form
 ```
 
 #### 7. Inicie o Ambiente de Desenvolvimento
@@ -227,7 +227,7 @@ npm run format          # Prettier para formatação
 npm run types           # Verificação de tipos TypeScript
 
 # Wayfinder (Geração de Tipos TypeScript)
-php artisan wayfinder:generate       # Gerar bindings TypeScript
+php artisan wayfinder:generate --with-form  # Gerar bindings TypeScript
 
 # Docker
 docker build -t licitacao-project .  # Build da imagem Docker
@@ -284,7 +284,7 @@ O projeto utiliza o **Laravel Wayfinder** para gerar automaticamente bindings Ty
 ### Comandos Importantes:
 ```bash
 # Gerar bindings TypeScript
-php artisan wayfinder:generate
+php artisan wayfinder:generate --with-form
 
 # Os arquivos são gerados em:
 # - resources/js/actions/     # Controladores tipados

@@ -42,8 +42,8 @@ RUN composer run-script post-autoload-dump
 # Generate Laravel app key for wayfinder generation
 RUN php artisan key:generate --force
 
-# Generate Wayfinder types
-RUN php artisan wayfinder:generate
+# Generate Wayfinder types with form variants
+RUN php artisan wayfinder:generate --with-form
 
 # Stage 2: Frontend Build
 FROM node:22-alpine AS frontend-builder

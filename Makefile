@@ -78,7 +78,7 @@ install: ## Install dependencies locally
 	@echo "📦 Installing Node.js dependencies..."
 	npm install
 	@echo "🔗 Generating Wayfinder types..."
-	php artisan wayfinder:generate
+	php artisan wayfinder:generate --with-form
 
 dev: wayfinder ## Start development environment locally
 	@echo "🔧 Starting development environment..."
@@ -105,7 +105,7 @@ format: ## Format code
 
 wayfinder: ## Generate Wayfinder TypeScript bindings
 	@echo "🔗 Generating Wayfinder TypeScript bindings..."
-	php artisan wayfinder:generate
+	php artisan wayfinder:generate --with-form
 
 # Production commands
 prod: ## Build and run production container
