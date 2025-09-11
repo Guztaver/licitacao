@@ -54,33 +54,79 @@ O Sistema de Licitações é uma aplicação web moderna desenvolvida para geren
 
 ## 📋 Pré-requisitos
 
+### Desenvolvimento Local
 Antes de iniciar, certifique-se de ter as seguintes ferramentas instaladas:
 
 - **PHP 8.4+** com extensões: BCMath, Ctype, Fileinfo, JSON, Mbstring, OpenSSL, PDO, Tokenizer, XML
 - **Composer 2.0+**
-- **Node.js 18+** e **npm/yarn**
+- **Node.js 22+** e **npm/yarn**
 - **MySQL 8.0+** ou **SQLite 3**
 - **Git**
 
+### Usando Docker (Recomendado)
+Para uma configuração mais simples e consistente:
+
+- **Docker 24.0+**
+- **Docker Compose 2.0+**
+
 ## 🚀 Instalação e Configuração
 
-### 1. Clone o Repositório
+### Opção 1: Usando Docker (Recomendado) 🐳
+
+#### 1. Clone o Repositório
 ```bash
 git clone https://github.com/seu-usuario/licitacao-project.git
 cd licitacao-project
 ```
 
-### 2. Instale as Dependências PHP
+#### 2. Configure o Ambiente
+```bash
+# Copie o arquivo de ambiente
+cp .env.example .env
+
+# Configure as variáveis para Docker no .env
+# APP_ENV=production
+# APP_DEBUG=false
+# APP_KEY=base64:your-app-key-here
+# DB_CONNECTION=sqlite
+# DB_DATABASE=/var/www/html/database/database.sqlite
+```
+
+#### 3. Build e Execute com Docker Compose
+```bash
+# Build e iniciar os serviços
+docker-compose up -d --build
+
+# O aplicativo estará disponível em http://localhost:8080
+```
+
+#### 4. Configurar a Aplicação (primeira execução)
+```bash
+# Executar dentro do container
+docker-compose exec app php artisan key:generate
+docker-compose exec app php artisan migrate
+docker-compose exec app php artisan db:seed
+```
+
+### Opção 2: Desenvolvimento Local
+
+#### 1. Clone o Repositório
+```bash
+git clone https://github.com/seu-usuario/licitacao-project.git
+cd licitacao-project
+```
+
+#### 2. Instale as Dependências PHP
 ```bash
 composer install
 ```
 
-### 3. Instale as Dependências Node.js
+#### 3. Instale as Dependências Node.js
 ```bash
 npm install
 ```
 
-### 4. Configure o Ambiente
+#### 4. Configure o Ambiente
 ```bash
 # Copie o arquivo de ambiente
 cp .env.example .env
@@ -97,7 +143,7 @@ php artisan key:generate
 # DB_PASSWORD=sua_senha
 ```
 
-### 5. Execute as Migrações e Seeders
+#### 5. Execute as Migrações e Seeders
 ```bash
 # Criar o banco de dados (SQLite)
 touch database/database.sqlite
@@ -109,7 +155,7 @@ php artisan migrate
 php artisan db:seed
 ```
 
-### 6. Inicie o Ambiente de Desenvolvimento
+#### 6. Inicie o Ambiente de Desenvolvimento
 ```bash
 # Opção 1: Usar o comando composer personalizado (recomendado)
 composer run dev
@@ -173,6 +219,11 @@ npm run test            # Executa testes do frontend (se configurado)
 npm run lint            # ESLint com auto-fix
 npm run format          # Prettier para formatação
 npm run types           # Verificação de tipos TypeScript
+
+# Docker
+docker build -t licitacao-project .  # Build da imagem Docker
+docker-compose up -d                  # Iniciar com Docker Compose
+docker-compose down                   # Parar containers
 ```
 
 ## 🏗️ Arquitetura do Sistema
@@ -216,9 +267,92 @@ O sistema implementa várias camadas de segurança:
 - **Queue Monitoring**: Monitoramento do sistema de filas
 - **Error Tracking**: Captura e análise de erros
 
-## 🚀 Deploy
+## 🐳 Container Docker
 
-### Ambiente de Produção
+### Construindo a Imagem Docker
+
+O projeto inclui um `Dockerfile` multi-stage otimizado que segue os padrões OCI (Open Container Initiative):
+
+```bash
+# Build da imagem
+docker build -t licitacao-project .
+
+# Executar o container
+docker run -d -p 8080:80 --name licitacao-app licitacao-project
+```
+
+### Docker Compose para Desenvolvimento
+
+Use o `docker-compose.yml` incluído para desenvolvimento local completo com Redis e PostgreSQL:
+
+```bash
+# Iniciar todos os serviços
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f app
+
+# Parar os serviços
+docker-compose down
+```
+
+### Configuração de Produção
+
+Para produção, configure as seguintes variáveis de ambiente:
+
+```bash
+# Variáveis essenciais
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=your-production-key
+DB_CONNECTION=pgsql
+DB_HOST=your-db-host
+DB_DATABASE=your-db-name
+DB_USERNAME=your-db-user
+DB_PASSWORD=your-db-password
+REDIS_HOST=your-redis-host
+```
+
+## 🚀 Deploy e CI/CD
+
+### GitHub Actions
+
+O projeto inclui workflows do GitHub Actions para:
+
+- **Testes automatizados**: Execução de testes PHP e linting
+- **Build de imagens Docker**: Construção automática de imagens seguindo padrões OCI
+- **Deploy automático**: Push para GitHub Container Registry (ghcr.io)
+- **Análise de segurança**: Scan de vulnerabilidades com Trivy
+
+### Container Registry
+
+As imagens Docker são automaticamente construídas e publicadas no GitHub Container Registry:
+
+```bash
+# Pull da imagem mais recente
+docker pull ghcr.io/seu-usuario/licitacao-project:latest
+
+# Executar em produção
+docker run -d \
+  -p 80:80 \
+  -e APP_ENV=production \
+  -e APP_KEY=your-key \
+  -e DB_CONNECTION=pgsql \
+  -e DB_HOST=your-db-host \
+  --name licitacao-production \
+  ghcr.io/seu-usuario/licitacao-project:latest
+```
+
+### Tags Disponíveis
+
+- `latest`: Versão mais recente da branch main
+- `develop`: Versão de desenvolvimento
+- `v1.0.0`: Versões específicas por tag
+- `main`: Build da branch principal
+
+### Deployment Manual
+
+Para deploy tradicional em servidor:
 
 1. **Configure o servidor web** (Apache/Nginx)
 2. **Configure as variáveis de ambiente** para produção
@@ -233,21 +367,6 @@ O sistema implementa várias camadas de segurança:
    php artisan route:cache
    php artisan view:cache
    ```
-
-### Docker (Opcional)
-
-O projeto inclui configuração para Laravel Sail:
-
-```bash
-# Instalar Sail
-composer require laravel/sail --dev
-
-# Publicar configuração
-php artisan sail:install
-
-# Iniciar containers
-./vendor/bin/sail up -d
-```
 
 ## 🤝 Contribuindo
 

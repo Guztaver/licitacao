@@ -1,4 +1,4 @@
-import { MapPin, CheckCircle, FileText, AlertCircle } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface DestinatarisStatsCardProps {
@@ -8,13 +8,6 @@ interface DestinatarisStatsCardProps {
 	icon?: React.ComponentType<{ className?: string }>;
 	color?: string;
 }
-
-const iconMap = {
-	MapPin,
-	CheckCircle,
-	FileText,
-	AlertCircle,
-};
 
 export default function DestinatarisStatsCard({
 	title,
