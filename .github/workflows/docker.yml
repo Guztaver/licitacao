@@ -66,23 +66,36 @@ jobs:
 
   security-scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run Trivy vulnerability scanner in repo mode
+      - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
           scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-repo-results.sarif'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+      - name: Run Trivy and generate report
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'json'
+          output: 'trivy-results.json'
+
+      - name: Upload security scan results
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          sarif_file: 'trivy-repo-results.sarif'
+          name: security-scan-results
+          path: trivy-results.json
+          retention-days: 30
 
   build-and-push:
     runs-on: ubuntu-latest
@@ -91,6 +104,7 @@ jobs:
       contents: read
       packages: write
       security-events: write
+      actions: read
 
     steps:
       - name: Checkout repository
@@ -177,14 +191,24 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           input: /tmp/image.tar
-          format: 'sarif'
-          output: 'trivy-image-results.sarif'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
 
-      - name: Upload Docker image scan results
-        uses: github/codeql-action/upload-sarif@v3
+      - name: Generate Docker image security report
+        uses: aquasecurity/trivy-action@master
+        with:
+          input: /tmp/image.tar
+          format: 'json'
+          output: 'trivy-image-results.json'
+
+      - name: Upload Docker security scan results
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          sarif_file: 'trivy-image-results.sarif'
+          name: docker-security-scan-results
+          path: trivy-image-results.json
+          retention-days: 30
 
       - name: Push Docker image
         if: github.event_name != 'pull_request' || github.event.inputs.push_image == 'true'
@@ -203,7 +227,7 @@ jobs:
         if: github.event_name != 'pull_request' || github.event.inputs.push_image == 'true'
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           format: spdx-json
           output-file: sbom.spdx.json
 
@@ -211,8 +235,9 @@ jobs:
         if: github.event_name != 'pull_request' || github.event.inputs.push_image == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: sbom
+          name: sbom-report
           path: sbom.spdx.json
+          retention-days: 90
 
   deploy-staging:
     runs-on: ubuntu-latest

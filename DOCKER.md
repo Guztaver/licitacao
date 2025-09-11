@@ -645,4 +645,154 @@ For issues related to containerization:
 
 ---
 
-**Built with ❤️ for efficient containerized deployment**
+## 🔒 Security Scanning
+
+The project includes comprehensive security scanning integrated into the CI/CD pipeline to ensure container and application security.
+
+### Security Workflows
+
+#### Basic Security Scanning
+The `security-basic.yml` workflow provides essential security checks:
+
+```bash
+# Triggers security scans
+git push origin main        # On push to main/develop
+# OR manually via GitHub Actions UI
+```
+
+**Scans Include:**
+- **Vulnerability Scanning**: Trivy filesystem and dependency scanning
+- **Dependency Audit**: PHP Composer and Node.js npm security audits  
+- **Docker Image Security**: Container image vulnerability assessment
+- **Automated Reporting**: Detailed reports with artifact downloads
+
+#### Advanced Security Features
+The `security.yml` workflow provides comprehensive security analysis:
+
+- **Secrets Detection**: GitLeaks and TruffleHog scanning
+- **License Compliance**: PHP and Node.js license verification
+- **Code Quality Analysis**: Static analysis security testing
+- **SBOM Generation**: Software Bill of Materials for compliance
+
+### Security Configuration
+
+#### GitLeaks Configuration
+Security scanning is configured via `.gitleaks.toml`:
+
+```toml
+# Custom rules for Laravel applications
+[[rules]]
+id = "laravel-app-key"
+description = "Laravel Application Key"
+regex = '''(?i)(app_key\s*=\s*)(base64:)?[a-zA-Z0-9+/=]{40,}'''
+```
+
+#### Security Scan Results
+Scan results are available as:
+
+- **GitHub Actions Artifacts**: Downloadable JSON reports
+- **PR Comments**: Automated security summaries on pull requests
+- **Workflow Summaries**: Real-time scan status in GitHub Actions
+- **Artifact Reports**: Detailed vulnerability and compliance reports
+
+### Docker Security Best Practices
+
+#### 1. Base Image Security
+```dockerfile
+# Use official, regularly updated base images
+FROM php:8.4-fpm-alpine AS php-base
+
+# Keep base images updated
+RUN apk update && apk upgrade
+```
+
+#### 2. Non-Root User
+```dockerfile
+# Create and use non-root user
+RUN addgroup -g 1000 -S www && \
+    adduser -u 1000 -D -S -G www www
+USER www
+```
+
+#### 3. Minimal Attack Surface
+```dockerfile
+# Install only necessary packages
+RUN apk add --no-cache \
+    git curl libpng-dev libxml2-dev \
+    sqlite sqlite-dev nginx supervisor
+```
+
+#### 4. Security Headers
+```nginx
+# Nginx security configuration
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header X-Content-Type-Options "nosniff" always;
+```
+
+### Security Monitoring
+
+#### Container Runtime Security
+```bash
+# Monitor container behavior
+docker stats licitacao-app
+
+# Check security contexts
+docker inspect licitacao-app | jq '.[0].HostConfig.SecurityOpt'
+
+# Verify user context
+docker exec licitacao-app whoami
+```
+
+#### Vulnerability Management
+```bash
+# Manual security scan
+trivy image licitacao-project:latest
+
+# Generate security report
+trivy image --format json --output security-report.json licitacao-project:latest
+
+# Check specific vulnerabilities
+trivy image --severity CRITICAL,HIGH licitacao-project:latest
+```
+
+### Production Security Checklist
+
+- [ ] **Environment Variables**: Use secrets management (not hardcoded)
+- [ ] **Network Security**: Deploy with proper network isolation
+- [ ] **Resource Limits**: Configure memory and CPU limits
+- [ ] **Health Checks**: Enable comprehensive health monitoring
+- [ ] **Log Management**: Centralized, secure logging setup
+- [ ] **Backup Strategy**: Regular backups with encryption
+- [ ] **Update Policy**: Regular image updates and patching
+- [ ] **Access Control**: Principle of least privilege
+- [ ] **Monitoring**: Real-time security monitoring setup
+
+### Security Incident Response
+
+#### 1. Vulnerability Detection
+```bash
+# If critical vulnerability found
+docker pull ghcr.io/your-username/licitacao-project:latest  # Get latest secure image
+docker stop licitacao-production
+docker rm licitacao-production
+docker run -d --name licitacao-production [security-hardened-options] new-image
+```
+
+#### 2. Container Compromise
+```bash
+# Immediate response
+docker stop compromised-container
+docker logs compromised-container > incident-logs.txt
+docker commit compromised-container forensic-image
+docker rm compromised-container
+```
+
+#### 3. Data Protection
+```bash
+# Backup critical data
+docker exec licitacao-app php artisan backup:run
+docker cp licitacao-app:/var/www/html/database/database.sqlite ./backup/
+```
+
+**Built with ❤️ for secure containerized deployment**

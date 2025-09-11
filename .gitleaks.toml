@@ -1,0 +1,125 @@
+# GitLeaks configuration for Laravel Licitação Project
+# https://github.com/gitleaks/gitleaks
+
+title = "Licitacao Project Security Configuration"
+
+[extend]
+# useDefault will extend the base configuration with the default gitleaks config:
+# https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml
+useDefault = true
+
+[[rules]]
+id = "laravel-app-key"
+description = "Laravel Application Key"
+regex = '''(?i)(app_key\s*=\s*)(base64:)?[a-zA-Z0-9+/=]{40,}'''
+keywords = ["APP_KEY"]
+
+[[rules]]
+id = "database-password"
+description = "Database Password"
+regex = '''(?i)(db_password\s*=\s*)(.{3,})'''
+keywords = ["DB_PASSWORD"]
+
+[[rules]]
+id = "jwt-secret"
+description = "JWT Secret"
+regex = '''(?i)(jwt_secret\s*=\s*)(.{10,})'''
+keywords = ["JWT_SECRET"]
+
+[[rules]]
+id = "mail-password"
+description = "Mail Password"
+regex = '''(?i)(mail_password\s*=\s*)(.{3,})'''
+keywords = ["MAIL_PASSWORD"]
+
+[[rules]]
+id = "aws-access-key"
+description = "AWS Access Key"
+regex = '''(?i)(aws_access_key_id\s*=\s*)([A-Z0-9]{20})'''
+keywords = ["AWS_ACCESS_KEY_ID"]
+
+[[rules]]
+id = "aws-secret-key"
+description = "AWS Secret Key"
+regex = '''(?i)(aws_secret_access_key\s*=\s*)([a-zA-Z0-9+/]{40})'''
+keywords = ["AWS_SECRET_ACCESS_KEY"]
+
+[[rules]]
+id = "pusher-key"
+description = "Pusher Key"
+regex = '''(?i)(pusher_app_key\s*=\s*)(.{10,})'''
+keywords = ["PUSHER_APP_KEY"]
+
+[[rules]]
+id = "pusher-secret"
+description = "Pusher Secret"
+regex = '''(?i)(pusher_app_secret\s*=\s*)(.{10,})'''
+keywords = ["PUSHER_APP_SECRET"]
+
+[[rules]]
+id = "redis-password"
+description = "Redis Password"
+regex = '''(?i)(redis_password\s*=\s*)(.{3,})'''
+keywords = ["REDIS_PASSWORD"]
+
+[[rules]]
+id = "session-encryption-key"
+description = "Session Encryption Key"
+regex = '''(?i)(session_encryption_key\s*=\s*)(.{10,})'''
+keywords = ["SESSION_ENCRYPTION_KEY"]
+
+# Allowlist for common false positives
+[allowlist]
+description = "Global allowlist"
+paths = [
+    '''\.env\.example$''',
+    '''\.env\.docker$''',
+    '''README\.md$''',
+    '''composer\.json$''',
+    '''package\.json$''',
+    '''\.github/workflows/.*\.yml$''',
+    '''tests/.*\.php$''',
+    '''database/factories/.*\.php$''',
+    '''database/seeders/.*\.php$''',
+]
+
+commits = [
+    # Add commit hashes here for known false positives
+]
+
+# Allowlist for specific patterns that are not secrets
+regexes = [
+    '''base64:test''',
+    '''password.*example''',
+    '''secret.*example''',
+    '''key.*example''',
+    '''APP_KEY=base64:''',
+    '''your-.*-here''',
+    '''example\.com''',
+    '''localhost''',
+    '''127\.0\.0\.1''',
+    '''\*\*\*\*\*\*''',  # Masked secrets in documentation
+    '''xxxxx''',         # Placeholder values
+    '''yyyyy''',         # Placeholder values
+]
+
+[allowlist.regexTarget]
+# Allow certain patterns in specific contexts
+"composer.json" = [
+    '''"name":\s*".*"''',
+    '''"version":\s*".*"''',
+]
+
+"package.json" = [
+    '''"name":\s*".*"''',
+    '''"version":\s*".*"''',
+]
+
+".env.example" = [
+    '''.*=.*''',  # Allow all example environment variables
+]
+
+".env.docker" = [
+    '''APP_KEY=''',     # Allow empty app key in docker template
+    '''DB_PASSWORD=''', # Allow empty password in docker template
+]
