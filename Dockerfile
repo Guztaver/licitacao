@@ -36,11 +36,20 @@ RUN composer install --optimize-autoloader --no-scripts --no-interaction
 # Copy Laravel application files
 COPY --chown=www:www . .
 
+# Create environment file from example
+RUN cp .env.example .env
+
 # Run composer post-install scripts
 RUN composer run-script post-autoload-dump
 
 # Generate Laravel app key for wayfinder generation
 RUN php artisan key:generate --force
+
+# Create SQLite database and run migrations for wayfinder generation
+RUN mkdir -p database && \
+    touch database/database.sqlite && \
+    chmod 664 database/database.sqlite && \
+    php artisan migrate --force
 
 # Generate Wayfinder types with form variants
 RUN php artisan wayfinder:generate --with-form

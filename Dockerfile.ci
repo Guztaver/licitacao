@@ -61,6 +61,9 @@ RUN composer install --optimize-autoloader --no-dev --no-scripts --no-interactio
 # Copy application files
 COPY --chown=www:www . .
 
+# Create environment file from example
+RUN cp .env.example .env
+
 # Copy built frontend assets
 COPY --from=frontend-builder --chown=www:www /app/public/build ./public/build
 

@@ -47,14 +47,17 @@ jobs:
       - name: Generate application key
         run: php artisan key:generate
 
-      - name: Create SQLite database
-        run: touch database/database.sqlite
-
-      - name: Run database migrations
-        run: php artisan migrate --force
+      - name: Create SQLite database and run migrations
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+          chmod 664 database/database.sqlite
+          php artisan migrate --force
 
       - name: Generate Wayfinder files
-        run: php artisan wayfinder:generate --with-form
+        run: |
+          ls -la database/database.sqlite
+          DB_DATABASE="$(pwd)/database/database.sqlite" php artisan wayfinder:generate --with-form
 
       - name: Run PHP CS Fixer
         run: ./vendor/bin/pint --test
@@ -96,14 +99,17 @@ jobs:
       - name: Generate application key
         run: php artisan key:generate
 
-      - name: Create SQLite database
-        run: touch database/database.sqlite
-
-      - name: Run database migrations
-        run: php artisan migrate --force
+      - name: Create SQLite database and run migrations
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+          chmod 664 database/database.sqlite
+          php artisan migrate --force
 
       - name: Generate Wayfinder files
-        run: php artisan wayfinder:generate --with-form
+        run: |
+          ls -la database/database.sqlite
+          DB_DATABASE="$(pwd)/database/database.sqlite" php artisan wayfinder:generate --with-form
 
       - name: Build frontend assets
         run: npm run build
