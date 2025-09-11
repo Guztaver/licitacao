@@ -1,4 +1,4 @@
-name: linter
+name: Code Quality & Linting
 
 on:
   push:
@@ -11,35 +11,115 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
+  pull-requests: write
 
 jobs:
-  quality:
+  php-quality:
+    name: PHP Code Quality
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
+          tools: composer:v2
 
-      - name: Install Dependencies
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install PHP Dependencies
+        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Run Laravel Pint (Code Style)
+        run: ./vendor/bin/pint --test
+
+      - name: Generate application key for analysis
         run: |
-          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-          npm install
+          cp .env.example .env
+          php artisan key:generate
 
-      - name: Run Pint
-        run: vendor/bin/pint
+      - name: Generate Wayfinder types
+        run: php artisan wayfinder:generate --with-form
 
-      - name: Format Frontend
-        run: npm run format
+  frontend-quality:
+    name: Frontend Code Quality
+    runs-on: ubuntu-latest
 
-      - name: Lint Frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Setup PHP for Wayfinder
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Install PHP dependencies for Wayfinder
+        run: composer install --no-scripts
+
+      - name: Generate application key
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Generate Wayfinder types
+        run: php artisan wayfinder:generate --with-form
+
+      - name: TypeScript Type Check
+        run: npm run types
+
+      - name: ESLint Check
         run: npm run lint
 
-      # - name: Commit Changes
-      #   uses: stefanzweifel/git-auto-commit-action@v5
-      #   with:
-      #     commit_message: fix code style
-      #     commit_options: '--no-verify'
+      - name: Prettier Format Check
+        run: npm run format:check
+
+  summary:
+    name: Quality Summary
+    runs-on: ubuntu-latest
+    needs: [php-quality, frontend-quality]
+    if: always()
+
+    steps:
+      - name: Generate quality summary
+        run: |
+          echo "# 🎯 Code Quality Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.php-quality.result }}" = "success" ]; then
+            echo "✅ **PHP Code Quality:** Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **PHP Code Quality:** Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ needs.frontend-quality.result }}" = "success" ]; then
+            echo "✅ **Frontend Code Quality:** Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Frontend Code Quality:** Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Checks performed:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Laravel Pint (PHP Code Style)" >> $GITHUB_STEP_SUMMARY
+          echo "- TypeScript Type Checking" >> $GITHUB_STEP_SUMMARY
+          echo "- ESLint (JavaScript/TypeScript Linting)" >> $GITHUB_STEP_SUMMARY
+          echo "- Prettier (Code Formatting)" >> $GITHUB_STEP_SUMMARY

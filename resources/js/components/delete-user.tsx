@@ -1,103 +1,84 @@
-import { Form } from "@inertiajs/react";
-import { useRef } from "react";
-import ProfileController from "@/actions/App/Http/Controllers/Settings/ProfileController";
-import HeadingSmall from "@/components/heading-small";
-import InputError from "@/components/input-error";
-import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogClose,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import HeadingSmall from '@/components/heading-small';
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Form } from '@inertiajs/react';
+import { useRef } from 'react';
 
 export default function DeleteUser() {
-	const passwordInput = useRef<HTMLInputElement>(null);
+    const passwordInput = useRef<HTMLInputElement>(null);
 
-	return (
-		<div className="space-y-6">
-			<HeadingSmall
-				title="Deletar conta"
-				description="Delete conta e todos os seus dados permanentemente."
-			/>
-			<div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
-				<div className="relative space-y-0.5 text-red-600 dark:text-red-100">
-					<p className="font-medium">Cuidado</p>
-					<p className="text-sm">
-						Por favor, proceda com cautela. Esta ação é irreversível, e todos os
-						seus dados serão permanentemente excluídos.{" "}
-						<b>NÃO SERÁ POSSÍVEL RECUPERAR OS DADOS APÓS A EXCLUSÃO.</b>
-					</p>
-				</div>
+    return (
+        <div className="space-y-6">
+            <HeadingSmall title="Deletar conta" description="Delete conta e todos os seus dados permanentemente." />
+            <div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
+                <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
+                    <p className="font-medium">Cuidado</p>
+                    <p className="text-sm">
+                        Por favor, proceda com cautela. Esta ação é irreversível, e todos os seus dados serão permanentemente excluídos.{' '}
+                        <b>NÃO SERÁ POSSÍVEL RECUPERAR OS DADOS APÓS A EXCLUSÃO.</b>
+                    </p>
+                </div>
 
-				<Dialog>
-					<DialogTrigger asChild>
-						<Button variant="destructive">Deletar conta</Button>
-					</DialogTrigger>
-					<DialogContent>
-						<DialogTitle>
-							Você tem certeza que deseja excluir sua conta?
-						</DialogTitle>
-						<DialogDescription>
-							Uma vez que sua conta for excluída, todos os seus recursos e dados
-							serão permanentemente removidos. Antes de excluir sua conta, faça
-							o download de quaisquer dados ou informações que você deseja
-							reter.
-						</DialogDescription>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="destructive">Deletar conta</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogTitle>Você tem certeza que deseja excluir sua conta?</DialogTitle>
+                        <DialogDescription>
+                            Uma vez que sua conta for excluída, todos os seus recursos e dados serão permanentemente removidos. Antes de excluir sua
+                            conta, faça o download de quaisquer dados ou informações que você deseja reter.
+                        </DialogDescription>
 
-						<Form
-							{...ProfileController.destroy.form()}
-							options={{
-								preserveScroll: true,
-							}}
-							onError={() => passwordInput.current?.focus()}
-							resetOnSuccess
-							className="space-y-6"
-						>
-							{({ resetAndClearErrors, processing, errors }) => (
-								<>
-									<div className="grid gap-2">
-										<Label htmlFor="password" className="sr-only">
-											Password
-										</Label>
+                        <Form
+                            {...ProfileController.destroy.form()}
+                            options={{
+                                preserveScroll: true,
+                            }}
+                            onError={() => passwordInput.current?.focus()}
+                            resetOnSuccess
+                            className="space-y-6"
+                        >
+                            {({ resetAndClearErrors, processing, errors }) => (
+                                <>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="password" className="sr-only">
+                                            Password
+                                        </Label>
 
-										<Input
-											id="password"
-											type="password"
-											name="password"
-											ref={passwordInput}
-											placeholder="Senha"
-											autoComplete="current-password"
-										/>
+                                        <Input
+                                            id="password"
+                                            type="password"
+                                            name="password"
+                                            ref={passwordInput}
+                                            placeholder="Senha"
+                                            autoComplete="current-password"
+                                        />
 
-										<InputError message={errors.password} />
-									</div>
+                                        <InputError message={errors.password} />
+                                    </div>
 
-									<DialogFooter className="gap-2">
-										<DialogClose asChild>
-											<Button
-												variant="secondary"
-												onClick={() => resetAndClearErrors()}
-											>
-												Cancel
-											</Button>
-										</DialogClose>
+                                    <DialogFooter className="gap-2">
+                                        <DialogClose asChild>
+                                            <Button variant="secondary" onClick={() => resetAndClearErrors()}>
+                                                Cancel
+                                            </Button>
+                                        </DialogClose>
 
-										<Button variant="destructive" disabled={processing} asChild>
-											<button type="submit">Deletar conta</button>
-										</Button>
-									</DialogFooter>
-								</>
-							)}
-						</Form>
-					</DialogContent>
-				</Dialog>
-			</div>
-		</div>
-	);
+                                        <Button variant="destructive" disabled={processing} asChild>
+                                            <button type="submit">Deletar conta</button>
+                                        </Button>
+                                    </DialogFooter>
+                                </>
+                            )}
+                        </Form>
+                    </DialogContent>
+                </Dialog>
+            </div>
+        </div>
+    );
 }

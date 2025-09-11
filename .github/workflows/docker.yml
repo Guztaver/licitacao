@@ -61,6 +61,15 @@ jobs:
       - name: Generate Wayfinder Types
         run: php artisan wayfinder:generate --with-form
 
+      - name: TypeScript Type Check
+        run: npm run types
+
+      - name: ESLint Check
+        run: npm run lint
+
+      - name: Code Formatting Check
+        run: npm run format:check
+
       - name: Run Tests
         run: ./vendor/bin/pest
 
