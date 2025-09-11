@@ -1,0 +1,104 @@
+# Multi-stage Dockerfile optimized for CI/CD builds
+FROM node:22-alpine AS frontend-builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production=false
+
+# Copy source files needed for build
+COPY resources/ ./resources/
+COPY public/ ./public/
+COPY vite.config.ts ./
+COPY tsconfig.json ./
+
+# Copy generated files (these should be available in CI context)
+COPY resources/js/wayfinder/ ./resources/js/wayfinder/
+COPY resources/js/actions/ ./resources/js/actions/
+COPY resources/js/routes.ts ./resources/js/routes.ts
+
+# Build frontend assets
+RUN npm run build
+
+# PHP base stage
+FROM php:8.4-fpm-alpine AS php-base
+
+# Install system dependencies
+RUN apk add --no-cache \
+    git \
+    curl \
+    libpng-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    sqlite \
+    sqlite-dev \
+    nginx \
+    supervisor \
+    oniguruma-dev \
+    netcat-openbsd
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_sqlite gd xml mbstring
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Create user and set permissions
+RUN addgroup -g 1000 -S www && \
+    adduser -u 1000 -D -S -G www www
+
+# Copy composer files and install dependencies
+COPY composer.json composer.lock ./
+RUN composer install --optimize-autoloader --no-dev --no-scripts --no-interaction
+
+# Copy application files
+COPY --chown=www:www . .
+
+# Copy built frontend assets
+COPY --from=frontend-builder --chown=www:www /app/public/build ./public/build
+
+# Create necessary directories and set permissions
+RUN mkdir -p /var/www/html/storage/logs \
+    && mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
+    && mkdir -p /var/www/html/bootstrap/cache \
+    && mkdir -p /var/log/supervisor \
+    && mkdir -p /run/nginx \
+    && touch /var/log/nginx/access.log \
+    && touch /var/log/nginx/error.log \
+    && chown -R www:www /var/www/html/storage \
+    && chown -R www:www /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
+
+# Copy configuration files
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+COPY docker/supervisord.conf /etc/supervisord.conf
+COPY docker/start.sh /usr/local/bin/start.sh
+
+# Make start script executable
+RUN chmod +x /usr/local/bin/start.sh
+
+# Create SQLite database if it doesn't exist
+RUN touch /var/www/html/database/database.sqlite \
+    && chown www:www /var/www/html/database/database.sqlite
+
+# Expose port
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD nc -z localhost 80 || exit 1
+
+# Switch to www user
+USER www
+
+# Start services
+CMD ["/usr/local/bin/start.sh"]

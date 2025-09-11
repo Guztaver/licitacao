@@ -112,7 +112,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile.ci
           tags: security-scan:latest
           outputs: type=docker,dest=/tmp/image.tar
           cache-from: type=gha

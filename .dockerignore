@@ -24,7 +24,6 @@ yarn-debug.log*
 yarn-error.log*
 .npm
 .yarn
-package-lock.json
 yarn.lock
 
 # Build artifacts (keep compiled assets)
@@ -110,6 +109,10 @@ postcss.config.js
 tailwind.config.js
 components.json
 webpack.mix.js
+
+# Allow build configuration files
+!tsconfig.json
+!vite.config.ts
 
 # Backup files
 *.bak
