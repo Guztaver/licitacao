@@ -44,20 +44,23 @@ jobs:
       - name: Copy environment file
         run: cp .env.example .env
 
-      - name: Update database path in .env file
-        run: |
-          echo "DB_DATABASE=$(pwd)/database/database.sqlite" >> .env
-          cat .env | grep DB_DATABASE
-
       - name: Generate application key
         run: php artisan key:generate
 
-      - name: Create SQLite database and run migrations
+      - name: Create SQLite database
         run: |
           mkdir -p database
           touch database/database.sqlite
           chmod 664 database/database.sqlite
-          php artisan migrate --force
+
+      - name: Update database path in .env file
+        run: |
+          sed -i 's|# DB_DATABASE=laravel|DB_DATABASE='$(pwd)'/database/database.sqlite|' .env
+          php artisan config:clear
+          cat .env | grep DB_DATABASE
+
+      - name: Run migrations
+        run: php artisan migrate --force
 
       - name: Generate Wayfinder files
         run: |
@@ -100,20 +103,23 @@ jobs:
       - name: Copy environment file
         run: cp .env.example .env
 
-      - name: Update database path in .env file
-        run: |
-          echo "DB_DATABASE=$(pwd)/database/database.sqlite" >> .env
-          cat .env | grep DB_DATABASE
-
       - name: Generate application key
         run: php artisan key:generate
 
-      - name: Create SQLite database and run migrations
+      - name: Create SQLite database
         run: |
           mkdir -p database
           touch database/database.sqlite
           chmod 664 database/database.sqlite
-          php artisan migrate --force
+
+      - name: Update database path in .env file
+        run: |
+          sed -i 's|# DB_DATABASE=laravel|DB_DATABASE='$(pwd)'/database/database.sqlite|' .env
+          php artisan config:clear
+          cat .env | grep DB_DATABASE
+
+      - name: Run migrations
+        run: php artisan migrate --force
 
       - name: Generate Wayfinder files
         run: |

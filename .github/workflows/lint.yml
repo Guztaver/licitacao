@@ -47,6 +47,21 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
+      - name: Create SQLite Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+          chmod 664 database/database.sqlite
+
+      - name: Update database path in .env file
+        run: |
+          sed -i 's|# DB_DATABASE=laravel|DB_DATABASE='$(pwd)'/database/database.sqlite|' .env
+          php artisan config:clear
+          cat .env | grep DB_DATABASE
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
       - name: Generate Wayfinder types
         run: php artisan wayfinder:generate --with-form
 
@@ -80,6 +95,21 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
+
+      - name: Create SQLite Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+          chmod 664 database/database.sqlite
+
+      - name: Update database path in .env file
+        run: |
+          sed -i 's|# DB_DATABASE=laravel|DB_DATABASE='$(pwd)'/database/database.sqlite|' .env
+          php artisan config:clear
+          cat .env | grep DB_DATABASE
+
+      - name: Run migrations
+        run: php artisan migrate --force
 
       - name: Generate Wayfinder types
         run: php artisan wayfinder:generate --with-form
