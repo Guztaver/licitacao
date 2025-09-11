@@ -15,7 +15,7 @@ class CheckUserType
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      * @param  string  ...$allowedTypes
      */
-    public function handle(Request $request, Closure $next, ...$allowedTypes): Response
+    public function handle(Request $request, Closure $next, ...$allowedTypes)
     {
         if (! Auth::check()) {
             return redirect()->route('login');

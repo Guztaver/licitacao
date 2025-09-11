@@ -43,6 +43,13 @@ jobs:
       - name: Copy Environment File
         run: cp .env.example .env
 
+      - name: Create SQLite Database and Run Migrations
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+          chmod 664 database/database.sqlite
+          php artisan migrate --force
+
       - name: Update database path in .env file
         run: |
           echo "DB_DATABASE=$(pwd)/database/database.sqlite" >> .env
