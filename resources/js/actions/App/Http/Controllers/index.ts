@@ -1,12 +1,12 @@
-import DashboardController from './DashboardController'
-import FornecedorController from './FornecedorController'
-import RequisicaoController from './RequisicaoController'
-import ConferenciaController from './ConferenciaController'
-import EmitenteController from './EmitenteController'
-import DestinatarioController from './DestinatarioController'
-import RelatorioController from './RelatorioController'
-import Settings from './Settings'
-import Auth from './Auth'
+import Auth from './Auth';
+import ConferenciaController from './ConferenciaController';
+import DashboardController from './DashboardController';
+import DestinatarioController from './DestinatarioController';
+import EmitenteController from './EmitenteController';
+import FornecedorController from './FornecedorController';
+import RelatorioController from './RelatorioController';
+import RequisicaoController from './RequisicaoController';
+import Settings from './Settings';
 
 const Controllers = {
     DashboardController,
@@ -18,6 +18,6 @@ const Controllers = {
     RelatorioController,
     Settings,
     Auth,
-}
+};
 
-export default Controllers
+export default Controllers;
