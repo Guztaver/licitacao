@@ -26,7 +26,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
           tools: composer:v2
 
       - name: Cache Composer dependencies
@@ -76,8 +76,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
 
       - name: Install Node.js dependencies
         run: npm ci
@@ -85,7 +85,7 @@ jobs:
       - name: Setup PHP for Wayfinder
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
           tools: composer:v2
 
       - name: Install PHP dependencies for Wayfinder
@@ -120,7 +120,7 @@ jobs:
       - name: ESLint Check
         run: npm run lint
 
-      - name: Prettier Format Check
+      - name: Biome Format Check
         run: npm run format:check
 
   summary:
@@ -152,4 +152,4 @@ jobs:
           echo "- Laravel Pint (PHP Code Style)" >> $GITHUB_STEP_SUMMARY
           echo "- TypeScript Type Checking" >> $GITHUB_STEP_SUMMARY
           echo "- ESLint (JavaScript/TypeScript Linting)" >> $GITHUB_STEP_SUMMARY
-          echo "- Prettier (Code Formatting)" >> $GITHUB_STEP_SUMMARY
+          echo "- Biome (Code Formatting)" >> $GITHUB_STEP_SUMMARY
