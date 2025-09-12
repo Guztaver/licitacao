@@ -23,7 +23,7 @@ env:
 jobs:
   setup:
     name: Setup & Dependencies
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       php-cache-key: ${{ steps.php-cache.outputs.cache-hit }}
       node-cache-key: ${{ steps.node-cache.outputs.cache-hit }}

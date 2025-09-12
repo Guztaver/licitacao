@@ -251,7 +251,7 @@ jobs:
 
   security-summary:
     name: Security Summary Report
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs:
       [dependency-scan, code-security-audit, secrets-scan, license-compliance]
     if: always()

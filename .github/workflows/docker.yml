@@ -145,7 +145,7 @@ jobs:
           retention-days: 90
 
   deploy-staging:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build-and-push
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     environment: staging
