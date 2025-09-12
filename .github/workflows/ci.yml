@@ -212,7 +212,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
-    needs: [setup, php-quality, frontend-quality]
+    needs: [setup, php-quality, frontend-quality, build]
 
     steps:
       - name: Checkout code
@@ -237,6 +237,12 @@ jobs:
             resources/js/actions/
             resources/js/routes.ts
           key: setup-${{ github.sha }}-${{ hashFiles('composer.lock', 'package-lock.json') }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-assets-${{ github.sha }}
+          path: public/build/
 
       - name: Run PHP tests
         run: php artisan test --coverage-clover coverage.xml

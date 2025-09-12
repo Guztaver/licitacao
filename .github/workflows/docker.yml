@@ -76,19 +76,16 @@ jobs:
             org.opencontainers.image.vendor=Government IT Department
             org.opencontainers.image.licenses=MIT
 
-      - name: Build Docker image
+      - name: Build Docker image for testing (single platform)
         uses: docker/build-push-action@v5
         id: build
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # Remove cache options to avoid buildx cache error
-          # cache-from: type=gha,scope=buildkit
-          # cache-to: type=gha,mode=max,scope=buildkit
           outputs: type=docker,dest=/tmp/image.tar
 
       - name: Load and test Docker image
@@ -120,7 +117,7 @@ jobs:
           # Clean up
           docker stop test-container || true
 
-      - name: Push Docker image
+      - name: Push Docker image (multi-platform)
         if: github.event_name != 'pull_request' || github.event.inputs.push_image == 'true'
         uses: docker/build-push-action@v5
         with:
@@ -130,9 +127,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # Remove cache options to avoid buildx cache error
-          # cache-from: type=gha,scope=buildkit
-          # cache-to: type=gha,mode=max,scope=buildkit
 
       - name: Generate SBOM
         if: github.event_name != 'pull_request' || github.event.inputs.push_image == 'true'
