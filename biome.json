@@ -72,6 +72,15 @@
       "linter": {
         "enabled": false
       }
+    },
+    {
+      "includes": ["resources/js/actions/**/*"],
+      "formatter": {
+        "enabled": false
+      },
+      "linter": {
+        "enabled": false
+      }
     }
   ],
   "assist": {
