@@ -75,8 +75,6 @@ const formatValue = (value: string | number | undefined, formatType?: 'currency'
             return formatCurrency(Number(value));
         case 'date':
             return formatDate(String(value));
-        case 'phone':
-        case 'cnpj':
         default:
             return String(value);
     }
