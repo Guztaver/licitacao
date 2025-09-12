@@ -80,6 +80,21 @@
       },
       "linter": {
         "enabled": false
+      },
+      "assist": {
+        "enabled": false
+      }
+    },
+    {
+      "includes": ["resources/js/wayfinder/**/*"],
+      "formatter": {
+        "enabled": false
+      },
+      "linter": {
+        "enabled": false
+      },
+      "assist": {
+        "enabled": false
       }
     }
   ],

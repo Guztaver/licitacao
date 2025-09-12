@@ -1,23 +1,23 @@
-import Auth from './Auth';
-import ConferenciaController from './ConferenciaController';
-import DashboardController from './DashboardController';
-import DestinatarioController from './DestinatarioController';
-import EmitenteController from './EmitenteController';
-import FornecedorController from './FornecedorController';
-import RelatorioController from './RelatorioController';
-import RequisicaoController from './RequisicaoController';
-import Settings from './Settings';
+import DashboardController from './DashboardController'
+import FornecedorController from './FornecedorController'
+import RequisicaoController from './RequisicaoController'
+import ConferenciaController from './ConferenciaController'
+import EmitenteController from './EmitenteController'
+import DestinatarioController from './DestinatarioController'
+import RelatorioController from './RelatorioController'
+import Settings from './Settings'
+import Auth from './Auth'
 
 const Controllers = {
-    DashboardController,
-    FornecedorController,
-    RequisicaoController,
-    ConferenciaController,
-    EmitenteController,
-    DestinatarioController,
-    RelatorioController,
-    Settings,
-    Auth,
-};
+    DashboardController: Object.assign(DashboardController, DashboardController),
+    FornecedorController: Object.assign(FornecedorController, FornecedorController),
+    RequisicaoController: Object.assign(RequisicaoController, RequisicaoController),
+    ConferenciaController: Object.assign(ConferenciaController, ConferenciaController),
+    EmitenteController: Object.assign(EmitenteController, EmitenteController),
+    DestinatarioController: Object.assign(DestinatarioController, DestinatarioController),
+    RelatorioController: Object.assign(RelatorioController, RelatorioController),
+    Settings: Object.assign(Settings, Settings),
+    Auth: Object.assign(Auth, Auth),
+}
 
-export default Controllers;
+export default Controllers
