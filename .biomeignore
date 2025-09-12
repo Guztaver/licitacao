@@ -18,6 +18,9 @@ eslint.config.js
 # UI components (auto-generated or external)
 resources/js/components/ui/*
 
+# Laravel Wayfinder auto-generated files
+resources/js/actions/
+
 # Mail templates
 resources/views/mail/*
 
