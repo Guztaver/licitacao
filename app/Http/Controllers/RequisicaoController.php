@@ -471,7 +471,7 @@ class RequisicaoController extends Controller
 
         $filename = basename($requisicao->anexo);
 
-        return response()->download(storage_path('app/public/'.$requisicao->anexo));
+        return Storage::disk("public")->download($requisicao->anexo, basename($requisicao->anexo));
     }
 
     /**
