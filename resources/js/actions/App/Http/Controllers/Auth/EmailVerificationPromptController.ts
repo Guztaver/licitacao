@@ -1,4 +1,5 @@
 import { queryParams, type RouteDefinition, type RouteFormDefinition, type RouteQueryOptions } from './../../../../../wayfinder';
+
 /**
  * @see \App\Http\Controllers\Auth\EmailVerificationPromptController::__invoke
  * @see app/Http/Controllers/Auth/EmailVerificationPromptController.php:16

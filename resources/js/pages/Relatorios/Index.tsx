@@ -1,11 +1,3 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import AppLayout from '@/layouts/app-layout';
-import type { BreadcrumbItem } from '@/types';
-import { formatters, reportUtils } from '@/utils/relatorios/formatters';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import {
     BarChart3,
@@ -21,6 +13,14 @@ import {
     TrendingUp,
 } from 'lucide-react';
 import { type FormEventHandler, useId, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import AppLayout from '@/layouts/app-layout';
+import type { BreadcrumbItem } from '@/types';
+import { formatters, reportUtils } from '@/utils/relatorios/formatters';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -174,7 +174,7 @@ const ReportFiltersCard = ({
     const dataFimId = useId();
 
     const showEmitenteFilter = ['requisicoes_periodo', 'requisicoes_status', 'emitentes_ranking', 'valores_mensais', 'aprovacoes_tempo'].includes(
-        selectedReportType,
+        selectedReportType
     );
 
     const showFornecedorFilter = [

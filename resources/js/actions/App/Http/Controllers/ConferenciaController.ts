@@ -224,7 +224,7 @@ store.form = storeForm;
  */
 export const show = (
     args: { conferencia: number | { id: number } } | [conferencia: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
@@ -242,7 +242,7 @@ show.definition = {
  */
 show.url = (
     args: { conferencia: number | { id: number } } | [conferencia: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { conferencia: args };
@@ -274,7 +274,7 @@ show.url = (
  */
 show.get = (
     args: { conferencia: number | { id: number } } | [conferencia: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
@@ -287,7 +287,7 @@ show.get = (
  */
 show.head = (
     args: { conferencia: number | { id: number } } | [conferencia: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
@@ -300,7 +300,7 @@ show.head = (
  */
 const showForm = (
     args: { conferencia: number | { id: number } } | [conferencia: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
@@ -313,7 +313,7 @@ const showForm = (
  */
 showForm.get = (
     args: { conferencia: number | { id: number } } | [conferencia: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
@@ -326,7 +326,7 @@ showForm.get = (
  */
 showForm.head = (
     args: { conferencia: number | { id: number } } | [conferencia: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: show.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -346,7 +346,7 @@ show.form = showForm;
  */
 export const edit = (
     args: { conferencia: string | number } | [conferencia: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
@@ -389,7 +389,7 @@ edit.url = (args: { conferencia: string | number } | [conferencia: string | numb
  */
 edit.get = (
     args: { conferencia: string | number } | [conferencia: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
@@ -402,7 +402,7 @@ edit.get = (
  */
 edit.head = (
     args: { conferencia: string | number } | [conferencia: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'head'> => ({
     url: edit.url(args, options),
     method: 'head',
@@ -415,7 +415,7 @@ edit.head = (
  */
 const editForm = (
     args: { conferencia: string | number } | [conferencia: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
@@ -428,7 +428,7 @@ const editForm = (
  */
 editForm.get = (
     args: { conferencia: string | number } | [conferencia: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
@@ -441,7 +441,7 @@ editForm.get = (
  */
 editForm.head = (
     args: { conferencia: string | number } | [conferencia: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: edit.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -461,7 +461,7 @@ edit.form = editForm;
  */
 export const update = (
     args: { conferencia: string | number } | [conferencia: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
@@ -504,7 +504,7 @@ update.url = (args: { conferencia: string | number } | [conferencia: string | nu
  */
 update.put = (
     args: { conferencia: string | number } | [conferencia: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
@@ -517,7 +517,7 @@ update.put = (
  */
 update.patch = (
     args: { conferencia: string | number } | [conferencia: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
@@ -530,7 +530,7 @@ update.patch = (
  */
 const updateForm = (
     args: { conferencia: string | number } | [conferencia: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -548,7 +548,7 @@ const updateForm = (
  */
 updateForm.put = (
     args: { conferencia: string | number } | [conferencia: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -566,7 +566,7 @@ updateForm.put = (
  */
 updateForm.patch = (
     args: { conferencia: string | number } | [conferencia: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -586,7 +586,7 @@ update.form = updateForm;
  */
 export const destroy = (
     args: { conferencia: number | { id: number } } | [conferencia: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
@@ -604,7 +604,7 @@ destroy.definition = {
  */
 destroy.url = (
     args: { conferencia: number | { id: number } } | [conferencia: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { conferencia: args };
@@ -636,7 +636,7 @@ destroy.url = (
  */
 destroy.delete = (
     args: { conferencia: number | { id: number } } | [conferencia: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
@@ -649,7 +649,7 @@ destroy.delete = (
  */
 const destroyForm = (
     args: { conferencia: number | { id: number } } | [conferencia: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -667,7 +667,7 @@ const destroyForm = (
  */
 destroyForm.delete = (
     args: { conferencia: number | { id: number } } | [conferencia: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -768,7 +768,7 @@ exportMethod.form = exportMethodForm;
  */
 export const fornecedor = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: fornecedor.url(args, options),
     method: 'get',
@@ -786,7 +786,7 @@ fornecedor.definition = {
  */
 fornecedor.url = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (Array.isArray(args)) {
         args = {
@@ -817,7 +817,7 @@ fornecedor.url = (
  */
 fornecedor.get = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: fornecedor.url(args, options),
     method: 'get',
@@ -830,7 +830,7 @@ fornecedor.get = (
  */
 fornecedor.head = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'head'> => ({
     url: fornecedor.url(args, options),
     method: 'head',
@@ -843,7 +843,7 @@ fornecedor.head = (
  */
 const fornecedorForm = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: fornecedor.url(args, options),
     method: 'get',
@@ -856,7 +856,7 @@ const fornecedorForm = (
  */
 fornecedorForm.get = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: fornecedor.url(args, options),
     method: 'get',
@@ -869,7 +869,7 @@ fornecedorForm.get = (
  */
 fornecedorForm.head = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: fornecedor.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -889,7 +889,7 @@ fornecedor.form = fornecedorForm;
  */
 export const storePedidoManual = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'post'> => ({
     url: storePedidoManual.url(args, options),
     method: 'post',
@@ -907,7 +907,7 @@ storePedidoManual.definition = {
  */
 storePedidoManual.url = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (Array.isArray(args)) {
         args = {
@@ -938,7 +938,7 @@ storePedidoManual.url = (
  */
 storePedidoManual.post = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'post'> => ({
     url: storePedidoManual.url(args, options),
     method: 'post',
@@ -951,7 +951,7 @@ storePedidoManual.post = (
  */
 const storePedidoManualForm = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: storePedidoManual.url(args, options),
     method: 'post',
@@ -964,7 +964,7 @@ const storePedidoManualForm = (
  */
 storePedidoManualForm.post = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: storePedidoManual.url(args, options),
     method: 'post',
@@ -981,7 +981,7 @@ export const destroyPedidoManual = (
     args:
         | { fornecedor: string | number; periodo: string | number; pedido: string | number }
         | [fornecedor: string | number, periodo: string | number, pedido: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'delete'> => ({
     url: destroyPedidoManual.url(args, options),
     method: 'delete',
@@ -1001,7 +1001,7 @@ destroyPedidoManual.url = (
     args:
         | { fornecedor: string | number; periodo: string | number; pedido: string | number }
         | [fornecedor: string | number, periodo: string | number, pedido: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (Array.isArray(args)) {
         args = {
@@ -1037,7 +1037,7 @@ destroyPedidoManual.delete = (
     args:
         | { fornecedor: string | number; periodo: string | number; pedido: string | number }
         | [fornecedor: string | number, periodo: string | number, pedido: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'delete'> => ({
     url: destroyPedidoManual.url(args, options),
     method: 'delete',
@@ -1052,7 +1052,7 @@ const destroyPedidoManualForm = (
     args:
         | { fornecedor: string | number; periodo: string | number; pedido: string | number }
         | [fornecedor: string | number, periodo: string | number, pedido: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: destroyPedidoManual.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -1072,7 +1072,7 @@ destroyPedidoManualForm.delete = (
     args:
         | { fornecedor: string | number; periodo: string | number; pedido: string | number }
         | [fornecedor: string | number, periodo: string | number, pedido: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: destroyPedidoManual.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -1092,7 +1092,7 @@ destroyPedidoManual.form = destroyPedidoManualForm;
  */
 export const finalizarConferencia = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'post'> => ({
     url: finalizarConferencia.url(args, options),
     method: 'post',
@@ -1110,7 +1110,7 @@ finalizarConferencia.definition = {
  */
 finalizarConferencia.url = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (Array.isArray(args)) {
         args = {
@@ -1141,7 +1141,7 @@ finalizarConferencia.url = (
  */
 finalizarConferencia.post = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'post'> => ({
     url: finalizarConferencia.url(args, options),
     method: 'post',
@@ -1154,7 +1154,7 @@ finalizarConferencia.post = (
  */
 const finalizarConferenciaForm = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: finalizarConferencia.url(args, options),
     method: 'post',
@@ -1167,7 +1167,7 @@ const finalizarConferenciaForm = (
  */
 finalizarConferenciaForm.post = (
     args: { fornecedor: string | number; periodo: string | number } | [fornecedor: string | number, periodo: string | number],
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: finalizarConferencia.url(args, options),
     method: 'post',

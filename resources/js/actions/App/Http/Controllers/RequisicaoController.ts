@@ -224,7 +224,7 @@ store.form = storeForm;
  */
 export const show = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
@@ -242,7 +242,7 @@ show.definition = {
  */
 show.url = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { requisicao: args };
@@ -274,7 +274,7 @@ show.url = (
  */
 show.get = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
@@ -287,7 +287,7 @@ show.get = (
  */
 show.head = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
@@ -300,7 +300,7 @@ show.head = (
  */
 const showForm = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
@@ -313,7 +313,7 @@ const showForm = (
  */
 showForm.get = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
@@ -326,7 +326,7 @@ showForm.get = (
  */
 showForm.head = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: show.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -346,7 +346,7 @@ show.form = showForm;
  */
 export const edit = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
@@ -364,7 +364,7 @@ edit.definition = {
  */
 edit.url = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { requisicao: args };
@@ -396,7 +396,7 @@ edit.url = (
  */
 edit.get = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
@@ -409,7 +409,7 @@ edit.get = (
  */
 edit.head = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'head'> => ({
     url: edit.url(args, options),
     method: 'head',
@@ -422,7 +422,7 @@ edit.head = (
  */
 const editForm = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
@@ -435,7 +435,7 @@ const editForm = (
  */
 editForm.get = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
@@ -448,7 +448,7 @@ editForm.get = (
  */
 editForm.head = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: edit.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -468,7 +468,7 @@ edit.form = editForm;
  */
 export const update = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
@@ -486,7 +486,7 @@ update.definition = {
  */
 update.url = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { requisicao: args };
@@ -518,7 +518,7 @@ update.url = (
  */
 update.put = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
@@ -531,7 +531,7 @@ update.put = (
  */
 update.patch = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
@@ -544,7 +544,7 @@ update.patch = (
  */
 const updateForm = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -562,7 +562,7 @@ const updateForm = (
  */
 updateForm.put = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -580,7 +580,7 @@ updateForm.put = (
  */
 updateForm.patch = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -600,7 +600,7 @@ update.form = updateForm;
  */
 export const destroy = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
@@ -618,7 +618,7 @@ destroy.definition = {
  */
 destroy.url = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { requisicao: args };
@@ -650,7 +650,7 @@ destroy.url = (
  */
 destroy.delete = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
@@ -663,7 +663,7 @@ destroy.delete = (
  */
 const destroyForm = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -681,7 +681,7 @@ const destroyForm = (
  */
 destroyForm.delete = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -863,7 +863,7 @@ exportMethod.form = exportMethodForm;
  */
 export const anexo = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: anexo.url(args, options),
     method: 'get',
@@ -881,7 +881,7 @@ anexo.definition = {
  */
 anexo.url = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { requisicao: args };
@@ -913,7 +913,7 @@ anexo.url = (
  */
 anexo.get = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: anexo.url(args, options),
     method: 'get',
@@ -926,7 +926,7 @@ anexo.get = (
  */
 anexo.head = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'head'> => ({
     url: anexo.url(args, options),
     method: 'head',
@@ -939,7 +939,7 @@ anexo.head = (
  */
 const anexoForm = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: anexo.url(args, options),
     method: 'get',
@@ -952,7 +952,7 @@ const anexoForm = (
  */
 anexoForm.get = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: anexo.url(args, options),
     method: 'get',
@@ -965,7 +965,7 @@ anexoForm.get = (
  */
 anexoForm.head = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: anexo.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -985,7 +985,7 @@ anexo.form = anexoForm;
  */
 export const concretizar = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'post'> => ({
     url: concretizar.url(args, options),
     method: 'post',
@@ -1003,7 +1003,7 @@ concretizar.definition = {
  */
 concretizar.url = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { requisicao: args };
@@ -1035,7 +1035,7 @@ concretizar.url = (
  */
 concretizar.post = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'post'> => ({
     url: concretizar.url(args, options),
     method: 'post',
@@ -1048,7 +1048,7 @@ concretizar.post = (
  */
 const concretizarForm = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: concretizar.url(args, options),
     method: 'post',
@@ -1061,7 +1061,7 @@ const concretizarForm = (
  */
 concretizarForm.post = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: concretizar.url(args, options),
     method: 'post',
@@ -1076,7 +1076,7 @@ concretizar.form = concretizarForm;
  */
 export const cancelar = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'post'> => ({
     url: cancelar.url(args, options),
     method: 'post',
@@ -1094,7 +1094,7 @@ cancelar.definition = {
  */
 cancelar.url = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { requisicao: args };
@@ -1126,7 +1126,7 @@ cancelar.url = (
  */
 cancelar.post = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'post'> => ({
     url: cancelar.url(args, options),
     method: 'post',
@@ -1139,7 +1139,7 @@ cancelar.post = (
  */
 const cancelarForm = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: cancelar.url(args, options),
     method: 'post',
@@ -1152,7 +1152,7 @@ const cancelarForm = (
  */
 cancelarForm.post = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: cancelar.url(args, options),
     method: 'post',
@@ -1167,7 +1167,7 @@ cancelar.form = cancelarForm;
  */
 export const pdf = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: pdf.url(args, options),
     method: 'get',
@@ -1185,7 +1185,7 @@ pdf.definition = {
  */
 pdf.url = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { requisicao: args };
@@ -1217,7 +1217,7 @@ pdf.url = (
  */
 pdf.get = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: pdf.url(args, options),
     method: 'get',
@@ -1230,7 +1230,7 @@ pdf.get = (
  */
 pdf.head = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'head'> => ({
     url: pdf.url(args, options),
     method: 'head',
@@ -1243,7 +1243,7 @@ pdf.head = (
  */
 const pdfForm = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: pdf.url(args, options),
     method: 'get',
@@ -1256,7 +1256,7 @@ const pdfForm = (
  */
 pdfForm.get = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: pdf.url(args, options),
     method: 'get',
@@ -1269,7 +1269,7 @@ pdfForm.get = (
  */
 pdfForm.head = (
     args: { requisicao: number | { id: number } } | [requisicao: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: pdf.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {

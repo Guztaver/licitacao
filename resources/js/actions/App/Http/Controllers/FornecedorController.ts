@@ -224,7 +224,7 @@ store.form = storeForm;
  */
 export const show = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
@@ -242,7 +242,7 @@ show.definition = {
  */
 show.url = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { fornecedor: args };
@@ -274,7 +274,7 @@ show.url = (
  */
 show.get = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
@@ -287,7 +287,7 @@ show.get = (
  */
 show.head = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
@@ -300,7 +300,7 @@ show.head = (
  */
 const showForm = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
@@ -313,7 +313,7 @@ const showForm = (
  */
 showForm.get = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
@@ -326,7 +326,7 @@ showForm.get = (
  */
 showForm.head = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: show.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -346,7 +346,7 @@ show.form = showForm;
  */
 export const edit = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
@@ -364,7 +364,7 @@ edit.definition = {
  */
 edit.url = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { fornecedor: args };
@@ -396,7 +396,7 @@ edit.url = (
  */
 edit.get = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
@@ -409,7 +409,7 @@ edit.get = (
  */
 edit.head = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'head'> => ({
     url: edit.url(args, options),
     method: 'head',
@@ -422,7 +422,7 @@ edit.head = (
  */
 const editForm = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
@@ -435,7 +435,7 @@ const editForm = (
  */
 editForm.get = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
@@ -448,7 +448,7 @@ editForm.get = (
  */
 editForm.head = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: edit.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -468,7 +468,7 @@ edit.form = editForm;
  */
 export const update = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
@@ -486,7 +486,7 @@ update.definition = {
  */
 update.url = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { fornecedor: args };
@@ -518,7 +518,7 @@ update.url = (
  */
 update.put = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
@@ -531,7 +531,7 @@ update.put = (
  */
 update.patch = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
@@ -544,7 +544,7 @@ update.patch = (
  */
 const updateForm = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -562,7 +562,7 @@ const updateForm = (
  */
 updateForm.put = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -580,7 +580,7 @@ updateForm.put = (
  */
 updateForm.patch = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -600,7 +600,7 @@ update.form = updateForm;
  */
 export const destroy = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
@@ -618,7 +618,7 @@ destroy.definition = {
  */
 destroy.url = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { fornecedor: args };
@@ -650,7 +650,7 @@ destroy.url = (
  */
 destroy.delete = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
@@ -663,7 +663,7 @@ destroy.delete = (
  */
 const destroyForm = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
@@ -681,7 +681,7 @@ const destroyForm = (
  */
 destroyForm.delete = (
     args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number }] | number | { id: number },
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {

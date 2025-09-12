@@ -1,8 +1,8 @@
+import { router, useForm } from '@inertiajs/react';
+import { useMemo } from 'react';
 import { EMITENTE_LABELS, EMITENTE_MESSAGES, type EmitenteFormData } from '@/constants/emitentes';
 import { emitentes } from '@/routes';
 import type { BreadcrumbItem, Emitente } from '@/types';
-import { router, useForm } from '@inertiajs/react';
-import { useMemo } from 'react';
 
 // =============================================================================
 // FORM HOOKS
@@ -32,7 +32,7 @@ export function useEmitenteForm(initialData?: Partial<EmitenteFormData>, emitent
                 clearErrors(name as keyof EmitenteFormData);
             }
         },
-        [setData, errors, clearErrors],
+        [setData, errors, clearErrors]
     );
 
     const handleObservationsChange = useMemo(
@@ -42,7 +42,7 @@ export function useEmitenteForm(initialData?: Partial<EmitenteFormData>, emitent
                 clearErrors('observacoes');
             }
         },
-        [setData, errors.observacoes, clearErrors],
+        [setData, errors.observacoes, clearErrors]
     );
 
     const handleSubmit = useMemo(
@@ -54,7 +54,7 @@ export function useEmitenteForm(initialData?: Partial<EmitenteFormData>, emitent
                 post(emitentes.store());
             }
         },
-        [post, put, emitenteId],
+        [post, put, emitenteId]
     );
 
     const handleCancel = useMemo(() => {
@@ -97,7 +97,7 @@ export function useEmitenteEdit(emitente: Emitente) {
             email: emitente.email || '',
             observacoes: emitente.observacoes || '',
         }),
-        [emitente],
+        [emitente]
     );
 
     return useEmitenteForm(initialData, emitente.id);
@@ -125,7 +125,7 @@ export function useEmitenteFilters(initialFilters?: { search?: string }) {
                 replace: true,
             });
         },
-        [get],
+        [get]
     );
 
     const handleReset = useMemo(
@@ -136,14 +136,14 @@ export function useEmitenteFilters(initialFilters?: { search?: string }) {
                 replace: true,
             });
         },
-        [setData, get],
+        [setData, get]
     );
 
     const handleSearchChange = useMemo(
         () => (value: string) => {
             setData('search', value);
         },
-        [setData],
+        [setData]
     );
 
     return {
@@ -169,7 +169,7 @@ export function useEmitentePagination() {
         () => (url: string) => {
             router.get(url);
         },
-        [],
+        []
     );
 
     return {
@@ -206,7 +206,7 @@ export function useEmitenteBreadcrumbs(page: 'index' | 'create' | 'edit' | 'show
                         {
                             title: EMITENTE_LABELS.edit,
                             href: emitentes.edit(emitente.id),
-                        },
+                        }
                     );
                 }
                 break;
@@ -242,7 +242,7 @@ export function useEmitenteActions() {
                 });
             }
         },
-        [],
+        []
     );
 
     const handleExport = useMemo(
@@ -250,7 +250,7 @@ export function useEmitenteActions() {
             const params = new URLSearchParams(filters);
             window.location.href = `${emitentes.export()}?${params.toString()}`;
         },
-        [],
+        []
     );
 
     const handleReload = useMemo(() => () => router.reload(), []);
@@ -279,7 +279,7 @@ export function useEmitenteFormatters() {
             if (email) parts.push(email);
             return parts.join(' | ');
         },
-        [],
+        []
     );
 
     const formatRequisicoesCount = useMemo(() => (count: number) => `${count || 0} requisições`, []);
@@ -292,14 +292,14 @@ export function useEmitenteFormatters() {
                 currency: 'BRL',
             }).format(Number(value));
         },
-        [],
+        []
     );
 
     const formatDate = useMemo(
         () => (date: string | null | undefined) => {
             return date || EMITENTE_MESSAGES.noValue;
         },
-        [],
+        []
     );
 
     const formatPaginationLabel = useMemo(
@@ -309,7 +309,7 @@ export function useEmitenteFormatters() {
             if (label.includes('&hellip;')) return '...';
             return label;
         },
-        [],
+        []
     );
 
     return {
@@ -336,7 +336,7 @@ export function useEmitenteStatus() {
                     return 'secondary';
             }
         },
-        [],
+        []
     );
 
     const getStatusLabel = useMemo(
@@ -350,7 +350,7 @@ export function useEmitenteStatus() {
                     return status;
             }
         },
-        [],
+        []
     );
 
     return {
@@ -378,7 +378,7 @@ export function useEmitenteStats(stats?: Record<string, number>) {
             requisicoes_mes_atual: 0,
             ...stats,
         }),
-        [stats],
+        [stats]
     );
 }
 
@@ -419,7 +419,7 @@ export function useEmitenteValidation() {
             }
             return null;
         },
-        [],
+        []
     );
 
     const validateForm = useMemo(
@@ -437,7 +437,7 @@ export function useEmitenteValidation() {
 
             return { errors, hasErrors };
         },
-        [validateField],
+        [validateField]
     );
 
     return {

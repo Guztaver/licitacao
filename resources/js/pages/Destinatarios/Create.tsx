@@ -1,11 +1,11 @@
+import { Head, Link, router } from '@inertiajs/react';
+import { ArrowLeft, Building, Save } from 'lucide-react';
 import { DestinatarisFormField, DestinatarisFormSection, DestinatarisInfoCard } from '@/components/destinatarios';
 import { Button } from '@/components/ui/button';
 import { DESTINATARIOS_LABELS, DESTINATARIOS_MESSAGES, useDestinatarisForm } from '@/hooks/use-destinatarios';
 import AppLayout from '@/layouts/app-layout';
 import { destinatarios } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Building, Save } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

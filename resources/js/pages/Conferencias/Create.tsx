@@ -1,3 +1,6 @@
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft, CheckSquare, Save } from 'lucide-react';
+import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,9 +11,6 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { conferencias } from '@/routes';
 import type { BreadcrumbItem, Fornecedor } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, CheckSquare, Save } from 'lucide-react';
-import { useMemo } from 'react';
 
 // Types
 interface CreateProps {
@@ -93,7 +93,7 @@ function InputField({ field, value, onChange, error, children }: InputFieldProps
         () => (newValue: string) => {
             onChange(field.name, newValue);
         },
-        [field.name, onChange],
+        [field.name, onChange]
     );
 
     return (
@@ -170,7 +170,7 @@ export default function ConferenciaCreate({ fornecedores }: CreateProps) {
         () => (name: string, value: string) => {
             setData(name as keyof FormData, value);
         },
-        [setData],
+        [setData]
     );
 
     const handleSubmit = useMemo(
@@ -178,21 +178,21 @@ export default function ConferenciaCreate({ fornecedores }: CreateProps) {
             e.preventDefault();
             post(conferencias.index());
         },
-        [post],
+        [post]
     );
 
     const handleObservacoesChange = useMemo(
         () => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
             setData('observacoes', e.target.value);
         },
-        [setData],
+        [setData]
     );
 
     const handleReset = useMemo(
         () => () => {
             reset();
         },
-        [reset],
+        [reset]
     );
 
     return (

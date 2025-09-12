@@ -14,5 +14,5 @@ createServer((page) =>
         setup: ({ App, props }) => {
             return <App {...props} />;
         },
-    }),
+    })
 );

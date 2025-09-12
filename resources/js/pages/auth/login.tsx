@@ -1,3 +1,5 @@
+import { Form, Head } from '@inertiajs/react';
+import { useCallback, useId } from 'react';
 import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
 import { AuthFormField, AuthNavigationLink, AuthStatusMessage, AuthSubmitButton } from '@/components/auth';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -5,8 +7,6 @@ import { Label } from '@/components/ui/label';
 import { AUTH_MESSAGES, FORM_FIELD_CONFIGS } from '@/constants/auth/constants';
 import AuthLayout from '@/layouts/auth-layout';
 import { password, register } from '@/routes';
-import { Form, Head } from '@inertiajs/react';
-import { useCallback, useId } from 'react';
 
 interface LoginProps {
     status?: string;

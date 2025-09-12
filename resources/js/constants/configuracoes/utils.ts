@@ -52,7 +52,7 @@ export function getFormDefaults(configuracoes: Partial<ConfiguracoesData> = {}):
 
 export function createFieldHandler<T extends keyof ConfiguracoesData>(
     setData: (key: keyof ConfiguracoesData, value: ConfiguracoesData[keyof ConfiguracoesData]) => void,
-    field: T,
+    field: T
 ) {
     return (value: string | number | boolean) => setData(field, value as ConfiguracoesData[T]);
 }

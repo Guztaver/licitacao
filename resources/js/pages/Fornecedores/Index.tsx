@@ -1,3 +1,6 @@
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Building, FileDown, Plus, Search, Users } from 'lucide-react';
+import react from 'react';
 import CreateFornecedorModal from '@/components/modals/CreateFornecedorModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,9 +10,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { fornecedores } from '@/routes';
 import type { BreadcrumbItem, Fornecedor } from '@/types';
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import { Building, FileDown, Plus, Search, Users } from 'lucide-react';
-import react from 'react';
 
 // Constants
 const EMPTY_MESSAGES = {
@@ -211,7 +211,7 @@ export default function FornecedoresIndex({ fornecedores: fornecedoresPaginated,
                 replace: true,
             });
         },
-        [get],
+        [get]
     );
 
     const handleReset = react.useCallback(() => {

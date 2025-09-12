@@ -1,3 +1,5 @@
+import { Head } from '@inertiajs/react';
+import { useMemo } from 'react';
 import { EmitenteFiltersCard, EmitenteHeaderActions, EmitentePageHeader } from '@/components/emitentes/filter-components';
 import { EmitenteListCard, EmitenteTable } from '@/components/emitentes/table-components';
 import { EmitenteFilterSummary, EmitentePagination, EmitenteStatsGrid } from '@/components/emitentes/ui-components';
@@ -5,8 +7,6 @@ import { EMITENTE_LABELS, EMITENTE_MESSAGES } from '@/constants/emitentes';
 import { useEmitenteActions, useEmitenteBreadcrumbs, useEmitenteFilters, useEmitentePagination, useEmitenteStats } from '@/hooks/emitentes';
 import AppLayout from '@/layouts/app-layout';
 import type { Emitente } from '@/types';
-import { Head } from '@inertiajs/react';
-import { useMemo } from 'react';
 
 // =============================================================================
 // TYPES
@@ -71,7 +71,7 @@ export default function EmitentesIndex({ emitentes: emitentesPaginated, stats, f
                 last_page: 1,
                 current_page: 1,
             },
-        [safeEmitentes.meta],
+        [safeEmitentes.meta]
     );
     const safeStats = useEmitenteStats(stats);
 

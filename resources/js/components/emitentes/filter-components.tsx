@@ -1,12 +1,12 @@
+import { Link } from '@inertiajs/react';
+import { FileDown, Search } from 'lucide-react';
+import type { FormEventHandler } from 'react';
+import { useId, useMemo } from 'react';
 import CreateEmitenteModal from '@/components/modals/CreateEmitenteModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { EMITENTE_LABELS, EMITENTE_MESSAGES } from '@/constants/emitentes';
-import { Link } from '@inertiajs/react';
-import { FileDown, Search } from 'lucide-react';
-import type { FormEventHandler } from 'react';
-import { useId, useMemo } from 'react';
 
 // =============================================================================
 // SEARCH INPUT COMPONENT
@@ -161,7 +161,7 @@ export function EmitenteAdvancedFilters({ filters, onChange, onSubmit, onClear, 
         () => (field: keyof typeof filters) => (value: string) => {
             onChange({ [field]: value });
         },
-        [onChange],
+        [onChange]
     );
 
     return (

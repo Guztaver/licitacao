@@ -1,8 +1,8 @@
+import { Form, Head } from '@inertiajs/react';
 import ConfirmablePasswordController from '@/actions/App/Http/Controllers/Auth/ConfirmablePasswordController';
 import { AuthFormField, AuthSubmitButton } from '@/components/auth';
 import { AUTH_MESSAGES, FORM_FIELD_CONFIGS } from '@/constants/auth/constants';
 import AuthLayout from '@/layouts/auth-layout';
-import { Form, Head } from '@inertiajs/react';
 
 export default function ConfirmPassword() {
     const { password: passwordConfig } = FORM_FIELD_CONFIGS.CONFIRM_PASSWORD;

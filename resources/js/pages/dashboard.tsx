@@ -1,11 +1,11 @@
+import { Head, Link, router } from '@inertiajs/react';
+import { ArrowRight, Building, Calendar, CheckSquare, DollarSign, FileText, TrendingUp, Users } from 'lucide-react';
+import type { ReactNode } from 'react';
 import CreateFornecedorModal from '@/components/modals/CreateFornecedorModal';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { conferencias, dashboard, fornecedores, requisicoes } from '@/routes';
 import type { BreadcrumbItem, Conferencia, DashboardStats, Fornecedor, Requisicao } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowRight, Building, Calendar, CheckSquare, DollarSign, FileText, TrendingUp, Users } from 'lucide-react';
-import type { ReactNode } from 'react';
 
 // Constants
 const STATUS_COLORS = {
@@ -308,7 +308,7 @@ export default function Dashboard({ stats, recent_requisicoes, fornecedores_ativ
                                                             fornecedor.requisicoes_mes_atual || 0,
                                                             'req. este mês',
                                                             'req. este mês',
-                                                            EMPTY_MESSAGES.noRequests,
+                                                            EMPTY_MESSAGES.noRequests
                                                         )}
                                                     </span>
                                                     <span className="text-xs text-gray-500">

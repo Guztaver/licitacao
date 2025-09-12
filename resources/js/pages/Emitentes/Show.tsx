@@ -1,3 +1,6 @@
+import { Head } from '@inertiajs/react';
+import { FileText } from 'lucide-react';
+import { useMemo } from 'react';
 import { EmitentePageHeader } from '@/components/emitentes/filter-components';
 import { EmitenteRequisicoesTable } from '@/components/emitentes/table-components';
 import { EmitenteActionsCard, EmitenteDetailStatsCard, EmitenteInfoCard } from '@/components/emitentes/ui-components';
@@ -7,9 +10,6 @@ import { useEmitenteActions, useEmitenteBreadcrumbs, useEmitenteStats } from '@/
 import AppLayout from '@/layouts/app-layout';
 import { emitentes } from '@/routes';
 import type { Emitente, Requisicao } from '@/types';
-import { Head } from '@inertiajs/react';
-import { FileText } from 'lucide-react';
-import { useMemo } from 'react';
 
 // =============================================================================
 // TYPES

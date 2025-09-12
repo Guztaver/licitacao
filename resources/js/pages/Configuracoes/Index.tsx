@@ -1,3 +1,6 @@
+import { Head, useForm } from '@inertiajs/react';
+import { Save } from 'lucide-react';
+import { type FormEventHandler, useCallback } from 'react';
 import { ConfigInfoCard } from '@/components/configuracoes';
 import {
     BackupSection,
@@ -13,9 +16,6 @@ import { CONFIGURACOES_MESSAGES } from '@/constants/configuracoes/constants';
 import { getFormDefaults } from '@/constants/configuracoes/utils';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
-import { Save } from 'lucide-react';
-import { useCallback, type FormEventHandler } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -85,7 +85,7 @@ export default function ConfiguracoesIndex({ configuracoes }: ConfiguracoesIndex
                 preserveScroll: true,
             });
         },
-        [post],
+        [post]
     );
 
     const renderHeader = useCallback(
@@ -97,7 +97,7 @@ export default function ConfiguracoesIndex({ configuracoes }: ConfiguracoesIndex
                 </div>
             </div>
         ),
-        [],
+        []
     );
 
     const renderSaveButton = useCallback(
@@ -109,12 +109,12 @@ export default function ConfiguracoesIndex({ configuracoes }: ConfiguracoesIndex
                 </Button>
             </div>
         ),
-        [processing],
+        [processing]
     );
 
     const renderInfoCard = useCallback(
         () => <ConfigInfoCard title={CONFIGURACOES_MESSAGES.INFO_TITLE} message={CONFIGURACOES_MESSAGES.INFO_TEXT} />,
-        [],
+        []
     );
 
     return (

@@ -1,11 +1,11 @@
+import { Link } from '@inertiajs/react';
+import { MapPin, Plus } from 'lucide-react';
 import CreateDestinatarioModal from '@/components/modals/CreateDestinatarioModal';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DESTINATARIOS_LABELS } from '@/hooks/use-destinatarios';
 import { destinatarios } from '@/routes';
 import type { Destinatario } from '@/types';
-import { Link } from '@inertiajs/react';
-import { MapPin, Plus } from 'lucide-react';
 
 interface DestinatarisTableProps {
     destinatarios: Destinatario[];

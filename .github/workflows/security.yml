@@ -111,10 +111,30 @@ jobs:
       - name: Install PHP dependencies
         run: composer install --no-interaction --prefer-dist
 
-      - name: Run PHP Security Checker
+      - name: Run PHP Security Audit
         run: |
-          composer require --dev sensiolabs/security-checker
-          ./vendor/bin/security-checker security:check composer.lock --format=json > php-security-report.json || true
+          echo "## 🔍 PHP Security Audit Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Run composer audit
+          if composer audit --format=json > php-security-report.json 2>/dev/null; then
+            echo "✅ **Composer Audit:** No vulnerabilities found" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Composer Audit:** Vulnerabilities detected" >> $GITHUB_STEP_SUMMARY
+            composer audit --format=table || true
+          fi
+
+          # Verify roave/security-advisories is working
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if composer show roave/security-advisories > /dev/null 2>&1; then
+            echo "✅ **Security Advisories:** roave/security-advisories is active" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Security Advisories:** roave/security-advisories not found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Check for any known vulnerable packages
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Installed Security Package:** roave/security-advisories prevents installation of packages with known vulnerabilities" >> $GITHUB_STEP_SUMMARY
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -257,13 +277,26 @@ jobs:
 
       - name: Check PHP license compliance
         run: |
-          composer require --dev franzl/studio
-          composer licenses --format=json > php-licenses.json || true
+          # Use composer show to list packages and their licenses
+          composer show --format=json > composer-packages.json || true
+
+          # Create a simple license report from composer.lock
+          if [ -f "composer.lock" ]; then
+            echo "Extracting license information from composer.lock..."
+            jq -r '.packages[] | "\(.name): \(.license // ["Unknown"] | join(", "))"' composer.lock > php-licenses.txt 2>/dev/null || echo "Unable to extract license info" > php-licenses.txt
+            echo '{"licenses_extracted": true}' > php-licenses.json
+          else
+            echo '{"error": "composer.lock not found"}' > php-licenses.json
+          fi
 
       - name: Check Node.js license compliance
         run: |
-          npx license-checker --json --out npm-licenses.json || true
-          npx license-checker --summary || true
+          # Install license-checker if not available and run it
+          if ! npx license-checker --version > /dev/null 2>&1; then
+            npm install license-checker --no-save
+          fi
+          npx license-checker --json --out npm-licenses.json || echo '{"error":"license-checker failed"}' > npm-licenses.json
+          npx license-checker --summary || echo "License summary not available"
 
       - name: Upload license reports
         uses: actions/upload-artifact@v4
@@ -272,7 +305,9 @@ jobs:
           name: license-compliance-reports-${{ github.sha }}
           path: |
             php-licenses.json
+            php-licenses.txt
             npm-licenses.json
+            composer-packages.json
           retention-days: 90
 
   security-summary:

@@ -6,7 +6,7 @@ import { applyUrlDefaults, queryParams, type RouteDefinition, type RouteFormDefi
  */
 export const create = (
     args: { token: string | number } | [token: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: create.url(args, options),
     method: 'get',
@@ -49,7 +49,7 @@ create.url = (args: { token: string | number } | [token: string | number] | stri
  */
 create.get = (
     args: { token: string | number } | [token: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'get'> => ({
     url: create.url(args, options),
     method: 'get',
@@ -62,7 +62,7 @@ create.get = (
  */
 create.head = (
     args: { token: string | number } | [token: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteDefinition<'head'> => ({
     url: create.url(args, options),
     method: 'head',
@@ -75,7 +75,7 @@ create.head = (
  */
 const createForm = (
     args: { token: string | number } | [token: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: create.url(args, options),
     method: 'get',
@@ -88,7 +88,7 @@ const createForm = (
  */
 createForm.get = (
     args: { token: string | number } | [token: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: create.url(args, options),
     method: 'get',
@@ -101,7 +101,7 @@ createForm.get = (
  */
 createForm.head = (
     args: { token: string | number } | [token: string | number] | string | number,
-    options?: RouteQueryOptions,
+    options?: RouteQueryOptions
 ): RouteFormDefinition<'get'> => ({
     action: create.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {

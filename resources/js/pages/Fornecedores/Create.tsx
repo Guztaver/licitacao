@@ -1,3 +1,6 @@
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft, Building, Save, Users } from 'lucide-react';
+import react from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -6,9 +9,6 @@ import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { fornecedores } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Building, Save, Users } from 'lucide-react';
-import react from 'react';
 
 // Constants
 const PLACEHOLDERS = {
@@ -166,7 +166,7 @@ export default function FornecedorCreate() {
                 },
             });
         },
-        [post],
+        [post]
     );
 
     const handleCNPJChange = react.useCallback(
@@ -174,7 +174,7 @@ export default function FornecedorCreate() {
             const formatted = formatCNPJ(value);
             setData('cnpj', formatted);
         },
-        [setData],
+        [setData]
     );
 
     const handlePhoneChange = react.useCallback(
@@ -182,7 +182,7 @@ export default function FornecedorCreate() {
             const formatted = formatPhone(value);
             setData('telefone', formatted);
         },
-        [setData],
+        [setData]
     );
 
     const handleReset = react.useCallback(() => {

@@ -1,8 +1,8 @@
+import { Building } from 'lucide-react';
+import { useMemo } from 'react';
 import { CONFIGURACOES_MESSAGES, FIELD_CONFIGS } from '@/constants/configuracoes/constants';
 import { createFieldHandler, getFieldError, getFieldValue } from '@/constants/configuracoes/utils';
 import type { ConfiguracoesData } from '@/pages/Configuracoes/Index';
-import { Building } from 'lucide-react';
-import { useMemo } from 'react';
 import ConfigField from '../config-field';
 import ConfigGrid from '../config-grid';
 import ConfigSection from '../config-section';
@@ -24,7 +24,7 @@ export default function OrganizacaoSection({ data, setData, errors }: Organizaca
             telefone_organizacao: createFieldHandler(setData, 'telefone_organizacao'),
             email_organizacao: createFieldHandler(setData, 'email_organizacao'),
         }),
-        [setData],
+        [setData]
     );
 
     return (

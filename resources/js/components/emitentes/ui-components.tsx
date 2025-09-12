@@ -1,11 +1,11 @@
+import { Link } from '@inertiajs/react';
+import { Edit, FileText, Mail, MapPin, Phone, Trash2 } from 'lucide-react';
+import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EMITENTE_DETAIL_STATS, EMITENTE_INFO_FIELDS, EMITENTE_LABELS, EMITENTE_MESSAGES, EMITENTE_STATS_CONFIG } from '@/constants/emitentes';
 import { emitentes } from '@/routes';
 import type { Emitente } from '@/types';
-import { Link } from '@inertiajs/react';
-import { Edit, FileText, Mail, MapPin, Phone, Trash2 } from 'lucide-react';
-import { useMemo } from 'react';
 
 // =============================================================================
 // STATISTICS CARD COMPONENT
@@ -52,7 +52,7 @@ export function EmitenteStatsGrid({ stats, isFiltered }: EmitenteStatsGridProps)
             sem_atividade: 0,
             ...stats,
         }),
-        [stats],
+        [stats]
     );
 
     return (
@@ -101,7 +101,7 @@ export function EmitenteDetailStatsCard({ stats }: EmitenteDetailStatsCardProps)
             requisicoes_mes_atual: 0,
             ...stats,
         }),
-        [stats],
+        [stats]
     );
 
     return (

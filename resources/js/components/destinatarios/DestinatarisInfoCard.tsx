@@ -1,5 +1,5 @@
-import { Card, CardContent } from '@/components/ui/card';
 import { AlertTriangle, Building, Info } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface DestinatarisInfoCardProps {
     title: string;

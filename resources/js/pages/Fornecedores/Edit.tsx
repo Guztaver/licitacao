@@ -1,3 +1,6 @@
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft, Building, Save, Users } from 'lucide-react';
+import react from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -6,9 +9,6 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { fornecedores } from '@/routes';
 import type { BreadcrumbItem, Fornecedor } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Building, Save, Users } from 'lucide-react';
-import react from 'react';
 
 // Constants
 const PLACEHOLDERS = {
@@ -194,7 +194,7 @@ export default function FornecedoresEdit({ fornecedor }: FornecedoresEditProps) 
                 },
             });
         },
-        [put, fornecedor.id],
+        [put, fornecedor.id]
     );
 
     const handleCnpjCpfChange = react.useCallback(
@@ -202,7 +202,7 @@ export default function FornecedoresEdit({ fornecedor }: FornecedoresEditProps) 
             const formatted = formatCnpjCpf(value);
             setData('cnpj_cpf', formatted);
         },
-        [setData],
+        [setData]
     );
 
     const fornecedorName = fornecedor.razao_social || 'Fornecedor';

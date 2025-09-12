@@ -1,3 +1,5 @@
+import { Head, Link, router } from '@inertiajs/react';
+import { ArrowLeft, Edit, FileText, Mail, MapPin, Phone, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,8 +8,6 @@ import { DESTINATARIOS_LABELS, useDestinatarisActions, useDestinatarisUtils } fr
 import AppLayout from '@/layouts/app-layout';
 import { destinatarios } from '@/routes';
 import type { BreadcrumbItem, Destinatario, Requisicao } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Edit, FileText, Mail, MapPin, Phone, Trash2 } from 'lucide-react';
 
 interface DestinatariosShowProps {
     destinatario: Destinatario & {

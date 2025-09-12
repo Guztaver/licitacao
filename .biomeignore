@@ -1,0 +1,57 @@
+# Generated files
+vendor/
+node_modules/
+public/
+bootstrap/ssr/
+
+# Configuration files that don't need formatting
+tailwind.config.js
+vite.config.ts
+tsconfig.json
+eslint.config.js
+
+# CSS files (contains Tailwind at-rules that Biome doesn't understand)
+**/*.css
+**/*.scss
+**/*.sass
+
+# UI components (auto-generated or external)
+resources/js/components/ui/*
+
+# Mail templates
+resources/views/mail/*
+
+# Build outputs
+dist/
+build/
+
+# Laravel specific
+storage/
+bootstrap/cache/
+app/
+database/
+routes/
+config/
+tests/
+**/*.php
+**/*.blade.php
+
+# Lock files
+package-lock.json
+composer.lock
+
+# Environment files
+.env*
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Other Laravel/PHP files
+artisan
+composer.json
+phpunit.xml

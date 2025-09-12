@@ -1,9 +1,9 @@
+import { Form, Head } from '@inertiajs/react';
 import EmailVerificationNotificationController from '@/actions/App/Http/Controllers/Auth/EmailVerificationNotificationController';
 import { AuthNavigationLink, AuthStatusMessage, AuthSubmitButton } from '@/components/auth';
 import { AUTH_MESSAGES } from '@/constants/auth/constants';
 import AuthLayout from '@/layouts/auth-layout';
 import { logout } from '@/routes';
-import { Form, Head } from '@inertiajs/react';
 
 interface VerifyEmailProps {
     status?: string;

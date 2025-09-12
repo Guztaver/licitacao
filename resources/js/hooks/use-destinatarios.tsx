@@ -1,6 +1,6 @@
-import { destinatarios } from '@/routes';
 import { router, useForm } from '@inertiajs/react';
 import { useCallback, useMemo } from 'react';
+import { destinatarios } from '@/routes';
 
 export interface DestinatarisFormData {
     nome: string;
@@ -218,7 +218,7 @@ export function useDestinatarisForm({ initialData, destinatarioId, onSuccess, on
                 rows: 4,
             },
         ],
-        [data, setData, errors],
+        [data, setData, errors]
     );
 
     // Submit handler
@@ -240,7 +240,7 @@ export function useDestinatarisForm({ initialData, destinatarioId, onSuccess, on
                 });
             }
         },
-        [isEditing, destinatarioId, post, put, onSuccess, onError],
+        [isEditing, destinatarioId, post, put, onSuccess, onError]
     );
 
     return {
@@ -317,7 +317,7 @@ export function useDestinatarisActions({ onSuccess, onError }: UseDestinatarisAc
                 });
             }
         },
-        [onSuccess, onError],
+        [onSuccess, onError]
     );
 
     const exportDestinatarios = useCallback((filters?: { search?: string }) => {

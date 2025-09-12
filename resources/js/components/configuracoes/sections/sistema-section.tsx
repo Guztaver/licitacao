@@ -1,8 +1,8 @@
+import { Settings } from 'lucide-react';
+import { useMemo } from 'react';
 import { CONFIGURACOES_MESSAGES, FIELD_CONFIGS } from '@/constants/configuracoes/constants';
 import { createFieldHandler, getFieldError, getFieldValue } from '@/constants/configuracoes/utils';
 import type { ConfiguracoesData } from '@/pages/Configuracoes/Index';
-import { Settings } from 'lucide-react';
-import { useMemo } from 'react';
 import ConfigField from '../config-field';
 import ConfigGrid from '../config-grid';
 import ConfigSection from '../config-section';
@@ -22,7 +22,7 @@ export default function SistemaSection({ data, setData, errors }: SistemaSection
             versao_sistema: createFieldHandler(setData, 'versao_sistema'),
             descricao_sistema: createFieldHandler(setData, 'descricao_sistema'),
         }),
-        [setData],
+        [setData]
     );
 
     return (

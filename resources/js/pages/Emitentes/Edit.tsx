@@ -1,3 +1,5 @@
+import { Head } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
 import { EmitentePageHeader } from '@/components/emitentes/filter-components';
 import { EmitenteFormActions, EmitenteFormCard, EmitenteInfoCard } from '@/components/emitentes/form-components';
 import { EMITENTE_LABELS, EMITENTE_MESSAGES, EMITENTE_TIPS } from '@/constants/emitentes';
@@ -5,8 +7,6 @@ import { useEmitenteBreadcrumbs, useEmitenteEdit } from '@/hooks/emitentes';
 import AppLayout from '@/layouts/app-layout';
 import { emitentes } from '@/routes';
 import type { Emitente } from '@/types';
-import { Head } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
 
 // =============================================================================
 // TYPES

@@ -1,3 +1,7 @@
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Calendar, CheckCircle, CheckSquare, Clock, DollarSign, FileDown, Plus, Search, Users } from 'lucide-react';
+import type { FormEventHandler } from 'react';
+import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,10 +10,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { conferencias } from '@/routes';
 import type { BreadcrumbItem, Conferencia, Fornecedor } from '@/types';
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import { Calendar, CheckCircle, CheckSquare, Clock, DollarSign, FileDown, Plus, Search, Users } from 'lucide-react';
-import type { FormEventHandler } from 'react';
-import { useMemo } from 'react';
 
 // Types
 interface PaginationLink {
@@ -367,7 +367,7 @@ export default function ConferenciasIndex({ conferencias: conferenciasPaginated,
                 replace: true,
             });
         },
-        [get],
+        [get]
     );
 
     const handleReset = useMemo(
@@ -383,7 +383,7 @@ export default function ConferenciasIndex({ conferencias: conferenciasPaginated,
                 replace: true,
             });
         },
-        [setData, get],
+        [setData, get]
     );
 
     const handleExport = useMemo(
@@ -391,14 +391,14 @@ export default function ConferenciasIndex({ conferencias: conferenciasPaginated,
             const params = new URLSearchParams(filters as Record<string, string>);
             window.location.href = `${conferencias.export()}?${params.toString()}`;
         },
-        [filters],
+        [filters]
     );
 
     const handlePaginationClick = useMemo(
         () => (url: string) => {
             router.get(url);
         },
-        [],
+        []
     );
 
     return (

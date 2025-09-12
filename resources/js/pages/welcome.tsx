@@ -1,9 +1,9 @@
+import { Head, Link, usePage } from '@inertiajs/react';
+import { ArrowRight, Building2, CheckCircle, FileText, Lock, Shield, TrendingUp, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { dashboard, login, register } from '@/routes';
 import type { SharedData } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
-import { ArrowRight, Building2, CheckCircle, FileText, Lock, Shield, TrendingUp, Users } from 'lucide-react';
 
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props;

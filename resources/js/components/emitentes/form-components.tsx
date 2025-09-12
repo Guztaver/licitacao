@@ -1,12 +1,12 @@
+import { Building } from 'lucide-react';
+import type { FormEventHandler } from 'react';
+import { useId, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { EMITENTE_FORM_FIELDS, EMITENTE_LABELS, EMITENTE_MESSAGES, type EmitenteFormData, type EmitenteFormField } from '@/constants/emitentes';
-import { Building } from 'lucide-react';
-import type { FormEventHandler } from 'react';
-import { useId, useMemo } from 'react';
 
 // =============================================================================
 // FORM FIELD COMPONENT
@@ -27,7 +27,7 @@ export function EmitenteInputField({ field, value, onChange, error, className, d
             const newValue = field.transform ? field.transform(e.target.value) : e.target.value;
             onChange(field.name, newValue);
         },
-        [field, onChange],
+        [field, onChange]
     );
 
     return (

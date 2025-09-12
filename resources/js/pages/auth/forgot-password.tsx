@@ -1,9 +1,9 @@
+import { Form, Head } from '@inertiajs/react';
 import PasswordResetLinkController from '@/actions/App/Http/Controllers/Auth/PasswordResetLinkController';
 import { AuthFormField, AuthNavigationLink, AuthStatusMessage, AuthSubmitButton } from '@/components/auth';
 import { AUTH_MESSAGES, FORM_FIELD_CONFIGS } from '@/constants/auth/constants';
 import AuthLayout from '@/layouts/auth-layout';
 import { login } from '@/routes';
-import { Form, Head } from '@inertiajs/react';
 
 interface ForgotPasswordProps {
     status?: string;

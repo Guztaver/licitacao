@@ -1,8 +1,8 @@
+import { Form, Head } from '@inertiajs/react';
 import NewPasswordController from '@/actions/App/Http/Controllers/Auth/NewPasswordController';
 import { AuthFormField, AuthSubmitButton } from '@/components/auth';
 import { AUTH_MESSAGES, FORM_FIELD_CONFIGS } from '@/constants/auth/constants';
 import AuthLayout from '@/layouts/auth-layout';
-import { Form, Head } from '@inertiajs/react';
 
 interface ResetPasswordProps {
     token: string;

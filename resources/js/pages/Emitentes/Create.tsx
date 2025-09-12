@@ -1,11 +1,11 @@
+import { Head } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
 import { EmitentePageHeader } from '@/components/emitentes/filter-components';
 import { EmitenteFormActions, EmitenteFormCard, EmitenteTipCard } from '@/components/emitentes/form-components';
 import { EMITENTE_LABELS, EMITENTE_MESSAGES, EMITENTE_TIPS } from '@/constants/emitentes';
 import { useEmitenteBreadcrumbs, useEmitenteCreate } from '@/hooks/emitentes';
 import AppLayout from '@/layouts/app-layout';
 import { emitentes } from '@/routes';
-import { Head } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
 
 // =============================================================================
 // MAIN COMPONENT

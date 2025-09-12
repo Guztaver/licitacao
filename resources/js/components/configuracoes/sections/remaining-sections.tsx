@@ -1,8 +1,8 @@
+import { Database, FileText, Shield } from 'lucide-react';
+import { useMemo } from 'react';
 import { CONFIGURACOES_MESSAGES, FIELD_CONFIGS } from '@/constants/configuracoes/constants';
 import { createFieldHandler, getFieldError, getFieldValue } from '@/constants/configuracoes/utils';
 import type { ConfiguracoesData } from '@/pages/Configuracoes/Index';
-import { Database, FileText, Shield } from 'lucide-react';
-import { useMemo } from 'react';
 import ConfigField from '../config-field';
 import ConfigGrid from '../config-grid';
 import ConfigSection from '../config-section';
@@ -22,7 +22,7 @@ export function BackupSection({ data, setData, errors }: SectionProps) {
             backup_frequencia: createFieldHandler(setData, 'backup_frequencia'),
             backup_retencao: createFieldHandler(setData, 'backup_retencao'),
         }),
-        [setData],
+        [setData]
     );
 
     return (
@@ -61,7 +61,7 @@ export function SegurancaSection({ data, setData, errors }: SectionProps) {
             senha_complexidade: createFieldHandler(setData, 'senha_complexidade'),
             autenticacao_dois_fatores: createFieldHandler(setData, 'autenticacao_dois_fatores'),
         }),
-        [setData],
+        [setData]
     );
 
     return (
@@ -108,7 +108,7 @@ export function RelatoriosSection({ data, setData, errors }: SectionProps) {
             formato_data_padrao: createFieldHandler(setData, 'formato_data_padrao'),
             moeda_padrao: createFieldHandler(setData, 'moeda_padrao'),
         }),
-        [setData],
+        [setData]
     );
 
     return (

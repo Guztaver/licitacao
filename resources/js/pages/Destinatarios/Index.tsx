@@ -1,4 +1,6 @@
-import { DestinatarisFilters, DestinatarisStatsCard, DestinatarisTable, DestinatarissPagination } from '@/components/destinatarios';
+import { Head, router } from '@inertiajs/react';
+import { FileDown, MapPin } from 'lucide-react';
+import { DestinatarisFilters, DestinatarisStatsCard, DestinatarissPagination, DestinatarisTable } from '@/components/destinatarios';
 import CreateDestinatarioModal from '@/components/modals/CreateDestinatarioModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,8 +8,6 @@ import { DESTINATARIOS_LABELS, DESTINATARIOS_MESSAGES, useDestinatarisActions, u
 import AppLayout from '@/layouts/app-layout';
 import { destinatarios } from '@/routes';
 import type { BreadcrumbItem, Destinatario } from '@/types';
-import { Head, router } from '@inertiajs/react';
-import { FileDown, MapPin } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

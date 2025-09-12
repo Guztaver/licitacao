@@ -1,8 +1,8 @@
+import { Bell } from 'lucide-react';
+import { useMemo } from 'react';
 import { CONFIGURACOES_MESSAGES, FIELD_CONFIGS } from '@/constants/configuracoes/constants';
 import { createFieldHandler, getFieldError, getFieldValue } from '@/constants/configuracoes/utils';
 import type { ConfiguracoesData } from '@/pages/Configuracoes/Index';
-import { Bell } from 'lucide-react';
-import { useMemo } from 'react';
 import ConfigField from '../config-field';
 import ConfigGrid from '../config-grid';
 import ConfigSection from '../config-section';
@@ -24,7 +24,7 @@ export default function NotificacoesSection({ data, setData, errors }: Notificac
             notificar_rejeicao: createFieldHandler(setData, 'notificar_rejeicao'),
             notificar_vencimento: createFieldHandler(setData, 'notificar_vencimento'),
         }),
-        [setData],
+        [setData]
     );
 
     return (

@@ -1,3 +1,6 @@
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft, BarChart3, Calendar, DollarSign, Download, FileText, Filter, Search } from 'lucide-react';
+import { type FormEventHandler, useId } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,9 +11,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem, Destinatario, Emitente, Fornecedor, Requisicao } from '@/types';
 import { formatters, reportUtils } from '@/utils/relatorios/formatters';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, BarChart3, Calendar, DollarSign, Download, FileText, Filter, Search } from 'lucide-react';
-import { type FormEventHandler, useId } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

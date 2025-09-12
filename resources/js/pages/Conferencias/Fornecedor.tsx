@@ -1,3 +1,6 @@
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { ArrowLeft, Building2, Calendar, CheckCircle, DollarSign, Edit3, FileText, Plus, Save, Trash2 } from 'lucide-react';
+import { type FormEventHandler, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,9 +10,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import { ArrowLeft, Building2, Calendar, CheckCircle, DollarSign, Edit3, FileText, Plus, Save, Trash2 } from 'lucide-react';
-import { type FormEventHandler, useMemo, useState } from 'react';
 
 // Types
 interface Requisicao {
@@ -343,7 +343,7 @@ function InputField({ field, value, onChange, error }: InputFieldProps) {
         () => (e: React.ChangeEvent<HTMLInputElement>) => {
             onChange(field.name, e.target.value);
         },
-        [field.name, onChange],
+        [field.name, onChange]
     );
 
     return (
@@ -579,7 +579,7 @@ export default function ConferenciaFornecedor({
         () => (name: string, value: string) => {
             setPedidoData(name as keyof PedidoManualForm, value);
         },
-        [setPedidoData],
+        [setPedidoData]
     );
 
     const handleAddPedidoManual: FormEventHandler = useMemo(
@@ -592,7 +592,7 @@ export default function ConferenciaFornecedor({
                 },
             });
         },
-        [postPedido, fornecedor.id, periodo, resetPedido],
+        [postPedido, fornecedor.id, periodo, resetPedido]
     );
 
     const handleEditRequisicao = useMemo(
@@ -600,7 +600,7 @@ export default function ConferenciaFornecedor({
             setEditingRequisicao(requisicaoId);
             setRequisicaoData('valor_final', valorAtual.toString());
         },
-        [setRequisicaoData],
+        [setRequisicaoData]
     );
 
     const handleSaveRequisicao = useMemo(
@@ -611,21 +611,21 @@ export default function ConferenciaFornecedor({
                 },
             });
         },
-        [patchRequisicao],
+        [patchRequisicao]
     );
 
     const handleCancelEditRequisicao = useMemo(
         () => () => {
             setEditingRequisicao(null);
         },
-        [],
+        []
     );
 
     const handleRequisicaoValueChange = useMemo(
         () => (value: string) => {
             setRequisicaoData('valor_final', value);
         },
-        [setRequisicaoData],
+        [setRequisicaoData]
     );
 
     const handleDeletePedidoManual = useMemo(
@@ -634,7 +634,7 @@ export default function ConferenciaFornecedor({
                 router.delete(`/conferencias/fornecedor/${fornecedor.id}/${periodo}/pedidos-manuais/${pedidoId}`);
             }
         },
-        [fornecedor.id, periodo],
+        [fornecedor.id, periodo]
     );
 
     const handleFinalizarConferencia = useMemo(
@@ -643,7 +643,7 @@ export default function ConferenciaFornecedor({
                 router.post(`/conferencias/fornecedor/${fornecedor.id}/${periodo}/finalizar`);
             }
         },
-        [fornecedor.id, periodo],
+        [fornecedor.id, periodo]
     );
 
     const handleCancelPedidoForm = useMemo(
@@ -651,7 +651,7 @@ export default function ConferenciaFornecedor({
             setShowAddPedidoForm(false);
             resetPedido();
         },
-        [resetPedido],
+        [resetPedido]
     );
 
     return (

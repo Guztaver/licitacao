@@ -1,3 +1,6 @@
+import { Head, Link, router } from '@inertiajs/react';
+import { ArrowLeft, Building2, Calendar, DollarSign, FileText, Trash2, User } from 'lucide-react';
+import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,9 +8,6 @@ import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { conferencias } from '@/routes';
 import type { BreadcrumbItem, Fornecedor } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Building2, Calendar, DollarSign, FileText, Trash2, User } from 'lucide-react';
-import { useMemo } from 'react';
 
 // Types
 interface ShowConferencia {
@@ -318,7 +318,7 @@ export default function ConferenciaShow({ conferencia, fornecedor }: Conferencia
                 router.delete(conferencias.destroy(conferencia.id));
             }
         },
-        [conferencia.id],
+        [conferencia.id]
     );
 
     const canDelete = useMemo(() => conferencia.status === 'em_andamento', [conferencia.status]);

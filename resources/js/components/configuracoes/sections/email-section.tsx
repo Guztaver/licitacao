@@ -1,8 +1,8 @@
+import { Mail } from 'lucide-react';
+import { useMemo } from 'react';
 import { CONFIGURACOES_MESSAGES, FIELD_CONFIGS } from '@/constants/configuracoes/constants';
 import { createFieldHandler, getFieldError, getFieldValue } from '@/constants/configuracoes/utils';
 import type { ConfiguracoesData } from '@/pages/Configuracoes/Index';
-import { Mail } from 'lucide-react';
-import { useMemo } from 'react';
 import ConfigField from '../config-field';
 import ConfigGrid from '../config-grid';
 import ConfigSection from '../config-section';
@@ -26,7 +26,7 @@ export default function EmailSection({ data, setData, errors }: EmailSectionProp
             email_from_address: createFieldHandler(setData, 'email_from_address'),
             email_from_name: createFieldHandler(setData, 'email_from_name'),
         }),
-        [setData],
+        [setData]
     );
 
     return (

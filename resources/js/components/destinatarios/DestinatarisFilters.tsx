@@ -1,8 +1,8 @@
+import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { DESTINATARIOS_LABELS, DESTINATARIOS_MESSAGES } from '@/hooks/use-destinatarios';
-import { Search } from 'lucide-react';
 
 interface DestinatarisFiltersProps {
     search: string;

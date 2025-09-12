@@ -1,3 +1,8 @@
+import { Head, Link, router } from '@inertiajs/react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { ArrowLeft, Building, Edit, FileText, Mail, MapPin, Phone, Trash2, Users } from 'lucide-react';
+import react from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,11 +10,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { fornecedores, requisicoes } from '@/routes';
 import type { BreadcrumbItem, Fornecedor, Requisicao } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { ArrowLeft, Building, Edit, FileText, Mail, MapPin, Phone, Trash2, Users } from 'lucide-react';
-import react from 'react';
 
 // Constants
 const EMPTY_MESSAGES = {

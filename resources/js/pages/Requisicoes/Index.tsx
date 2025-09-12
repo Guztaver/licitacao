@@ -1,3 +1,6 @@
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { CheckCircle, Clock, DollarSign, FileDown, FileText, Plus, Search, X } from 'lucide-react';
+import react from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,9 +9,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { requisicoes } from '@/routes';
 import type { BreadcrumbItem, Emitente, Requisicao } from '@/types';
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import { CheckCircle, Clock, DollarSign, FileDown, FileText, Plus, Search, X } from 'lucide-react';
-import react from 'react';
 
 // Constants
 const EMPTY_MESSAGES = {
@@ -249,7 +249,7 @@ export default function RequisicoesIndex({ requisicoes: requisicoesPaginated, em
                 replace: true,
             });
         },
-        [get],
+        [get]
     );
 
     const handleReset = react.useCallback(() => {

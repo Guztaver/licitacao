@@ -1,11 +1,11 @@
+import { useForm } from '@inertiajs/react';
+import { Building2, Plus, Save } from 'lucide-react';
+import { type FormEventHandler, type ReactNode, useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { useForm } from '@inertiajs/react';
-import { Building2, Plus, Save } from 'lucide-react';
-import { type FormEventHandler, type ReactNode, useId, useState } from 'react';
 
 interface CreateFornecedorModalProps {
     trigger?: ReactNode;

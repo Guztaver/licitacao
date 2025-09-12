@@ -1,3 +1,6 @@
+import { Link } from '@inertiajs/react';
+import { Building, FileText } from 'lucide-react';
+import { useMemo } from 'react';
 import CreateEmitenteModal from '@/components/modals/CreateEmitenteModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -6,9 +9,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { EMITENTE_LABELS, EMITENTE_MESSAGES, EMITENTE_STATUS_CONFIG, EMITENTE_TABLE_COLUMNS, type EmitenteStatus } from '@/constants/emitentes';
 import { emitentes } from '@/routes';
 import type { Emitente, Requisicao } from '@/types';
-import { Link } from '@inertiajs/react';
-import { Building, FileText } from 'lucide-react';
-import { useMemo } from 'react';
 
 // =============================================================================
 // UTILITY FUNCTIONS
