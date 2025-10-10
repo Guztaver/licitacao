@@ -1,73 +1,72 @@
-version: '3.8'
-
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"
-    volumes:
-      - ./storage:/var/www/html/storage
-      - ./bootstrap/cache:/var/www/html/bootstrap/cache
-    environment:
-      - APP_ENV=production
-      - APP_DEBUG=false
-      - APP_KEY=base64:your-app-key-here
-      - DB_CONNECTION=sqlite
-      - DB_DATABASE=/var/www/html/database/database.sqlite
-      - LOG_CHANNEL=stderr
-      - LOG_STDERR_FORMATTER=Monolog\Formatter\JsonFormatter
-    depends_on:
-      - redis
-    networks:
-      - licitacao-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "8080:80"
+        volumes:
+            - ./storage:/var/www/html/storage
+            - ./bootstrap/cache:/var/www/html/bootstrap/cache
+            - ./database:/var/www/html/database
+        environment:
+            - APP_ENV=production
+            - APP_DEBUG=false
+            - APP_KEY=base64:fYk3zPZXGwjfIPNtPMTuGyXd2S3sGq0FGs6GYWtJYhY=
+            - DB_CONNECTION=sqlite
+            - DB_DATABASE=/var/www/html/database/database.sqlite
+            - LOG_CHANNEL=stderr
+            - LOG_STDERR_FORMATTER=Monolog\Formatter\JsonFormatter
+        depends_on:
+            - redis
+        networks:
+            - licitacao-network
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost/health"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s
 
-  redis:
-    image: redis:7-alpine
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
-    networks:
-      - licitacao-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
+    redis:
+        image: redis:7-alpine
+        command: redis-server --appendonly yes
+        volumes:
+            - redis_data:/data
+        networks:
+            - licitacao-network
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 30s
+            timeout: 3s
+            retries: 3
 
-  # Optional: Database for production-like setup
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      - POSTGRES_DB=licitacao
-      - POSTGRES_USER=licitacao
-      - POSTGRES_PASSWORD=secret
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - licitacao-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U licitacao"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
+    # Optional: Database for production-like setup
+    postgres:
+        image: postgres:16-alpine
+        environment:
+            - POSTGRES_DB=licitacao
+            - POSTGRES_USER=licitacao
+            - POSTGRES_PASSWORD=secret
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        networks:
+            - licitacao-network
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U licitacao"]
+            interval: 30s
+            timeout: 5s
+            retries: 3
 
 volumes:
-  redis_data:
-  postgres_data:
+    redis_data:
+    postgres_data:
 
 networks:
-  licitacao-network:
-    driver: bridge
+    licitacao-network:
+        driver: bridge

@@ -44,6 +44,18 @@ export const conferencias = {
     fornecedor: (fornecedorId: number, periodo: string) => `/conferencias/fornecedor/${fornecedorId}/${periodo}`,
 };
 
+export const contratos = {
+    index: () => '/contratos',
+    create: () => '/contratos/create',
+    store: () => '/contratos',
+    show: (id: number) => `/contratos/${id}`,
+    edit: (id: number) => `/contratos/${id}/edit`,
+    update: (id: number) => `/contratos/${id}`,
+    destroy: (id: number) => `/contratos/${id}`,
+    toggleStatus: (id: number) => `/contratos/${id}/toggle-status`,
+    checkLimits: () => '/contratos/check-limits',
+};
+
 export const emitentes = {
     index: () => '/emitentes',
     create: () => '/emitentes/create',
@@ -64,6 +76,19 @@ export const destinatarios = {
     update: (id: number) => `/destinatarios/${id}`,
     destroy: (id: number) => `/destinatarios/${id}`,
     export: () => '/destinatarios-export',
+};
+
+export const items = {
+    index: () => '/items',
+    create: () => '/items/create',
+    store: () => '/items',
+    show: (id: number) => `/items/${id}`,
+    edit: (id: number) => `/items/${id}/edit`,
+    update: (id: number) => `/items/${id}`,
+    destroy: (id: number) => `/items/${id}`,
+    import: () => '/items-import',
+    export: () => '/items-export',
+    template: () => '/items-template',
 };
 
 export const relatorios = {
@@ -113,6 +138,7 @@ export const quickActions = {
     newRequisicao: () => requisicoes.create(),
     newFornecedor: () => fornecedores.create(),
     newConferencia: () => conferencias.create(),
+    newContrato: () => contratos.create(),
     newEmitente: () => emitentes.create(),
     newDestinatario: () => destinatarios.create(),
 };

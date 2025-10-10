@@ -1,10 +1,10 @@
 import { Link } from '@inertiajs/react';
-import { BarChart3, BookOpen, Building, CheckSquare, FileText, LayoutGrid, MapPin, Users } from 'lucide-react';
+import { BarChart3, BookOpen, Building, CheckSquare, FileCheck, FileText, LayoutGrid, MapPin, Package, Users } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { conferencias, dashboard, destinatarios, emitentes, fornecedores, relatorios, requisicoes } from '@/routes';
+import { conferencias, contratos, dashboard, destinatarios, emitentes, fornecedores, items, relatorios, requisicoes } from '@/routes';
 import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
 
@@ -28,6 +28,16 @@ const mainNavItems: NavItem[] = [
         title: 'Conferências',
         href: conferencias.index(),
         icon: CheckSquare,
+    },
+    {
+        title: 'Contratos',
+        href: contratos.index(),
+        icon: FileCheck,
+    },
+    {
+        title: 'Itens',
+        href: items.index(),
+        icon: Package,
     },
     {
         title: 'Emitentes',
