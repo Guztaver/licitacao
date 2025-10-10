@@ -1,6 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, FileText, Save, Upload } from 'lucide-react';
-import { useId } from 'react';
+import { ArrowLeft, FileText, Save, Upload, Plus, Trash2 } from 'lucide-react';
+import { useId, useState } from 'react';
 import * as button from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { requisicoes } from '@/routes';
-import type { BreadcrumbItem, Destinatario, Emitente } from '@/types';
+import type { BreadcrumbItem, Destinatario, Emitente, Item, RequisicaoItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -26,6 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface CreateProps {
     emitentes: Emitente[];
     destinatarios: Destinatario[];
+    items: Item[];
     proximo_numero: string;
 }
 
@@ -38,9 +39,10 @@ interface FormData {
     data_recebimento: string;
     descricao: string;
     anexo: File | null;
+    items: RequisicaoItem[];
 }
 
-export default function RequisicaoCreate({ emitentes, destinatarios, proximo_numero }: CreateProps) {
+export default function RequisicaoCreate({ emitentes, destinatarios, items, proximo_numero }: CreateProps) {
     const numeroId = useId();
     const emitenteId = useId();
     const destinatarioId = useId();
@@ -56,10 +58,16 @@ export default function RequisicaoCreate({ emitentes, destinatarios, proximo_num
         destinatario_id: '',
         solicitante: '',
         numero_oficio: '',
-        data_recebimento: new Date().toISOString().split('T')[0], // Today's date
+        data_recebimento: new Date().toISOString().split('T')[0],
         descricao: '',
         anexo: null,
+        items: [],
     });
+
+    const [selectedItemId, setSelectedItemId] = useState<string>('');
+    const [quantidade, setQuantidade] = useState<string>('');
+    const [valorUnitario, setValorUnitario] = useState<string>('');
+    const [observacao, setObservacao] = useState<string>('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -69,6 +77,57 @@ export default function RequisicaoCreate({ emitentes, destinatarios, proximo_num
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
         setData('anexo', file);
+    };
+
+    const addItem = () => {
+        if (!selectedItemId || !quantidade || !valorUnitario) {
+            return;
+        }
+
+        const itemExists = data.items.some((item) => item.item_id.toString() === selectedItemId);
+        if (itemExists) {
+            alert('Este item já foi adicionado à requisição.');
+            return;
+        }
+
+        const newItem: RequisicaoItem = {
+            item_id: parseInt(selectedItemId),
+            quantidade_solicitada: parseInt(quantidade),
+            valor_unitario_maximo: parseFloat(valorUnitario),
+            observacao: observacao || undefined,
+        };
+
+        setData('items', [...data.items, newItem]);
+        setSelectedItemId('');
+        setQuantidade('');
+        setValorUnitario('');
+        setObservacao('');
+    };
+
+    const removeItem = (itemId: number) => {
+        setData(
+            'items',
+            data.items.filter((item) => item.item_id !== itemId)
+        );
+    };
+
+    const getItemById = (itemId: number) => {
+        return items.find((item) => item.id === itemId);
+    };
+
+    const getTotalValue = (item: RequisicaoItem) => {
+        return item.quantidade_solicitada * item.valor_unitario_maximo;
+    };
+
+    const getTotalRequisicao = () => {
+        return data.items.reduce((total, item) => total + getTotalValue(item), 0);
+    };
+
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        }).format(value);
     };
 
     return (
@@ -246,6 +305,172 @@ export default function RequisicaoCreate({ emitentes, destinatarios, proximo_num
                         </CardContent>
                     </Card>
 
+                    {/* Items Section */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center">
+                                <FileText className="mr-2 h-5 w-5" />
+                                Itens da Requisição *
+                            </CardTitle>
+                            <CardDescription>
+                                Adicione os itens que serão solicitados nesta requisição com suas quantidades e valores máximos permitidos.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Add Item Form */}
+                            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
+                                <h3 className="mb-4 font-semibold text-gray-900 dark:text-gray-100">Adicionar Item</h3>
+                                <div className="grid gap-4 md:grid-cols-4">
+                                    <div className="space-y-2">
+                                        <Label>Item *</Label>
+                                        <Select value={selectedItemId} onValueChange={setSelectedItemId}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Selecione um item" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {items && items.length > 0 ? (
+                                                    items.map((item) => (
+                                                        <SelectItem key={item.id} value={item.id.toString()}>
+                                                            {item.code} - {item.name}
+                                                        </SelectItem>
+                                                    ))
+                                                ) : (
+                                                    <SelectItem value="no-item" disabled>
+                                                        Nenhum item disponível
+                                                    </SelectItem>
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label>Quantidade *</Label>
+                                        <Input
+                                            type="number"
+                                            min="1"
+                                            value={quantidade}
+                                            onChange={(e) => setQuantidade(e.target.value)}
+                                            placeholder="Ex: 10"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label>Valor Unitário Máximo *</Label>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            value={valorUnitario}
+                                            onChange={(e) => setValorUnitario(e.target.value)}
+                                            placeholder="Ex: 15.50"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label>Observação</Label>
+                                        <Input
+                                            type="text"
+                                            value={observacao}
+                                            onChange={(e) => setObservacao(e.target.value)}
+                                            placeholder="Opcional"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mt-4">
+                                    <button.Button
+                                        type="button"
+                                        onClick={addItem}
+                                        size="sm"
+                                        disabled={!selectedItemId || !quantidade || !valorUnitario}
+                                    >
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Adicionar Item
+                                    </button.Button>
+                                </div>
+                            </div>
+
+                            {errors.items && typeof errors.items === 'string' && <p className="text-sm text-red-500">{errors.items}</p>}
+
+                            {/* Items List */}
+                            {data.items.length > 0 ? (
+                                <div className="space-y-4">
+                                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">Itens Adicionados ({data.items.length})</h3>
+                                    <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                                        <table className="w-full text-sm">
+                                            <thead className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+                                                <tr>
+                                                    <th className="px-4 py-3 text-left font-medium text-gray-900 dark:text-gray-100">Código</th>
+                                                    <th className="px-4 py-3 text-left font-medium text-gray-900 dark:text-gray-100">Nome</th>
+                                                    <th className="px-4 py-3 text-left font-medium text-gray-900 dark:text-gray-100">Un. Medida</th>
+                                                    <th className="px-4 py-3 text-right font-medium text-gray-900 dark:text-gray-100">Quantidade</th>
+                                                    <th className="px-4 py-3 text-right font-medium text-gray-900 dark:text-gray-100">
+                                                        Valor Unitário
+                                                    </th>
+                                                    <th className="px-4 py-3 text-right font-medium text-gray-900 dark:text-gray-100">Valor Total</th>
+                                                    <th className="px-4 py-3 text-left font-medium text-gray-900 dark:text-gray-100">Observação</th>
+                                                    <th className="px-4 py-3 text-center font-medium text-gray-900 dark:text-gray-100">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                                {data.items.map((item) => {
+                                                    const itemDetails = getItemById(item.item_id);
+                                                    return (
+                                                        <tr key={item.item_id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                                            <td className="px-4 py-3 text-gray-900 dark:text-gray-100">{itemDetails?.code}</td>
+                                                            <td className="px-4 py-3 text-gray-900 dark:text-gray-100">{itemDetails?.name}</td>
+                                                            <td className="px-4 py-3 text-gray-900 dark:text-gray-100">
+                                                                {itemDetails?.unit_of_measurement}
+                                                            </td>
+                                                            <td className="px-4 py-3 text-right text-gray-900 dark:text-gray-100">
+                                                                {item.quantidade_solicitada}
+                                                            </td>
+                                                            <td className="px-4 py-3 text-right text-gray-900 dark:text-gray-100">
+                                                                {formatCurrency(item.valor_unitario_maximo)}
+                                                            </td>
+                                                            <td className="px-4 py-3 text-right font-medium text-gray-900 dark:text-gray-100">
+                                                                {formatCurrency(getTotalValue(item))}
+                                                            </td>
+                                                            <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{item.observacao || '-'}</td>
+                                                            <td className="px-4 py-3 text-center">
+                                                                <button.Button
+                                                                    type="button"
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    onClick={() => removeItem(item.item_id)}
+                                                                    className="text-red-600 hover:text-red-700 dark:text-red-400"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </button.Button>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                            <tfoot className="border-t-2 border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-800">
+                                                <tr>
+                                                    <td colSpan={5} className="px-4 py-3 text-right font-bold text-gray-900 dark:text-gray-100">
+                                                        Total da Requisição:
+                                                    </td>
+                                                    <td className="px-4 py-3 text-right font-bold text-gray-900 dark:text-gray-100">
+                                                        {formatCurrency(getTotalRequisicao())}
+                                                    </td>
+                                                    <td colSpan={2}></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="rounded-lg border border-dashed border-gray-300 p-8 text-center dark:border-gray-600">
+                                    <p className="text-gray-500 dark:text-gray-400">
+                                        Nenhum item adicionado ainda. Adicione pelo menos um item para continuar.
+                                    </p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
                     {/* Actions */}
                     <div className="flex items-center justify-end space-x-4">
                         <button.Button type="button" variant="outline" onClick={() => reset()} disabled={processing}>
@@ -254,7 +479,7 @@ export default function RequisicaoCreate({ emitentes, destinatarios, proximo_num
                         <button.Button type="button" variant="outline" asChild>
                             <Link href={requisicoes.index()}>Cancelar</Link>
                         </button.Button>
-                        <button.Button type="submit" disabled={processing}>
+                        <button.Button type="submit" disabled={processing || data.items.length === 0}>
                             <Save className="mr-2 h-4 w-4" />
                             {processing ? 'Salvando...' : 'Salvar Requisição'}
                         </button.Button>

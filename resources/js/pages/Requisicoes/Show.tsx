@@ -26,6 +26,7 @@ interface ShowRequisicao {
     status_color?: string;
     numero_pedido_real?: string;
     valor_final?: number;
+    valor_total_itens?: number;
     data_concretizacao?: string;
     data_exclusao?: string;
     motivo_exclusao?: string;
@@ -49,10 +50,22 @@ interface ShowRelations {
     usuario_exclusao?: Pick<User, 'name' | 'email'>;
 }
 
+interface ShowItem {
+    id: number;
+    code: string;
+    name: string;
+    unit_of_measurement: string;
+    quantidade_solicitada: number;
+    valor_unitario_maximo: number;
+    valor_total_maximo: number;
+    observacao?: string;
+}
+
 interface RequisicaoShowProps {
     requisicao: ShowRequisicao;
     relations: ShowRelations;
     fornecedores?: Fornecedor[];
+    items?: ShowItem[];
 }
 
 interface ConcretizarForm {
@@ -65,7 +78,7 @@ interface CancelarForm {
     motivo_cancelamento: string;
 }
 
-export default function RequisicaoShow({ requisicao, relations, fornecedores = [] }: RequisicaoShowProps) {
+export default function RequisicaoShow({ requisicao, relations, fornecedores = [], items = [] }: RequisicaoShowProps) {
     const [showConcretizarModal, setShowConcretizarModal] = useState(false);
     const [showCancelarModal, setShowCancelarModal] = useState(false);
 
@@ -413,6 +426,66 @@ export default function RequisicaoShow({ requisicao, relations, fornecedores = [
                                 <p className="text-sm whitespace-pre-wrap">{requisicao.descricao}</p>
                             </CardContent>
                         </Card>
+
+                        {/* Itens da Requisição */}
+                        {items && items.length > 0 && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Itens da Requisição ({items.length})</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                                        <table className="w-full text-sm">
+                                            <thead className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+                                                <tr>
+                                                    <th className="px-4 py-3 text-left font-medium text-gray-900 dark:text-gray-100">Código</th>
+                                                    <th className="px-4 py-3 text-left font-medium text-gray-900 dark:text-gray-100">Nome</th>
+                                                    <th className="px-4 py-3 text-left font-medium text-gray-900 dark:text-gray-100">Un. Medida</th>
+                                                    <th className="px-4 py-3 text-right font-medium text-gray-900 dark:text-gray-100">Quantidade</th>
+                                                    <th className="px-4 py-3 text-right font-medium text-gray-900 dark:text-gray-100">
+                                                        Valor Unitário Máx.
+                                                    </th>
+                                                    <th className="px-4 py-3 text-right font-medium text-gray-900 dark:text-gray-100">
+                                                        Valor Total Máx.
+                                                    </th>
+                                                    <th className="px-4 py-3 text-left font-medium text-gray-900 dark:text-gray-100">Observação</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                                {items.map((item) => (
+                                                    <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                                        <td className="px-4 py-3 text-gray-900 dark:text-gray-100">{item.code}</td>
+                                                        <td className="px-4 py-3 text-gray-900 dark:text-gray-100">{item.name}</td>
+                                                        <td className="px-4 py-3 text-gray-900 dark:text-gray-100">{item.unit_of_measurement}</td>
+                                                        <td className="px-4 py-3 text-right text-gray-900 dark:text-gray-100">
+                                                            {item.quantidade_solicitada}
+                                                        </td>
+                                                        <td className="px-4 py-3 text-right text-gray-900 dark:text-gray-100">
+                                                            {formatCurrency(item.valor_unitario_maximo)}
+                                                        </td>
+                                                        <td className="px-4 py-3 text-right font-medium text-gray-900 dark:text-gray-100">
+                                                            {formatCurrency(item.valor_total_maximo)}
+                                                        </td>
+                                                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{item.observacao || '-'}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                            <tfoot className="border-t-2 border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-800">
+                                                <tr>
+                                                    <td colSpan={5} className="px-4 py-3 text-right font-bold text-gray-900 dark:text-gray-100">
+                                                        Total dos Itens:
+                                                    </td>
+                                                    <td className="px-4 py-3 text-right font-bold text-gray-900 dark:text-gray-100">
+                                                        {formatCurrency(requisicao.valor_total_itens || 0)}
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
                     </div>
 
                     {/* Sidebar with additional info */}

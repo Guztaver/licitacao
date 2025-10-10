@@ -104,6 +104,30 @@ export interface Destinatario {
     requisicoes_count?: number;
 }
 
+export interface Item {
+    id: number;
+    code: string;
+    name: string;
+    unit_of_measurement: string;
+    medium_price: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface RequisicaoItem {
+    item_id: number;
+    quantidade_solicitada: number;
+    valor_unitario_maximo: number;
+    observacao?: string;
+}
+
+export interface RequisicaoItemWithDetails extends Item {
+    quantidade_solicitada: number;
+    valor_unitario_maximo: number;
+    valor_total_maximo: number;
+    observacao?: string;
+}
+
 export interface Requisicao {
     id: number;
     numero: string;
@@ -133,6 +157,7 @@ export interface Requisicao {
     pode_editar?: boolean;
     data_requisicao?: string;
     valor_total?: number;
+    valor_total_itens?: number;
     // Relationships
     emitente?: Emitente;
     destinatario?: Destinatario;
@@ -140,6 +165,7 @@ export interface Requisicao {
     usuario_criacao?: User;
     usuario_concretizacao?: User;
     usuario_exclusao?: User;
+    items?: RequisicaoItemWithDetails[];
 }
 
 export interface Conferencia {

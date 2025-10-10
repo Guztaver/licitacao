@@ -6,6 +6,7 @@ use App\Models\Contrato;
 use App\Models\Destinatario;
 use App\Models\Emitente;
 use App\Models\Fornecedor;
+use App\Models\Item;
 use App\Models\Requisicao;
 use App\Services\PdfService;
 use Illuminate\Http\RedirectResponse;
@@ -173,10 +174,20 @@ class RequisicaoController extends Controller
         $destinatarios = Destinatario::query()
             ->orderBy("nome")
             ->get(["id", "nome", "sigla"]);
+        $items = Item::query()
+            ->orderBy("name")
+            ->get([
+                "id",
+                "code",
+                "name",
+                "unit_of_measurement",
+                "medium_price",
+            ]);
 
         return Inertia::render("Requisicoes/Create", [
             "emitentes" => $emitentes,
             "destinatarios" => $destinatarios,
+            "items" => $items,
             "proximo_numero" => Requisicao::gerarProximoNumero(),
         ]);
     }
@@ -197,6 +208,11 @@ class RequisicaoController extends Controller
             "fornecedor_id" => "nullable|exists:fornecedores,id",
             "anexo" =>
                 "nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240",
+            "items" => "required|array|min:1",
+            "items.*.item_id" => "required|exists:items,id",
+            "items.*.quantidade_solicitada" => "required|integer|min:1",
+            "items.*.valor_unitario_maximo" => "required|numeric|min:0",
+            "items.*.observacao" => "nullable|string|max:500",
         ]);
 
         // Check contract limits if fornecedor is specified
@@ -246,6 +262,24 @@ class RequisicaoController extends Controller
         $requisicao = new Requisicao($validated);
         $requisicao->save();
 
+        // Attach items to requisicao
+        if (!empty($validated["items"])) {
+            foreach ($validated["items"] as $itemData) {
+                $valorTotal =
+                    $itemData["quantidade_solicitada"] *
+                    $itemData["valor_unitario_maximo"];
+
+                $requisicao->items()->attach($itemData["item_id"], [
+                    "quantidade_solicitada" =>
+                        $itemData["quantidade_solicitada"],
+                    "valor_unitario_maximo" =>
+                        $itemData["valor_unitario_maximo"],
+                    "valor_total_maximo" => $valorTotal,
+                    "observacao" => $itemData["observacao"] ?? null,
+                ]);
+            }
+        }
+
         return redirect()
             ->route("requisicoes.show", $requisicao)
             ->with("success", "Requisição criada com sucesso!");
@@ -263,6 +297,7 @@ class RequisicaoController extends Controller
             "usuarioCriacao",
             "usuarioConcretizacao",
             "usuarioExclusao",
+            "items",
         ]);
 
         $requisicaoData = [
@@ -294,7 +329,21 @@ class RequisicaoController extends Controller
             "pode_cancelar" => $requisicao->podeCancelar(),
             "created_at" => $requisicao->created_at->format("d/m/Y H:i"),
             "updated_at" => $requisicao->updated_at->format("d/m/Y H:i"),
+            "valor_total_itens" => $requisicao->getValorTotalItens(),
         ];
+
+        $items = $requisicao->items->map(function ($item) {
+            return [
+                "id" => $item->id,
+                "code" => $item->code,
+                "name" => $item->name,
+                "unit_of_measurement" => $item->unit_of_measurement,
+                "quantidade_solicitada" => $item->pivot->quantidade_solicitada,
+                "valor_unitario_maximo" => $item->pivot->valor_unitario_maximo,
+                "valor_total_maximo" => $item->pivot->valor_total_maximo,
+                "observacao" => $item->pivot->observacao,
+            ];
+        });
 
         $relations = [
             "emitente" => $requisicao->emitente
@@ -361,6 +410,7 @@ class RequisicaoController extends Controller
             "requisicao" => $requisicaoData,
             "relations" => $relations,
             "fornecedores" => $fornecedores,
+            "items" => $items,
         ]);
     }
 
@@ -376,12 +426,32 @@ class RequisicaoController extends Controller
                 ->with("error", "Esta requisição não pode ser editada.");
         }
 
+        $requisicao->load("items");
+
         $emitentes = Emitente::query()
             ->orderBy("nome")
             ->get(["id", "nome", "sigla"]);
         $destinatarios = Destinatario::query()
             ->orderBy("nome")
             ->get(["id", "nome", "sigla"]);
+        $allItems = Item::query()
+            ->orderBy("name")
+            ->get([
+                "id",
+                "code",
+                "name",
+                "unit_of_measurement",
+                "medium_price",
+            ]);
+
+        $requisicaoItems = $requisicao->items->map(function ($item) {
+            return [
+                "item_id" => $item->id,
+                "quantidade_solicitada" => $item->pivot->quantidade_solicitada,
+                "valor_unitario_maximo" => $item->pivot->valor_unitario_maximo,
+                "observacao" => $item->pivot->observacao,
+            ];
+        });
 
         return Inertia::render("Requisicoes/Edit", [
             "requisicao" => [
@@ -396,9 +466,11 @@ class RequisicaoController extends Controller
                     : null,
                 "descricao" => $requisicao->descricao,
                 "anexo" => $requisicao->anexo,
+                "items" => $requisicaoItems,
             ],
             "emitentes" => $emitentes,
             "destinatarios" => $destinatarios,
+            "items" => $allItems,
         ]);
     }
 
@@ -426,6 +498,11 @@ class RequisicaoController extends Controller
             "descricao" => "required|string",
             "anexo" =>
                 "nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240",
+            "items" => "required|array|min:1",
+            "items.*.item_id" => "required|exists:items,id",
+            "items.*.quantidade_solicitada" => "required|integer|min:1",
+            "items.*.valor_unitario_maximo" => "required|numeric|min:0",
+            "items.*.observacao" => "nullable|string|max:500",
         ]);
 
         // Handle file upload
@@ -446,6 +523,25 @@ class RequisicaoController extends Controller
             $requisicao->update([
                 "numero_completo" => $requisicao->gerarNumeroCompleto(),
             ]);
+        }
+
+        // Sync items - detach all and re-attach
+        $requisicao->items()->detach();
+        if (!empty($validated["items"])) {
+            foreach ($validated["items"] as $itemData) {
+                $valorTotal =
+                    $itemData["quantidade_solicitada"] *
+                    $itemData["valor_unitario_maximo"];
+
+                $requisicao->items()->attach($itemData["item_id"], [
+                    "quantidade_solicitada" =>
+                        $itemData["quantidade_solicitada"],
+                    "valor_unitario_maximo" =>
+                        $itemData["valor_unitario_maximo"],
+                    "valor_total_maximo" => $valorTotal,
+                    "observacao" => $itemData["observacao"] ?? null,
+                ]);
+            }
         }
 
         return redirect()

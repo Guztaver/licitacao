@@ -6,40 +6,41 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Requisicao extends Model
 {
     use HasFactory;
 
-    protected $table = 'requisicoes';
+    protected $table = "requisicoes";
 
     protected $fillable = [
-        'numero',
-        'numero_completo',
-        'emitente_id',
-        'destinatario_id',
-        'solicitante',
-        'numero_oficio',
-        'data_recebimento',
-        'descricao',
-        'fornecedor_id',
-        'anexo',
-        'status',
-        'numero_pedido_real',
-        'valor_final',
-        'data_concretizacao',
-        'usuario_concretizacao_id',
-        'data_exclusao',
-        'usuario_exclusao_id',
-        'motivo_exclusao',
-        'usuario_criacao_id',
+        "numero",
+        "numero_completo",
+        "emitente_id",
+        "destinatario_id",
+        "solicitante",
+        "numero_oficio",
+        "data_recebimento",
+        "descricao",
+        "fornecedor_id",
+        "anexo",
+        "status",
+        "numero_pedido_real",
+        "valor_final",
+        "data_concretizacao",
+        "usuario_concretizacao_id",
+        "data_exclusao",
+        "usuario_exclusao_id",
+        "motivo_exclusao",
+        "usuario_criacao_id",
     ];
 
     protected $casts = [
-        'data_recebimento' => 'date',
-        'data_concretizacao' => 'datetime',
-        'data_exclusao' => 'datetime',
-        'valor_final' => 'decimal:2',
+        "data_recebimento" => "date",
+        "data_concretizacao" => "datetime",
+        "data_exclusao" => "datetime",
+        "valor_final" => "decimal:2",
     ];
 
     /**
@@ -79,7 +80,7 @@ class Requisicao extends Model
      */
     public function usuarioCriacao(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'usuario_criacao_id');
+        return $this->belongsTo(User::class, "usuario_criacao_id");
     }
 
     /**
@@ -89,7 +90,7 @@ class Requisicao extends Model
      */
     public function usuarioConcretizacao(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'usuario_concretizacao_id');
+        return $this->belongsTo(User::class, "usuario_concretizacao_id");
     }
 
     /**
@@ -99,7 +100,42 @@ class Requisicao extends Model
      */
     public function usuarioExclusao(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'usuario_exclusao_id');
+        return $this->belongsTo(User::class, "usuario_exclusao_id");
+    }
+
+    /**
+     * Get the items associated with the requisicao.
+     *
+     * @return BelongsToMany<Item>
+     */
+    public function items(): BelongsToMany
+    {
+        return $this->belongsToMany(Item::class, "requisicao_items")
+            ->withPivot([
+                "quantidade_solicitada",
+                "valor_unitario_maximo",
+                "valor_total_maximo",
+                "observacao",
+            ])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the total maximum value of all items.
+     */
+    public function getValorTotalItens(): float
+    {
+        return $this->items->sum(function ($item) {
+            return (float) $item->pivot->valor_total_maximo;
+        });
+    }
+
+    /**
+     * Check if requisicao has items.
+     */
+    public function temItens(): bool
+    {
+        return $this->items()->count() > 0;
     }
 
     /**
@@ -107,7 +143,7 @@ class Requisicao extends Model
      */
     public function scopeAtiva(Builder $query): Builder
     {
-        return $query->where('status', '!=', 'excluida');
+        return $query->where("status", "!=", "excluida");
     }
 
     /**
@@ -115,15 +151,18 @@ class Requisicao extends Model
      */
     public function scopeConcretizada(Builder $query): Builder
     {
-        return $query->where('status', 'concretizada');
+        return $query->where("status", "concretizada");
     }
 
     /**
      * Scope a query for a specific period.
      */
-    public function scopePeriodo(Builder $query, \DateTime $inicio, \DateTime $fim): Builder
-    {
-        return $query->whereBetween('data_recebimento', [$inicio, $fim]);
+    public function scopePeriodo(
+        Builder $query,
+        \DateTime $inicio,
+        \DateTime $fim,
+    ): Builder {
+        return $query->whereBetween("data_recebimento", [$inicio, $fim]);
     }
 
     /**
@@ -131,16 +170,16 @@ class Requisicao extends Model
      */
     public static function gerarProximoNumero(): string
     {
-        $ultimaRequisicao = self::query()->orderBy('id', 'desc')->first();
+        $ultimaRequisicao = self::query()->orderBy("id", "desc")->first();
 
-        if (! $ultimaRequisicao) {
-            return '001';
+        if (!$ultimaRequisicao) {
+            return "001";
         }
 
         $ultimoNumero = (int) $ultimaRequisicao->numero;
         $proximoNumero = $ultimoNumero + 1;
 
-        return str_pad($proximoNumero, 3, '0', STR_PAD_LEFT);
+        return str_pad($proximoNumero, 3, "0", STR_PAD_LEFT);
     }
 
     /**
@@ -148,7 +187,7 @@ class Requisicao extends Model
      */
     public function gerarNumeroCompleto(): string
     {
-        return $this->numero.'/'.$this->emitente->sigla;
+        return $this->numero . "/" . $this->emitente->sigla;
     }
 
     /**
@@ -156,7 +195,7 @@ class Requisicao extends Model
      */
     public function podeEditar(): bool
     {
-        return in_array($this->status, ['autorizada']);
+        return in_array($this->status, ["autorizada"]);
     }
 
     /**
@@ -164,7 +203,7 @@ class Requisicao extends Model
      */
     public function podeConcretizar(): bool
     {
-        return $this->status === 'autorizada';
+        return $this->status === "autorizada";
     }
 
     /**
@@ -172,7 +211,7 @@ class Requisicao extends Model
      */
     public function podeExcluir(): bool
     {
-        return in_array($this->status, ['autorizada', 'cancelada']);
+        return in_array($this->status, ["autorizada", "cancelada"]);
     }
 
     /**
@@ -180,7 +219,7 @@ class Requisicao extends Model
      */
     public function podeCancelar(): bool
     {
-        return $this->status === 'autorizada';
+        return $this->status === "autorizada";
     }
 
     /**
@@ -191,12 +230,12 @@ class Requisicao extends Model
     public function concretizar(array $dados, User $usuario): void
     {
         $this->update([
-            'status' => 'concretizada',
-            'fornecedor_id' => $dados['fornecedor_id'] ?? $this->fornecedor_id,
-            'numero_pedido_real' => $dados['numero_pedido_real'],
-            'valor_final' => $dados['valor_final'],
-            'data_concretizacao' => now(),
-            'usuario_concretizacao_id' => $usuario->id,
+            "status" => "concretizada",
+            "fornecedor_id" => $dados["fornecedor_id"] ?? $this->fornecedor_id,
+            "numero_pedido_real" => $dados["numero_pedido_real"],
+            "valor_final" => $dados["valor_final"],
+            "data_concretizacao" => now(),
+            "usuario_concretizacao_id" => $usuario->id,
         ]);
     }
 
@@ -206,10 +245,10 @@ class Requisicao extends Model
     public function cancelar(string $motivo, User $usuario): void
     {
         $this->update([
-            'status' => 'cancelada',
-            'data_exclusao' => now(),
-            'usuario_exclusao_id' => $usuario->id,
-            'motivo_exclusao' => $motivo,
+            "status" => "cancelada",
+            "data_exclusao" => now(),
+            "usuario_exclusao_id" => $usuario->id,
+            "motivo_exclusao" => $motivo,
         ]);
     }
 
@@ -219,10 +258,10 @@ class Requisicao extends Model
     public function excluirLogicamente(string $motivo, User $usuario): void
     {
         $this->update([
-            'status' => 'excluida',
-            'data_exclusao' => now(),
-            'usuario_exclusao_id' => $usuario->id,
-            'motivo_exclusao' => $motivo,
+            "status" => "excluida",
+            "data_exclusao" => now(),
+            "usuario_exclusao_id" => $usuario->id,
+            "motivo_exclusao" => $motivo,
         ]);
     }
 
@@ -232,10 +271,10 @@ class Requisicao extends Model
     public function getStatusDisplayAttribute(): string
     {
         $statusMap = [
-            'autorizada' => 'Autorizada',
-            'concretizada' => 'Concretizada',
-            'cancelada' => 'Cancelada',
-            'excluida' => 'Excluída',
+            "autorizada" => "Autorizada",
+            "concretizada" => "Concretizada",
+            "cancelada" => "Cancelada",
+            "excluida" => "Excluída",
         ];
 
         return $statusMap[$this->status] ?? $this->status;
@@ -247,12 +286,12 @@ class Requisicao extends Model
     public function getStatusColorAttribute(): string
     {
         $colorMap = [
-            'autorizada' => 'bg-blue-100 text-blue-800',
-            'concretizada' => 'bg-green-100 text-green-800',
-            'cancelada' => 'bg-yellow-100 text-yellow-800',
-            'excluida' => 'bg-red-100 text-red-800',
+            "autorizada" => "bg-blue-100 text-blue-800",
+            "concretizada" => "bg-green-100 text-green-800",
+            "cancelada" => "bg-yellow-100 text-yellow-800",
+            "excluida" => "bg-red-100 text-red-800",
         ];
 
-        return $colorMap[$this->status] ?? 'bg-gray-100 text-gray-800';
+        return $colorMap[$this->status] ?? "bg-gray-100 text-gray-800";
     }
 }
