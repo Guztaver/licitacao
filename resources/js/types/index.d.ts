@@ -182,6 +182,7 @@ export interface Conferencia {
     status_display?: string;
     status_color?: string;
     data_finalizacao?: string;
+    data_conferencia?: string;
     usuario_criacao_id?: number;
     usuario_finalizacao_id?: number;
     observacoes?: string;
