@@ -1,11 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Edit, Trash2, Power, AlertCircle, TrendingUp, FileText, Clock, Plus, ArrowUp, ArrowDown } from 'lucide-react';
+import { AlertCircle, ArrowDown, ArrowUp, Clock, Edit, FileText, Plus, Power, Trash2, TrendingUp } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 

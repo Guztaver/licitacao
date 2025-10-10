@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, FileText, Save, Upload, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, FileText, Plus, Save, Trash2, Upload } from 'lucide-react';
 import { useId, useState } from 'react';
 import * as button from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
