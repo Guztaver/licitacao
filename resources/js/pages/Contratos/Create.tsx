@@ -43,7 +43,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function ContratoCreate({ fornecedores }: ContratoCreateProps) {
     const { data, setData, post, processing, errors } = useForm<ContratoFormData>({
-        fornecedor_id: '',
+        fornecedor_id: '0',
         numero_contrato: '',
         data_inicio: '',
         data_fim: '',
@@ -100,7 +100,7 @@ export default function ContratoCreate({ fornecedores }: ContratoCreateProps) {
                                                 <SelectValue placeholder="Selecione um fornecedor (opcional)" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="">Contrato Geral (sem fornecedor)</SelectItem>
+                                                <SelectItem value="0">Contrato Geral (sem fornecedor)</SelectItem>
                                                 {fornecedores.map((fornecedor) => (
                                                     <SelectItem key={fornecedor.id} value={fornecedor.id.toString()}>
                                                         {fornecedor.razao_social}

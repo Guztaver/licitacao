@@ -68,24 +68,42 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const STATUS_OPTIONS = [
-    { value: '', label: 'Todos os status' },
+    { value: 'all', label: 'Todos os status' },
     { value: 'ativo', label: 'Ativo' },
     { value: 'inativo', label: 'Inativo' },
     { value: 'expirado', label: 'Expirado' },
 ];
 
 export default function ContratosIndex({ contratos, fornecedores, filters }: ContratosIndexProps) {
-    const [search, setSearch] = useState(filters.search || '');
-    const [status, setStatus] = useState(filters.status || '');
-    const [fornecedorId, setFornecedorId] = useState(filters.fornecedor_id || '');
+    // Safe data extraction
+    const safeContratos = contratos || {
+        data: [],
+        links: [],
+        meta: { total: 0, from: 0, to: 0, last_page: 1, current_page: 1 },
+    };
+    const safeData = safeContratos.data || [];
+    const safeLinks = safeContratos.links || [];
+    const safeMeta = safeContratos.meta || {
+        total: 0,
+        from: 0,
+        to: 0,
+        last_page: 1,
+        current_page: 1,
+    };
+    const safeFornecedores = fornecedores || [];
+    const safeFilters = filters || {};
+
+    const [search, setSearch] = useState(safeFilters.search || '');
+    const [status, setStatus] = useState(safeFilters.status || 'all');
+    const [fornecedorId, setFornecedorId] = useState(safeFilters.fornecedor_id || 'all');
 
     const handleSearch = () => {
         router.get(
             '/contratos',
             {
                 search,
-                status,
-                fornecedor_id: fornecedorId,
+                status: status === 'all' ? undefined : status,
+                fornecedor_id: fornecedorId === 'all' ? undefined : fornecedorId,
             },
             {
                 preserveState: true,
@@ -96,8 +114,8 @@ export default function ContratosIndex({ contratos, fornecedores, filters }: Con
 
     const handleClearFilters = () => {
         setSearch('');
-        setStatus('');
-        setFornecedorId('');
+        setStatus('all');
+        setFornecedorId('all');
         router.get('/contratos', {}, { preserveState: true });
     };
 
@@ -162,8 +180,8 @@ export default function ContratosIndex({ contratos, fornecedores, filters }: Con
                                     <SelectValue placeholder="Fornecedor" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="">Todos os fornecedores</SelectItem>
-                                    {fornecedores.map((fornecedor) => (
+                                    <SelectItem value="all">Todos os fornecedores</SelectItem>
+                                    {safeFornecedores.map((fornecedor) => (
                                         <SelectItem key={fornecedor.id} value={fornecedor.id.toString()}>
                                             {fornecedor.razao_social}
                                         </SelectItem>
@@ -187,12 +205,12 @@ export default function ContratosIndex({ contratos, fornecedores, filters }: Con
                 {/* Table */}
                 <Card>
                     <CardContent className="p-0">
-                        {contratos.data.length === 0 ? (
+                        {safeData.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-12 text-center">
                                 <FileDown className="h-12 w-12 text-gray-400 mb-4" />
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Nenhum contrato encontrado</h3>
                                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                    {filters.search || filters.status || filters.fornecedor_id
+                                    {safeFilters.search || safeFilters.status || safeFilters.fornecedor_id
                                         ? 'Tente ajustar os filtros de busca.'
                                         : 'Comece criando um novo contrato.'}
                                 </p>
@@ -218,7 +236,7 @@ export default function ContratosIndex({ contratos, fornecedores, filters }: Con
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {contratos.data.map((contrato) => (
+                                        {safeData.map((contrato) => (
                                             <TableRow key={contrato.id}>
                                                 <TableCell className="font-medium">{contrato.numero_contrato}</TableCell>
                                                 <TableCell>{contrato.fornecedor?.razao_social || 'Geral'}</TableCell>
@@ -257,13 +275,13 @@ export default function ContratosIndex({ contratos, fornecedores, filters }: Con
                                 </Table>
 
                                 {/* Pagination */}
-                                {contratos.meta.last_page > 1 && (
+                                {safeMeta.last_page > 1 && (
                                     <div className="flex items-center justify-between border-t px-6 py-4">
                                         <div className="text-sm text-gray-600 dark:text-gray-400">
-                                            Mostrando {contratos.meta.from} a {contratos.meta.to} de {contratos.meta.total} resultados
+                                            Mostrando {safeMeta.from} a {safeMeta.to} de {safeMeta.total} resultados
                                         </div>
                                         <div className="flex gap-2">
-                                            {contratos.links.map((link, index) => (
+                                            {safeLinks.map((link, index) => (
                                                 <Button
                                                     key={index}
                                                     variant={link.active ? 'default' : 'outline'}

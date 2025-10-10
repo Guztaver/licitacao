@@ -73,14 +73,14 @@ Route::middleware(["auth", "verified"])->group(function () {
             ConferenciaController::class,
             "fornecedor",
         ])->name("conferencias.fornecedor");
-        Route::post(
-            "conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais",
-            [ConferenciaController::class, "storePedidoManual"],
-        )->name("conferencias.pedidos-manuais.store");
-        Route::delete(
-            "conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}",
-            [ConferenciaController::class, "destroyPedidoManual"],
-        )->name("conferencias.pedidos-manuais.destroy");
+        Route::post("conferencias/pedidos-manuais", [
+            ConferenciaController::class,
+            "storePedidoManual",
+        ])->name("conferencias.pedidos-manuais.store");
+        Route::delete("conferencias/{conferencia}/pedidos-manuais/{pedido}", [
+            ConferenciaController::class,
+            "destroyPedidoManual",
+        ])->name("conferencias.pedidos-manuais.destroy");
         Route::post(
             "conferencias/fornecedor/{fornecedor}/{periodo}/finalizar",
             [ConferenciaController::class, "finalizarConferencia"],

@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Building2, Calendar, DollarSign, FileText, Trash2, User } from 'lucide-react';
+import { ArrowLeft, Building2, Calendar, DollarSign, Edit2, FileText, Trash2, User } from 'lucide-react';
 import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -345,10 +345,18 @@ export default function ConferenciaShow({ conferencia, fornecedor }: Conferencia
                     </div>
                     <div className="flex items-center space-x-2">
                         {canDelete && (
-                            <Button variant="destructive" onClick={handleDelete}>
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Excluir
-                            </Button>
+                            <>
+                                <Button variant="outline" asChild>
+                                    <Link href={`/conferencias/${conferencia.id}/edit`}>
+                                        <Edit2 className="mr-2 h-4 w-4" />
+                                        Editar
+                                    </Link>
+                                </Button>
+                                <Button variant="destructive" onClick={handleDelete}>
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Excluir
+                                </Button>
+                            </>
                         )}
                     </div>
                 </div>

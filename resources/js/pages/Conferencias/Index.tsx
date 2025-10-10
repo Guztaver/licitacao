@@ -1,5 +1,5 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { Calendar, CheckCircle, CheckSquare, Clock, DollarSign, FileDown, Plus, Search, Users } from 'lucide-react';
+import { Calendar, CheckCircle, CheckSquare, Clock, DollarSign, Edit2, FileDown, Plus, Search, Users } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -295,6 +295,13 @@ function ConferenciaRow({ conferencia }: ConferenciaRowProps) {
                             Ver
                         </Button>
                     </Link>
+                    {extendedConferencia.status === 'em_andamento' && (
+                        <Link href={`/conferencias/${conferencia.id}/edit`}>
+                            <Button variant="ghost" size="sm">
+                                <Edit2 className="h-4 w-4" />
+                            </Button>
+                        </Link>
+                    )}
                 </div>
             </TableCell>
         </TableRow>

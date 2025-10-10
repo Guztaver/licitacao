@@ -1,5 +1,5 @@
-import { InertiaLinkProps } from '@inertiajs/react';
-import { LucideIcon } from 'lucide-react';
+import type { InertiaLinkProps } from '@inertiajs/react';
+import type { LucideIcon } from 'lucide-react';
 
 export interface Auth {
     user: User;
@@ -145,21 +145,35 @@ export interface Requisicao {
 export interface Conferencia {
     id: number;
     fornecedor_id: number;
-    periodo: string;
+    periodo_inicio: string;
+    periodo_fim: string;
+    periodo_display: string;
+    periodo?: string;
     total_requisicoes: number;
     total_pedidos_manuais: number;
     total_geral: number;
-    data_conferencia: string;
+    status: 'em_andamento' | 'finalizada';
+    status_display?: string;
+    status_color?: string;
+    data_finalizacao?: string;
+    usuario_criacao_id?: number;
+    usuario_finalizacao_id?: number;
     observacoes?: string;
     created_at: string;
     updated_at: string;
+    pode_editar?: boolean;
+    pode_finalizar?: boolean;
     // Relationships
     fornecedor?: Fornecedor;
+    pedidos_manuais?: PedidoManual[];
+    usuario_criacao?: User;
+    usuario_finalizacao?: User;
 }
 
 export interface PedidoManual {
     id: number;
     fornecedor_id: number;
+    conferencia_id?: number;
     descricao: string;
     valor: number;
     data_pedido: string;
@@ -169,6 +183,7 @@ export interface PedidoManual {
     updated_at: string;
     // Relationships
     fornecedor?: Fornecedor;
+    conferencia?: Conferencia;
 }
 
 export interface DashboardStats {

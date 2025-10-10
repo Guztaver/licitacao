@@ -56,7 +56,7 @@ const breadcrumbs = (contratoId: number): BreadcrumbItem[] => [
 
 export default function ContratoEdit({ contrato, fornecedores }: ContratoEditProps) {
     const { data, setData, put, processing, errors } = useForm<ContratoFormData>({
-        fornecedor_id: contrato.fornecedor_id?.toString() || '',
+        fornecedor_id: contrato.fornecedor_id?.toString() || '0',
         numero_contrato: contrato.numero_contrato,
         data_inicio: contrato.data_inicio,
         data_fim: contrato.data_fim,
@@ -113,7 +113,7 @@ export default function ContratoEdit({ contrato, fornecedores }: ContratoEditPro
                                                 <SelectValue placeholder="Selecione um fornecedor (opcional)" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="">Contrato Geral (sem fornecedor)</SelectItem>
+                                                <SelectItem value="0">Contrato Geral (sem fornecedor)</SelectItem>
                                                 {fornecedores.map((fornecedor) => (
                                                     <SelectItem key={fornecedor.id} value={fornecedor.id.toString()}>
                                                         {fornecedor.razao_social}

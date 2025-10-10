@@ -270,6 +270,141 @@ class ConferenciaController extends Controller
     }
 
     /**
+     * Show the form for editing the specified conferência.
+     */
+    public function edit(Conferencia $conferencia): Response
+    {
+        $conferencia->load(["fornecedor", "pedidosManuais"]);
+
+        // Get requisições for this period
+        $requisicoes = $conferencia->getRequisicoes();
+
+        $conferenciaData = [
+            "id" => $conferencia->id,
+            "fornecedor_id" => $conferencia->fornecedor_id,
+            "periodo_inicio" => $conferencia->periodo_inicio
+                ? $conferencia->periodo_inicio->format("Y-m-d")
+                : "",
+            "periodo_fim" => $conferencia->periodo_fim
+                ? $conferencia->periodo_fim->format("d/m/Y")
+                : "",
+            "periodo_display" => $conferencia->periodo_display,
+            "total_requisicoes" => $conferencia->total_requisicoes,
+            "total_pedidos_manuais" => $conferencia->total_pedidos_manuais,
+            "total_geral" => $conferencia->total_geral,
+            "status" => $conferencia->status,
+            "status_display" => $conferencia->status_display,
+            "status_color" => $conferencia->status_color,
+            "observacoes" => $conferencia->observacoes,
+            "pode_editar" => $conferencia->podeEditar(),
+            "pode_finalizar" => $conferencia->podeFinalizar(),
+        ];
+
+        $fornecedor = $conferencia->fornecedor
+            ? [
+                "id" => $conferencia->fornecedor->id,
+                "razao_social" => $conferencia->fornecedor->razao_social,
+                "cnpj" => $conferencia->fornecedor->cnpj,
+                "cnpj_formatado" => $conferencia->fornecedor->cnpj_formatado,
+                "telefone" => $conferencia->fornecedor->telefone,
+                "telefone_formatado" =>
+                    $conferencia->fornecedor->telefone_formatado,
+                "email" => $conferencia->fornecedor->email,
+                "endereco_completo" =>
+                    $conferencia->fornecedor->endereco_completo,
+            ]
+            : null;
+
+        $requisicoesData = $requisicoes->map(
+            fn($req) => [
+                "id" => $req->id,
+                "numero_completo" => $req->numero_completo,
+                "descricao" => $req->descricao,
+                "valor_final" => $req->valor_final,
+                "data_concretizacao" => $req->data_concretizacao
+                    ? $req->data_concretizacao->format("d/m/Y")
+                    : null,
+                "status" => $req->status,
+                "emitente" => $req->emitente
+                    ? [
+                        "nome" => $req->emitente->nome,
+                        "sigla" => $req->emitente->sigla,
+                    ]
+                    : null,
+            ],
+        );
+
+        $pedidosManuaisData = $conferencia->pedidosManuais->map(
+            fn($pedido) => [
+                "id" => $pedido->id,
+                "descricao" => $pedido->descricao,
+                "valor" => $pedido->valor,
+                "numero_pedido" => $pedido->numero_pedido,
+                "data_pedido" => $pedido->data_pedido
+                    ? $pedido->data_pedido->format("d/m/Y")
+                    : null,
+                "observacoes" => $pedido->observacoes,
+            ],
+        );
+
+        $totals = [
+            "total_requisicoes" => $conferencia->total_requisicoes,
+            "total_pedidos_manuais" => $conferencia->total_pedidos_manuais,
+            "total_geral" => $conferencia->total_geral,
+        ];
+
+        return Inertia::render("Conferencias/Edit", [
+            "conferencia" => $conferenciaData,
+            "fornecedor" => $fornecedor,
+            "requisicoes" => $requisicoesData,
+            "pedidos_manuais" => $pedidosManuaisData,
+            "totals" => $totals,
+        ]);
+    }
+
+    /**
+     * Update the specified conferência in storage.
+     */
+    public function update(
+        Request $request,
+        Conferencia $conferencia,
+    ): RedirectResponse {
+        // Check if can edit
+        if (!$conferencia->podeEditar()) {
+            return redirect()
+                ->route("conferencias.show", $conferencia)
+                ->with("error", "Conferência finalizada não pode ser editada.");
+        }
+
+        $validated = $request->validate([
+            "observacoes" => "nullable|string|max:1000",
+            "status" => "nullable|in:em_andamento,finalizada",
+        ]);
+
+        // If finalizing, set finalization data
+        if (
+            isset($validated["status"]) &&
+            $validated["status"] === "finalizada" &&
+            $conferencia->status === "em_andamento"
+        ) {
+            $conferencia->finalizar(Auth::user());
+        }
+
+        // Update observations if provided
+        if (isset($validated["observacoes"])) {
+            $conferencia->observacoes = $validated["observacoes"];
+            $conferencia->save();
+        }
+
+        // Recalculate totals
+        $conferencia->calcularTotais();
+
+        return redirect()
+            ->route("conferencias.show", $conferencia)
+            ->with("success", "Conferência atualizada com sucesso!");
+    }
+
+    /**
      * Display conferência for specific fornecedor and period.
      */
     /**
@@ -500,27 +635,38 @@ class ConferenciaController extends Controller
     /**
      * Store a new pedido manual for conferência.
      */
-    public function storePedidoManual(
-        Request $request,
-        int $fornecedorId,
-        string $periodo,
-    ): RedirectResponse {
+    public function storePedidoManual(Request $request): RedirectResponse
+    {
         $validated = $request->validate([
+            "conferencia_id" => "required|exists:conferencias,id",
             "descricao" => "required|string|max:500",
             "valor" => "required|numeric|min:0",
             "numero_pedido" => "nullable|string|max:100",
             "data_pedido" => "required|date",
-            "observacoes" => "required|string|max:1000",
+            "observacoes" => "nullable|string|max:1000",
         ]);
 
-        $fornecedor = Fornecedor::query()->findOrFail($fornecedorId);
+        $conferencia = Conferencia::query()->findOrFail(
+            $validated["conferencia_id"],
+        );
+
+        // Check if can edit
+        if (!$conferencia->podeEditar()) {
+            return redirect()
+                ->route("conferencias.show", $conferencia)
+                ->with("error", "Conferência finalizada não pode ser editada.");
+        }
 
         $pedidoManual = new PedidoManual($validated);
-        $pedidoManual->fornecedor_id = $fornecedor->id;
+        $pedidoManual->fornecedor_id = $conferencia->fornecedor_id;
+        $pedidoManual->conferencia_id = $conferencia->id;
         $pedidoManual->save();
 
+        // Recalculate totals
+        $conferencia->calcularTotais();
+
         return redirect()
-            ->route("conferencias.fornecedor", [$fornecedorId, $periodo])
+            ->route("conferencias.edit", $conferencia)
             ->with("success", "Pedido manual adicionado com sucesso!");
     }
 
@@ -528,24 +674,37 @@ class ConferenciaController extends Controller
      * Delete a pedido manual from conferência.
      */
     public function destroyPedidoManual(
-        Request $request,
-        int $fornecedorId,
-        string $periodo,
+        int $conferenciaId,
         int $pedidoId,
     ): RedirectResponse {
+        $conferencia = Conferencia::query()->findOrFail($conferenciaId);
+
+        // Check if can edit
+        if (!$conferencia->podeEditar()) {
+            return redirect()
+                ->route("conferencias.show", $conferencia)
+                ->with("error", "Conferência finalizada não pode ser editada.");
+        }
+
         $pedidoManual = PedidoManual::query()->findOrFail($pedidoId);
 
-        // Verify the pedido belongs to the correct fornecedor
-        if ($pedidoManual->fornecedor_id != $fornecedorId) {
+        // Verify the pedido belongs to the correct conferencia
+        if (
+            $pedidoManual->conferencia_id != $conferencia->id ||
+            $pedidoManual->fornecedor_id != $conferencia->fornecedor_id
+        ) {
             return redirect()
-                ->route("conferencias.fornecedor", [$fornecedorId, $periodo])
+                ->route("conferencias.edit", $conferencia)
                 ->with("error", "Pedido manual não encontrado.");
         }
 
         $pedidoManual->delete();
 
+        // Recalculate totals
+        $conferencia->calcularTotais();
+
         return redirect()
-            ->route("conferencias.fornecedor", [$fornecedorId, $periodo])
+            ->route("conferencias.edit", $conferencia)
             ->with("success", "Pedido manual excluído com sucesso!");
     }
 

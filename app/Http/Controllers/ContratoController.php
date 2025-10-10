@@ -51,6 +51,28 @@ class ContratoController extends Controller
 
         $contratos = $query->paginate(15)->withQueryString();
 
+        // Transform data for frontend
+        $contratos->getCollection()->transform(function ($contrato) {
+            return [
+                "id" => $contrato->id,
+                "numero_contrato" => $contrato->numero_contrato,
+                "fornecedor" => $contrato->fornecedor
+                    ? [
+                        "id" => $contrato->fornecedor->id,
+                        "razao_social" => $contrato->fornecedor->razao_social,
+                    ]
+                    : null,
+                "data_inicio" => $contrato->data_inicio->format("d/m/Y"),
+                "data_fim" => $contrato->data_fim->format("d/m/Y"),
+                "limite_requisicoes" => $contrato->limite_requisicoes,
+                "limite_conferencias" => $contrato->limite_conferencias,
+                "status" => $contrato->status,
+                "status_display" => $contrato->status_display,
+                "status_color" => $contrato->status_color,
+                "descricao" => $contrato->descricao,
+            ];
+        });
+
         // Get fornecedores for filter
         $fornecedores = Fornecedor::query()
             ->orderBy("razao_social")
@@ -99,6 +121,14 @@ class ContratoController extends Controller
             "status" => "required|in:ativo,inativo",
         ]);
 
+        // Convert "0" to null for fornecedor_id (general contract)
+        if (
+            isset($validated["fornecedor_id"]) &&
+            $validated["fornecedor_id"] === "0"
+        ) {
+            $validated["fornecedor_id"] = null;
+        }
+
         $validated["usuario_criacao_id"] = Auth::id();
 
         $contrato = Contrato::create($validated);
@@ -126,7 +156,27 @@ class ContratoController extends Controller
         $conferencias = $contrato->getConferencias()->take(10);
 
         return Inertia::render("Contratos/Show", [
-            "contrato" => $contrato,
+            "contrato" => [
+                "id" => $contrato->id,
+                "numero_contrato" => $contrato->numero_contrato,
+                "fornecedor" => $contrato->fornecedor
+                    ? [
+                        "id" => $contrato->fornecedor->id,
+                        "razao_social" => $contrato->fornecedor->razao_social,
+                        "cnpj_formatado" =>
+                            $contrato->fornecedor->cnpj_formatado,
+                    ]
+                    : null,
+                "data_inicio" => $contrato->data_inicio->format("d/m/Y"),
+                "data_fim" => $contrato->data_fim->format("d/m/Y"),
+                "limite_requisicoes" => $contrato->limite_requisicoes,
+                "limite_conferencias" => $contrato->limite_conferencias,
+                "status" => $contrato->status,
+                "status_display" => $contrato->status_display,
+                "status_color" => $contrato->status_color,
+                "descricao" => $contrato->descricao,
+                "created_at" => $contrato->created_at->format("d/m/Y H:i"),
+            ],
             "stats" => [
                 "requisicoes" => [
                     "total" => $countRequisicoes,
@@ -139,8 +189,23 @@ class ContratoController extends Controller
                     "restantes" => $conferenciasRestantes,
                 ],
             ],
-            "requisicoes" => $requisicoes,
-            "conferencias" => $conferencias,
+            "requisicoes" => $requisicoes->map(function ($req) {
+                return [
+                    "id" => $req->id,
+                    "numero_completo" => $req->numero_completo,
+                    "data_recebimento" => $req->data_recebimento->format(
+                        "d/m/Y",
+                    ),
+                    "valor_final" => $req->valor_final,
+                ];
+            }),
+            "conferencias" => $conferencias->map(function ($conf) {
+                return [
+                    "id" => $conf->id,
+                    "periodo_display" => $conf->periodo_display,
+                    "total_geral" => $conf->total_geral,
+                ];
+            }),
         ]);
     }
 
@@ -161,7 +226,17 @@ class ContratoController extends Controller
             ->get(["id", "razao_social"]);
 
         return Inertia::render("Contratos/Edit", [
-            "contrato" => $contrato,
+            "contrato" => [
+                "id" => $contrato->id,
+                "fornecedor_id" => $contrato->fornecedor_id,
+                "numero_contrato" => $contrato->numero_contrato,
+                "data_inicio" => $contrato->data_inicio->format("Y-m-d"),
+                "data_fim" => $contrato->data_fim->format("Y-m-d"),
+                "limite_requisicoes" => $contrato->limite_requisicoes,
+                "limite_conferencias" => $contrato->limite_conferencias,
+                "descricao" => $contrato->descricao,
+                "status" => $contrato->status,
+            ],
             "fornecedores" => $fornecedores,
         ]);
     }
@@ -191,6 +266,14 @@ class ContratoController extends Controller
             "descricao" => "nullable|string|max:1000",
             "status" => "required|in:ativo,inativo,expirado",
         ]);
+
+        // Convert "0" to null for fornecedor_id (general contract)
+        if (
+            isset($validated["fornecedor_id"]) &&
+            $validated["fornecedor_id"] === "0"
+        ) {
+            $validated["fornecedor_id"] = null;
+        }
 
         $contrato->update($validated);
 
