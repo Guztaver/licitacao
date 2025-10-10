@@ -10,11 +10,23 @@ services:
             - ./bootstrap/cache:/var/www/html/bootstrap/cache
             - ./database:/var/www/html/database
         environment:
+            # Production environment settings
             - APP_ENV=production
             - APP_DEBUG=false
             - APP_KEY=base64:fYk3zPZXGwjfIPNtPMTuGyXd2S3sGq0FGs6GYWtJYhY=
+
+            # HTTPS/Reverse Proxy Configuration
+            # These settings force Laravel to generate HTTPS URLs for assets
+            # Required when running behind a reverse proxy (like Traefik, nginx-proxy, etc.)
+            - APP_FORCE_HTTPS=true
+            - ASSET_URL=https://app.licitacao-project.orb.local
+            - APP_URL=https://app.licitacao-project.orb.local
+
+            # Database configuration
             - DB_CONNECTION=sqlite
             - DB_DATABASE=/var/www/html/database/database.sqlite
+
+            # Logging configuration
             - LOG_CHANNEL=stderr
             - LOG_STDERR_FORMATTER=Monolog\Formatter\JsonFormatter
         depends_on:

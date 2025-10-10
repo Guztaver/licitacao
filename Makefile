@@ -1,7 +1,7 @@
 # Makefile for Laravel Licitação Project
 # This file provides convenient commands for Docker operations and development
 
-.PHONY: help build run stop clean logs shell test lint format install dev prod deploy
+.PHONY: help build run stop clean logs shell test lint format install dev prod deploy env-production check-https
 
 # Default target
 .DEFAULT_GOAL := help
@@ -182,6 +182,41 @@ status: ## Show container status
 env-copy: ## Copy environment file for Docker
 	cp .env.example .env.docker
 	@echo "📝 .env.docker created. Please edit it with your Docker-specific settings."
+
+env-production: ## Create production .env file from template
+	@if [ -f .env ]; then \
+		echo "⚠️  .env file already exists. Creating backup as .env.backup"; \
+		cp .env .env.backup; \
+	fi
+	cp .env.production.example .env
+	@echo "📝 Production .env file created from template"
+	@echo ""
+	@echo "⚠️  IMPORTANT: You must configure the following:"
+	@echo "   1. Run 'docker-compose exec app php artisan key:generate' to generate APP_KEY"
+	@echo "   2. Update APP_URL and ASSET_URL with your production domain"
+	@echo "   3. Configure database credentials if not using SQLite"
+	@echo "   4. Set up mail configuration for notifications"
+	@echo ""
+	@echo "For HTTPS deployments, see HTTPS-SETUP.md"
+
+check-https: ## Check if HTTPS configuration is correct
+	@echo "🔍 Checking HTTPS configuration..."
+	@echo ""
+	@if docker-compose ps | grep -q "app.*Up"; then \
+		echo "✅ Container is running"; \
+		echo ""; \
+		echo "Environment Variables:"; \
+		docker-compose exec app env | grep -E 'APP_FORCE_HTTPS|APP_URL|ASSET_URL|APP_ENV' || echo "❌ HTTPS variables not found"; \
+		echo ""; \
+		echo "📋 For production HTTPS deployment:"; \
+		echo "   - APP_FORCE_HTTPS should be 'true'"; \
+		echo "   - APP_URL should start with 'https://'"; \
+		echo "   - ASSET_URL should start with 'https://'"; \
+		echo ""; \
+		echo "See HTTPS-SETUP.md for detailed configuration"; \
+	else \
+		echo "❌ Container is not running. Start with 'make compose-up' first"; \
+	fi
 
 backup-db: ## Backup database (SQLite)
 	@echo "💾 Creating database backup..."

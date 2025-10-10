@@ -1025,4 +1025,6 @@ finalizarConferencia.form = finalizarConferenciaForm
 
 const ConferenciaController = { index, create, store, show, edit, update, destroy, exportMethod, fornecedor, storePedidoManual, destroyPedidoManual, finalizarConferencia, export: exportMethod }
 
+export default ConferenciaControllerrtMethod, fornecedor, storePedidoManual, destroyPedidoManual, finalizarConferencia, export: exportMethod }
+
 export default ConferenciaController

@@ -108,6 +108,21 @@ docker-compose exec app php artisan migrate
 docker-compose exec app php artisan db:seed
 ```
 
+> **⚠️ IMPORTANTE: Configuração HTTPS para Produção**
+> 
+> Se você estiver implantando em produção atrás de um reverse proxy HTTPS (Traefik, nginx-proxy, Caddy, etc.), 
+> você DEVE configurar as seguintes variáveis de ambiente no `docker-compose.yml`:
+> 
+> ```yaml
+> environment:
+>   - APP_FORCE_HTTPS=true
+>   - APP_URL=https://seu-dominio.com
+>   - ASSET_URL=https://seu-dominio.com
+> ```
+> 
+> Isso evita erros de "Mixed Content" onde o navegador bloqueia recursos HTTP em páginas HTTPS.
+> **Consulte [HTTPS-SETUP.md](HTTPS-SETUP.md) para instruções detalhadas.**
+
 ### Opção 2: Desenvolvimento Local
 
 #### 1. Clone o Repositório
