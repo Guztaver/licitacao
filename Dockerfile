@@ -18,10 +18,11 @@ RUN apk add --no-cache \
     unzip \
     sqlite \
     sqlite-dev \
-    oniguruma-dev
+    oniguruma-dev \
+    libzip-dev
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_sqlite gd xml mbstring
+RUN docker-php-ext-install pdo pdo_sqlite gd xml mbstring zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -69,8 +70,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install Node dependencies (including dev dependencies for build)
-RUN npm ci
+# Install all Node dependencies including dev dependencies for build
+RUN npm ci --include=dev
 
 # Copy frontend source files
 COPY resources/ ./resources/
@@ -116,10 +117,11 @@ RUN apk add --no-cache \
     supervisor \
     oniguruma-dev \
     netcat-openbsd \
-    bash
+    bash \
+    libzip-dev
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_sqlite gd xml mbstring
+RUN docker-php-ext-install pdo pdo_sqlite gd xml mbstring zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
