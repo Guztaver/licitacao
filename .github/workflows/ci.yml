@@ -37,7 +37,7 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           tools: composer:v2
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, gd
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, gd, zip
           coverage: none
 
       - name: Cache Composer dependencies
