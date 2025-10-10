@@ -1,6 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
 import { Save, X } from 'lucide-react';
-import { FormEvent } from 'react';
+import type { FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

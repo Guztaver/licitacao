@@ -281,15 +281,16 @@ export default function ContratosIndex({ contratos, fornecedores, filters }: Con
                                             Mostrando {safeMeta.from} a {safeMeta.to} de {safeMeta.total} resultados
                                         </div>
                                         <div className="flex gap-2">
-                                            {safeLinks.map((link, index) => (
+                                            {safeLinks.map((link) => (
                                                 <Button
-                                                    key={index}
+                                                    key={link.url || link.label}
                                                     variant={link.active ? 'default' : 'outline'}
                                                     size="sm"
                                                     onClick={() => handlePageChange(link.url)}
                                                     disabled={!link.url}
-                                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                                />
+                                                >
+                                                    {link.label.replace(/&laquo;|&raquo;/g, (match) => (match === '&laquo;' ? '«' : '»'))}
+                                                </Button>
                                             ))}
                                         </div>
                                     </div>

@@ -91,8 +91,8 @@ export default function RequisicaoCreate({ emitentes, destinatarios, items, prox
         }
 
         const newItem: RequisicaoItem = {
-            item_id: parseInt(selectedItemId),
-            quantidade_solicitada: parseInt(quantidade),
+            item_id: parseInt(selectedItemId, 10),
+            quantidade_solicitada: parseInt(quantidade, 10),
             valor_unitario_maximo: parseFloat(valorUnitario),
             observacao: observacao || undefined,
         };

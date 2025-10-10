@@ -350,7 +350,7 @@ export default function ContratoShow({ contrato, stats, requisicoes, conferencia
                                 {/* Timeline line */}
                                 <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
 
-                                {historico_limites.map((historico, index) => (
+                                {historico_limites.map((historico, _index) => (
                                     <div key={historico.id} className="relative flex gap-4 pb-4">
                                         {/* Timeline dot */}
                                         <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600">
@@ -421,8 +421,8 @@ export default function ContratoShow({ contrato, stats, requisicoes, conferencia
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {valores_mensais.map((valor, index) => (
-                                        <TableRow key={index} className={valor.excedeu ? 'bg-red-50 dark:bg-red-950' : ''}>
+                                    {valores_mensais.map((valor) => (
+                                        <TableRow key={valor.periodo_display} className={valor.excedeu ? 'bg-red-50 dark:bg-red-950' : ''}>
                                             <TableCell className="font-medium">{valor.periodo_display}</TableCell>
                                             <TableCell>{valor.quantidade_requisicoes}</TableCell>
                                             <TableCell className="text-right">{formatCurrency(valor.total)}</TableCell>

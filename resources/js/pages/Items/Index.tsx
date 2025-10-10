@@ -284,7 +284,7 @@ export default function ItemsIndex({ items: itemsPaginated, units, stats, filter
         if (exportData.unit_of_measurement === 'all') {
             exportData.unit_of_measurement = '';
         }
-        window.location.href = items.export() + '?' + new URLSearchParams(exportData as Record<string, string>).toString();
+        window.location.href = `${items.export()}?${new URLSearchParams(exportData as Record<string, string>).toString()}`;
     };
 
     const handleDownloadTemplate = () => {

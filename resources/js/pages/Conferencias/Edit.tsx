@@ -109,7 +109,7 @@ const getBreadcrumbs = (conferencia: Conferencia): BreadcrumbItem[] => [
     },
     {
         title: 'Editar',
-        href: conferencias.show(conferencia.id) + '/edit',
+        href: `${conferencias.show(conferencia.id)}/edit`,
     },
 ];
 

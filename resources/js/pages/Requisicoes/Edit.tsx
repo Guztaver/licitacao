@@ -1,7 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, FileText, Save, Upload, Plus, Trash2 } from 'lucide-react';
 import type { FormEventHandler } from 'react';
-import { useId, useState, useEffect } from 'react';
+import { useId, useState, } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -105,8 +105,8 @@ export default function RequisicaoEdit({ requisicao, emitentes, destinatarios, i
         }
 
         const newItem: RequisicaoItem = {
-            item_id: parseInt(selectedItemId),
-            quantidade_solicitada: parseInt(quantidade),
+            item_id: parseInt(selectedItemId, 10),
+            quantidade_solicitada: parseInt(quantidade, 10),
             valor_unitario_maximo: parseFloat(valorUnitario),
             observacao: observacao || undefined,
         };

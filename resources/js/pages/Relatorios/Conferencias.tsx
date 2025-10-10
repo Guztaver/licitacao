@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Calendar, DollarSign, Download, FileText, Filter, Search } from 'lucide-react';
+import { ArrowLeft, DollarSign, Download, FileText, Filter, Search } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useId } from 'react';
 import { Button } from '@/components/ui/button';
