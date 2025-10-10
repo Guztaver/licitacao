@@ -11,25 +11,25 @@ class Fornecedor extends Model
 {
     use HasFactory;
 
-    protected $table = "fornecedores";
+    protected $table = 'fornecedores';
 
     protected $fillable = [
-        "razao_social",
-        "cnpj",
-        "telefone",
-        "email",
-        "endereco",
-        "cidade",
-        "estado",
-        "cep",
-        "contato",
-        "status",
-        "observacoes",
-        "tipo_fornecimento",
+        'razao_social',
+        'cnpj',
+        'telefone',
+        'email',
+        'endereco',
+        'cidade',
+        'estado',
+        'cep',
+        'contato',
+        'status',
+        'observacoes',
+        'tipo_fornecimento',
     ];
 
     protected $casts = [
-        "status" => "boolean",
+        'status' => 'boolean',
     ];
 
     /**
@@ -77,7 +77,7 @@ class Fornecedor extends Model
      */
     public function scopeAtivo(Builder $query): Builder
     {
-        return $query->where("status", true);
+        return $query->where('status', true);
     }
 
     /**
@@ -86,9 +86,9 @@ class Fornecedor extends Model
     public function scopeSearch(Builder $query, string $search): Builder
     {
         return $query->where(function ($q) use ($search) {
-            $q->where("razao_social", "like", "%{$search}%")->orWhere(
-                "cnpj",
-                "like",
+            $q->where('razao_social', 'like', "%{$search}%")->orWhere(
+                'cnpj',
+                'like',
                 "%{$search}%",
             );
         });
@@ -100,24 +100,24 @@ class Fornecedor extends Model
     public function getCnpjFormatadoAttribute(): string
     {
         if (empty($this->cnpj)) {
-            return "";
+            return '';
         }
 
-        $cnpj = preg_replace("/\D/", "", $this->cnpj);
+        $cnpj = preg_replace("/\D/", '', $this->cnpj);
 
         if (strlen($cnpj) === 14) {
-            return substr($cnpj, 0, 2) .
-                "." .
-                substr($cnpj, 2, 3) .
-                "." .
-                substr($cnpj, 5, 3) .
-                "/" .
-                substr($cnpj, 8, 4) .
-                "-" .
+            return substr($cnpj, 0, 2).
+                '.'.
+                substr($cnpj, 2, 3).
+                '.'.
+                substr($cnpj, 5, 3).
+                '/'.
+                substr($cnpj, 8, 4).
+                '-'.
                 substr($cnpj, 12, 2);
         }
 
-        return $this->cnpj ?? "";
+        return $this->cnpj ?? '';
     }
 
     /**
@@ -125,7 +125,7 @@ class Fornecedor extends Model
      */
     public function getStatusDisplayAttribute(): string
     {
-        return $this->status ? "Ativo" : "Inativo";
+        return $this->status ? 'Ativo' : 'Inativo';
     }
 
     /**
@@ -134,8 +134,8 @@ class Fornecedor extends Model
     public function getStatusColorAttribute(): string
     {
         return $this->status
-            ? "bg-green-100 text-green-800"
-            : "bg-red-100 text-red-800";
+            ? 'bg-green-100 text-green-800'
+            : 'bg-red-100 text-red-800';
     }
 
     /**
@@ -144,28 +144,28 @@ class Fornecedor extends Model
     public function getTelefoneFormatadoAttribute(): string
     {
         if (empty($this->telefone)) {
-            return "";
+            return '';
         }
 
-        $telefone = preg_replace("/\D/", "", $this->telefone);
+        $telefone = preg_replace("/\D/", '', $this->telefone);
 
         if (strlen($telefone) === 11) {
-            return "(" .
-                substr($telefone, 0, 2) .
-                ") " .
-                substr($telefone, 2, 5) .
-                "-" .
+            return '('.
+                substr($telefone, 0, 2).
+                ') '.
+                substr($telefone, 2, 5).
+                '-'.
                 substr($telefone, 7, 4);
         } elseif (strlen($telefone) === 10) {
-            return "(" .
-                substr($telefone, 0, 2) .
-                ") " .
-                substr($telefone, 2, 4) .
-                "-" .
+            return '('.
+                substr($telefone, 0, 2).
+                ') '.
+                substr($telefone, 2, 4).
+                '-'.
                 substr($telefone, 6, 4);
         }
 
-        return $this->telefone ?? "";
+        return $this->telefone ?? '';
     }
 
     /**
@@ -180,7 +180,7 @@ class Fornecedor extends Model
             $this->cep,
         ]);
 
-        return implode(", ", $parts);
+        return implode(', ', $parts);
     }
 
     /**
@@ -208,8 +208,8 @@ class Fornecedor extends Model
     public function getTotalRequisicoes(): float
     {
         return $this->requisicoes()
-            ->where("status", "concretizada")
-            ->sum("valor_final") ?? 0;
+            ->where('status', 'concretizada')
+            ->sum('valor_final') ?? 0;
     }
 
     /**
@@ -217,7 +217,7 @@ class Fornecedor extends Model
      */
     public function getTotalPedidosManuais(): float
     {
-        return $this->pedidosManuais()->sum("valor") ?? 0;
+        return $this->pedidosManuais()->sum('valor') ?? 0;
     }
 
     /**

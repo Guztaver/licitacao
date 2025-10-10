@@ -21,8 +21,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Force HTTPS scheme when behind a reverse proxy (production/Docker)
-        if (env("APP_FORCE_HTTPS", false)) {
-            URL::forceScheme("https");
+        if (env('APP_FORCE_HTTPS', false)) {
+            URL::forceScheme('https');
         }
     }
 }

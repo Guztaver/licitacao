@@ -10,25 +10,25 @@ class ContratoValorMensal extends Model
 {
     use HasFactory;
 
-    protected $table = "contrato_valores_mensais";
+    protected $table = 'contrato_valores_mensais';
 
     protected $fillable = [
-        "contrato_id",
-        "requisicao_id",
-        "usuario_id",
-        "ano",
-        "mes",
-        "valor",
-        "excedeu_limite",
-        "valor_excedente",
+        'contrato_id',
+        'requisicao_id',
+        'usuario_id',
+        'ano',
+        'mes',
+        'valor',
+        'excedeu_limite',
+        'valor_excedente',
     ];
 
     protected $casts = [
-        "ano" => "integer",
-        "mes" => "integer",
-        "valor" => "decimal:2",
-        "excedeu_limite" => "boolean",
-        "valor_excedente" => "decimal:2",
+        'ano' => 'integer',
+        'mes' => 'integer',
+        'valor' => 'decimal:2',
+        'excedeu_limite' => 'boolean',
+        'valor_excedente' => 'decimal:2',
     ];
 
     /**
@@ -58,7 +58,7 @@ class ContratoValorMensal extends Model
      */
     public function usuario(): BelongsTo
     {
-        return $this->belongsTo(User::class, "usuario_id");
+        return $this->belongsTo(User::class, 'usuario_id');
     }
 
     /**
@@ -66,7 +66,7 @@ class ContratoValorMensal extends Model
      */
     public function getMesAnoDisplayAttribute(): string
     {
-        return sprintf("%02d/%d", $this->mes, $this->ano);
+        return sprintf('%02d/%d', $this->mes, $this->ano);
     }
 
     /**
@@ -74,7 +74,7 @@ class ContratoValorMensal extends Model
      */
     public function getValorFormatadoAttribute(): string
     {
-        return number_format((float) ($this->valor ?? 0), 2, ",", ".");
+        return number_format((float) ($this->valor ?? 0), 2, ',', '.');
     }
 
     /**
@@ -85,8 +85,8 @@ class ContratoValorMensal extends Model
         return number_format(
             (float) ($this->valor_excedente ?? 0),
             2,
-            ",",
-            ".",
+            ',',
+            '.',
         );
     }
 }

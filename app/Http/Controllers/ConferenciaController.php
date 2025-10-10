@@ -20,27 +20,27 @@ class ConferenciaController extends Controller
      */
     public function index(Request $request): Response
     {
-        $query = Conferencia::with("fornecedor");
+        $query = Conferencia::with('fornecedor');
 
         // Search functionality
-        if ($request->filled("search")) {
-            $query->whereHas("fornecedor", function ($q) use ($request) {
-                $q->where("razao_social", "like", "%{$request->search}%");
+        if ($request->filled('search')) {
+            $query->whereHas('fornecedor', function ($q) use ($request) {
+                $q->where('razao_social', 'like', "%{$request->search}%");
             });
         }
 
         // Fornecedor filter
-        if ($request->filled("fornecedor_id")) {
-            $query->where("fornecedor_id", $request->fornecedor_id);
+        if ($request->filled('fornecedor_id')) {
+            $query->where('fornecedor_id', $request->fornecedor_id);
         }
 
         // Date range filter
-        if ($request->filled("data_inicio")) {
-            $query->whereDate("periodo_inicio", ">=", $request->data_inicio);
+        if ($request->filled('data_inicio')) {
+            $query->whereDate('periodo_inicio', '>=', $request->data_inicio);
         }
 
-        if ($request->filled("data_fim")) {
-            $query->whereDate("periodo_fim", "<=", $request->data_fim);
+        if ($request->filled('data_fim')) {
+            $query->whereDate('periodo_fim', '<=', $request->data_fim);
         }
 
         // Calculate statistics for the complete filtered dataset (before pagination)
@@ -48,82 +48,80 @@ class ConferenciaController extends Controller
         $allConferencias = $statsQuery->get();
 
         $stats = [
-            "total_conferencias" => $allConferencias->count(),
-            "em_andamento" => $allConferencias
-                ->where("status", "em_andamento")
+            'total_conferencias' => $allConferencias->count(),
+            'em_andamento' => $allConferencias
+                ->where('status', 'em_andamento')
                 ->count(),
-            "finalizadas" => $allConferencias
-                ->where("status", "finalizada")
+            'finalizadas' => $allConferencias
+                ->where('status', 'finalizada')
                 ->count(),
-            "este_mes" => $allConferencias
+            'este_mes' => $allConferencias
                 ->filter(
-                    fn($conferencia) => $conferencia->periodo_inicio?->format(
-                        "Y-m",
-                    ) === now()->format("Y-m") ||
-                        $conferencia->periodo_fim?->format("Y-m") ===
-                            now()->format("Y-m"),
+                    fn ($conferencia) => $conferencia->periodo_inicio?->format(
+                        'Y-m',
+                    ) === now()->format('Y-m') ||
+                        $conferencia->periodo_fim?->format('Y-m') ===
+                            now()->format('Y-m'),
                 )
                 ->count(),
-            "fornecedores_unicos" => $allConferencias
-                ->pluck("fornecedor_id")
+            'fornecedores_unicos' => $allConferencias
+                ->pluck('fornecedor_id')
                 ->unique()
                 ->count(),
-            "valor_total" => $allConferencias->sum("total_geral") ?? 0,
+            'valor_total' => $allConferencias->sum('total_geral') ?? 0,
         ];
 
         $conferenciasPaginated = $query
-            ->orderBy("created_at", "desc")
+            ->orderBy('created_at', 'desc')
             ->paginate(15)
             ->withQueryString();
 
         $conferenciasPaginated->getCollection()->transform(
-            fn($conferencia) => [
+            fn ($conferencia) => [
                 /**
                  * @var Conferencia $conferencia
                  */
-                "id" => $conferencia->id,
-                "periodo_inicio" => $conferencia->periodo_inicio
-                    ? $conferencia->periodo_inicio->format("d/m/Y")
-                    : "",
-                "periodo_fim" => $conferencia->periodo_fim
-                    ? $conferencia->periodo_fim->format("d/m/Y")
-                    : "",
-                "periodo_display" => $conferencia->periodo_display,
-                "periodo" => $conferencia->periodo_display,
-                "status" => $conferencia->status,
-                "status_display" => $conferencia->status_display,
-                "status_color" => $conferencia->status_color,
-                "total_requisicoes" => $conferencia->total_requisicoes,
-                "total_pedidos_manuais" => $conferencia->total_pedidos_manuais,
-                "total_geral" => $conferencia->total_geral,
-                "observacoes" => $conferencia->observacoes,
-                "fornecedor" => $conferencia->fornecedor
+                'id' => $conferencia->id,
+                'periodo_inicio' => $conferencia->periodo_inicio
+                    ? $conferencia->periodo_inicio->format('d/m/Y')
+                    : '',
+                'periodo_fim' => $conferencia->periodo_fim
+                    ? $conferencia->periodo_fim->format('d/m/Y')
+                    : '',
+                'periodo_display' => $conferencia->periodo_display,
+                'periodo' => $conferencia->periodo_display,
+                'status' => $conferencia->status,
+                'status_display' => $conferencia->status_display,
+                'status_color' => $conferencia->status_color,
+                'total_requisicoes' => $conferencia->total_requisicoes,
+                'total_pedidos_manuais' => $conferencia->total_pedidos_manuais,
+                'total_geral' => $conferencia->total_geral,
+                'observacoes' => $conferencia->observacoes,
+                'fornecedor' => $conferencia->fornecedor
                     ? [
-                        "id" => $conferencia->fornecedor->id,
-                        "razao_social" =>
-                            $conferencia->fornecedor->razao_social,
-                        "cnpj_formatado" =>
-                            $conferencia->fornecedor->cnpj_formatado,
+                        'id' => $conferencia->fornecedor->id,
+                        'razao_social' => $conferencia->fornecedor->razao_social,
+                        'cnpj_formatado' => $conferencia->fornecedor->cnpj_formatado,
                     ]
                     : null,
-                "created_at" => $conferencia->created_at->format("d/m/Y H:i"),
+                'created_at' => $conferencia->created_at->format('d/m/Y H:i'),
             ],
         );
 
         $fornecedores = Fornecedor::query()
-            ->where("status", true)
-            ->orderBy("razao_social")
-            ->get(["id", "razao_social"]);
+            ->where('status', true)
+            ->orderBy('razao_social')
+            ->get(['id', 'razao_social']);
 
-        return Inertia::render("Conferencias/Index", [
-            "conferencias" => $conferenciasPaginated,
-            "fornecedores" => $fornecedores,
-            "stats" => $stats,
-            "filters" => $request->only([
-                "search",
-                "fornecedor_id",
-                "data_inicio",
-                "data_fim",
+        return Inertia::render('Conferencias/Index', [
+            'conferencias' => $conferenciasPaginated,
+            'fornecedores' => $fornecedores,
+            'stats' => $stats,
+            'filters' => $request->only([
+                'search',
+                'fornecedor_id',
+                'data_inicio',
+                'data_fim',
             ]),
         ]);
     }
@@ -134,12 +132,12 @@ class ConferenciaController extends Controller
     public function create(): Response
     {
         $fornecedores = Fornecedor::query()
-            ->where("status", true)
-            ->orderBy("razao_social")
-            ->get(["id", "razao_social"]);
+            ->where('status', true)
+            ->orderBy('razao_social')
+            ->get(['id', 'razao_social']);
 
-        return Inertia::render("Conferencias/Create", [
-            "fornecedores" => $fornecedores,
+        return Inertia::render('Conferencias/Create', [
+            'fornecedores' => $fornecedores,
         ]);
     }
 
@@ -149,15 +147,15 @@ class ConferenciaController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            "fornecedor_id" => "required|exists:fornecedores,id",
-            "periodo" => 'required|string|max:100|regex:/^\d{2}\/\d{4}$/',
-            "observacoes" => "nullable|string|max:1000",
+            'fornecedor_id' => 'required|exists:fornecedores,id',
+            'periodo' => 'required|string|max:100|regex:/^\d{2}\/\d{4}$/',
+            'observacoes' => 'nullable|string|max:1000',
         ]);
 
         $fornecedor = Fornecedor::query()->findOrFail($request->fornecedor_id);
 
         // Parse periodo (MM/YYYY) to generate periodo_inicio and periodo_fim
-        $periodo = $validated["periodo"];
+        $periodo = $validated['periodo'];
         if (preg_match('/^(\d{2})\/(\d{4})$/', $periodo, $matches)) {
             $month = intval($matches[1]);
             $year = intval($matches[2]);
@@ -170,15 +168,14 @@ class ConferenciaController extends Controller
             return redirect()
                 ->back()
                 ->withErrors([
-                    "periodo" =>
-                        "Formato de período inválido. Use MM/AAAA (ex: 01/2024)",
+                    'periodo' => 'Formato de período inválido. Use MM/AAAA (ex: 01/2024)',
                 ])
                 ->withInput();
         }
 
         // Check contract limits for the fornecedor
         $contrato = Contrato::findContratoVigente(
-            $validated["fornecedor_id"],
+            $validated['fornecedor_id'],
             $periodo_inicio,
         );
 
@@ -186,39 +183,38 @@ class ConferenciaController extends Controller
             return redirect()
                 ->back()
                 ->withErrors([
-                    "fornecedor_id" =>
-                        "O limite de conferências para o contrato " .
-                        $contrato->numero_contrato .
-                        " foi atingido. Limite: " .
-                        $contrato->limite_conferencias .
-                        ", Utilizadas: " .
-                        $contrato->getCountConferencias() .
-                        ".",
+                    'fornecedor_id' => 'O limite de conferências para o contrato '.
+                        $contrato->numero_contrato.
+                        ' foi atingido. Limite: '.
+                        $contrato->limite_conferencias.
+                        ', Utilizadas: '.
+                        $contrato->getCountConferencias().
+                        '.',
                 ])
                 ->withInput();
         }
 
         // Calculate totals
-        $validated["total_requisicoes"] = $fornecedor->getTotalRequisicoes();
+        $validated['total_requisicoes'] = $fornecedor->getTotalRequisicoes();
         $validated[
-            "total_pedidos_manuais"
+            'total_pedidos_manuais'
         ] = $fornecedor->getTotalPedidosManuais();
-        $validated["total_geral"] = $fornecedor->getTotalGeral();
+        $validated['total_geral'] = $fornecedor->getTotalGeral();
 
         // Add the parsed dates and user info
-        $validated["periodo_inicio"] = $periodo_inicio;
-        $validated["periodo_fim"] = $periodo_fim;
-        $validated["usuario_criacao_id"] = Auth::id();
+        $validated['periodo_inicio'] = $periodo_inicio;
+        $validated['periodo_fim'] = $periodo_fim;
+        $validated['usuario_criacao_id'] = Auth::id();
 
         // Remove the original periodo field as it's not in the database
-        unset($validated["periodo"]);
+        unset($validated['periodo']);
 
         $conferencia = new Conferencia($validated);
         $conferencia->save();
 
         return redirect()
-            ->route("conferencias.show", $conferencia)
-            ->with("success", "Conferência criada com sucesso!");
+            ->route('conferencias.show', $conferencia)
+            ->with('success', 'Conferência criada com sucesso!');
     }
 
     /**
@@ -226,46 +222,44 @@ class ConferenciaController extends Controller
      */
     public function show(Conferencia $conferencia): Response
     {
-        $conferencia->load("fornecedor");
+        $conferencia->load('fornecedor');
 
         $conferenciaData = [
-            "id" => $conferencia->id,
-            "periodo_inicio" => $conferencia->periodo_inicio
-                ? $conferencia->periodo_inicio->format("d/m/Y")
-                : "",
-            "periodo_fim" => $conferencia->periodo_fim
-                ? $conferencia->periodo_fim->format("d/m/Y")
-                : "",
-            "periodo_display" => $conferencia->periodo_display,
-            "total_requisicoes" => $conferencia->total_requisicoes,
-            "total_pedidos_manuais" => $conferencia->total_pedidos_manuais,
-            "total_geral" => $conferencia->total_geral,
-            "status" => $conferencia->status,
-            "status_display" => $conferencia->status_display,
-            "status_color" => $conferencia->status_color,
-            "observacoes" => $conferencia->observacoes,
-            "created_at" => $conferencia->created_at->format("d/m/Y H:i"),
-            "updated_at" => $conferencia->updated_at->format("d/m/Y H:i"),
+            'id' => $conferencia->id,
+            'periodo_inicio' => $conferencia->periodo_inicio
+                ? $conferencia->periodo_inicio->format('d/m/Y')
+                : '',
+            'periodo_fim' => $conferencia->periodo_fim
+                ? $conferencia->periodo_fim->format('d/m/Y')
+                : '',
+            'periodo_display' => $conferencia->periodo_display,
+            'total_requisicoes' => $conferencia->total_requisicoes,
+            'total_pedidos_manuais' => $conferencia->total_pedidos_manuais,
+            'total_geral' => $conferencia->total_geral,
+            'status' => $conferencia->status,
+            'status_display' => $conferencia->status_display,
+            'status_color' => $conferencia->status_color,
+            'observacoes' => $conferencia->observacoes,
+            'created_at' => $conferencia->created_at->format('d/m/Y H:i'),
+            'updated_at' => $conferencia->updated_at->format('d/m/Y H:i'),
         ];
 
         $fornecedor = $conferencia->fornecedor
             ? [
-                "id" => $conferencia->fornecedor->id,
-                "razao_social" => $conferencia->fornecedor->razao_social,
-                "cnpj" => $conferencia->fornecedor->cnpj,
-                "cnpj_formatado" => $conferencia->fornecedor->cnpj_formatado,
-                "telefone" => $conferencia->fornecedor->telefone,
-                "telefone_formatado" =>
-                    $conferencia->fornecedor->telefone_formatado,
-                "email" => $conferencia->fornecedor->email,
-                "endereco_completo" =>
-                    $conferencia->fornecedor->endereco_completo,
+                'id' => $conferencia->fornecedor->id,
+                'razao_social' => $conferencia->fornecedor->razao_social,
+                'cnpj' => $conferencia->fornecedor->cnpj,
+                'cnpj_formatado' => $conferencia->fornecedor->cnpj_formatado,
+                'telefone' => $conferencia->fornecedor->telefone,
+                'telefone_formatado' => $conferencia->fornecedor->telefone_formatado,
+                'email' => $conferencia->fornecedor->email,
+                'endereco_completo' => $conferencia->fornecedor->endereco_completo,
             ]
             : null;
 
-        return Inertia::render("Conferencias/Show", [
-            "conferencia" => $conferenciaData,
-            "fornecedor" => $fornecedor,
+        return Inertia::render('Conferencias/Show', [
+            'conferencia' => $conferenciaData,
+            'fornecedor' => $fornecedor,
         ]);
     }
 
@@ -274,91 +268,89 @@ class ConferenciaController extends Controller
      */
     public function edit(Conferencia $conferencia): Response
     {
-        $conferencia->load(["fornecedor", "pedidosManuais"]);
+        $conferencia->load(['fornecedor', 'pedidosManuais']);
 
         // Get requisições for this period
         $requisicoes = $conferencia->getRequisicoes();
 
         $conferenciaData = [
-            "id" => $conferencia->id,
-            "fornecedor_id" => $conferencia->fornecedor_id,
-            "periodo_inicio" => $conferencia->periodo_inicio
-                ? $conferencia->periodo_inicio->format("Y-m-d")
-                : "",
-            "periodo_fim" => $conferencia->periodo_fim
-                ? $conferencia->periodo_fim->format("d/m/Y")
-                : "",
-            "periodo_display" => $conferencia->periodo_display,
-            "total_requisicoes" => $conferencia->total_requisicoes,
-            "total_pedidos_manuais" => $conferencia->total_pedidos_manuais,
-            "total_geral" => $conferencia->total_geral,
-            "status" => $conferencia->status,
-            "status_display" => $conferencia->status_display,
-            "status_color" => $conferencia->status_color,
-            "observacoes" => $conferencia->observacoes,
-            "pode_editar" => $conferencia->podeEditar(),
-            "pode_finalizar" => $conferencia->podeFinalizar(),
+            'id' => $conferencia->id,
+            'fornecedor_id' => $conferencia->fornecedor_id,
+            'periodo_inicio' => $conferencia->periodo_inicio
+                ? $conferencia->periodo_inicio->format('Y-m-d')
+                : '',
+            'periodo_fim' => $conferencia->periodo_fim
+                ? $conferencia->periodo_fim->format('d/m/Y')
+                : '',
+            'periodo_display' => $conferencia->periodo_display,
+            'total_requisicoes' => $conferencia->total_requisicoes,
+            'total_pedidos_manuais' => $conferencia->total_pedidos_manuais,
+            'total_geral' => $conferencia->total_geral,
+            'status' => $conferencia->status,
+            'status_display' => $conferencia->status_display,
+            'status_color' => $conferencia->status_color,
+            'observacoes' => $conferencia->observacoes,
+            'pode_editar' => $conferencia->podeEditar(),
+            'pode_finalizar' => $conferencia->podeFinalizar(),
         ];
 
         $fornecedor = $conferencia->fornecedor
             ? [
-                "id" => $conferencia->fornecedor->id,
-                "razao_social" => $conferencia->fornecedor->razao_social,
-                "cnpj" => $conferencia->fornecedor->cnpj,
-                "cnpj_formatado" => $conferencia->fornecedor->cnpj_formatado,
-                "telefone" => $conferencia->fornecedor->telefone,
-                "telefone_formatado" =>
-                    $conferencia->fornecedor->telefone_formatado,
-                "email" => $conferencia->fornecedor->email,
-                "endereco_completo" =>
-                    $conferencia->fornecedor->endereco_completo,
+                'id' => $conferencia->fornecedor->id,
+                'razao_social' => $conferencia->fornecedor->razao_social,
+                'cnpj' => $conferencia->fornecedor->cnpj,
+                'cnpj_formatado' => $conferencia->fornecedor->cnpj_formatado,
+                'telefone' => $conferencia->fornecedor->telefone,
+                'telefone_formatado' => $conferencia->fornecedor->telefone_formatado,
+                'email' => $conferencia->fornecedor->email,
+                'endereco_completo' => $conferencia->fornecedor->endereco_completo,
             ]
             : null;
 
         $requisicoesData = $requisicoes->map(
-            fn($req) => [
-                "id" => $req->id,
-                "numero_completo" => $req->numero_completo,
-                "descricao" => $req->descricao,
-                "valor_final" => $req->valor_final,
-                "data_concretizacao" => $req->data_concretizacao
-                    ? $req->data_concretizacao->format("d/m/Y")
+            fn ($req) => [
+                'id' => $req->id,
+                'numero_completo' => $req->numero_completo,
+                'descricao' => $req->descricao,
+                'valor_final' => $req->valor_final,
+                'data_concretizacao' => $req->data_concretizacao
+                    ? $req->data_concretizacao->format('d/m/Y')
                     : null,
-                "status" => $req->status,
-                "emitente" => $req->emitente
+                'status' => $req->status,
+                'emitente' => $req->emitente
                     ? [
-                        "nome" => $req->emitente->nome,
-                        "sigla" => $req->emitente->sigla,
+                        'nome' => $req->emitente->nome,
+                        'sigla' => $req->emitente->sigla,
                     ]
                     : null,
             ],
         );
 
         $pedidosManuaisData = $conferencia->pedidosManuais->map(
-            fn($pedido) => [
-                "id" => $pedido->id,
-                "descricao" => $pedido->descricao,
-                "valor" => $pedido->valor,
-                "numero_pedido" => $pedido->numero_pedido,
-                "data_pedido" => $pedido->data_pedido
-                    ? $pedido->data_pedido->format("d/m/Y")
+            fn ($pedido) => [
+                'id' => $pedido->id,
+                'descricao' => $pedido->descricao,
+                'valor' => $pedido->valor,
+                'numero_pedido' => $pedido->numero_pedido,
+                'data_pedido' => $pedido->data_pedido
+                    ? $pedido->data_pedido->format('d/m/Y')
                     : null,
-                "observacoes" => $pedido->observacoes,
+                'observacoes' => $pedido->observacoes,
             ],
         );
 
         $totals = [
-            "total_requisicoes" => $conferencia->total_requisicoes,
-            "total_pedidos_manuais" => $conferencia->total_pedidos_manuais,
-            "total_geral" => $conferencia->total_geral,
+            'total_requisicoes' => $conferencia->total_requisicoes,
+            'total_pedidos_manuais' => $conferencia->total_pedidos_manuais,
+            'total_geral' => $conferencia->total_geral,
         ];
 
-        return Inertia::render("Conferencias/Edit", [
-            "conferencia" => $conferenciaData,
-            "fornecedor" => $fornecedor,
-            "requisicoes" => $requisicoesData,
-            "pedidos_manuais" => $pedidosManuaisData,
-            "totals" => $totals,
+        return Inertia::render('Conferencias/Edit', [
+            'conferencia' => $conferenciaData,
+            'fornecedor' => $fornecedor,
+            'requisicoes' => $requisicoesData,
+            'pedidos_manuais' => $pedidosManuaisData,
+            'totals' => $totals,
         ]);
     }
 
@@ -370,29 +362,29 @@ class ConferenciaController extends Controller
         Conferencia $conferencia,
     ): RedirectResponse {
         // Check if can edit
-        if (!$conferencia->podeEditar()) {
+        if (! $conferencia->podeEditar()) {
             return redirect()
-                ->route("conferencias.show", $conferencia)
-                ->with("error", "Conferência finalizada não pode ser editada.");
+                ->route('conferencias.show', $conferencia)
+                ->with('error', 'Conferência finalizada não pode ser editada.');
         }
 
         $validated = $request->validate([
-            "observacoes" => "nullable|string|max:1000",
-            "status" => "nullable|in:em_andamento,finalizada",
+            'observacoes' => 'nullable|string|max:1000',
+            'status' => 'nullable|in:em_andamento,finalizada',
         ]);
 
         // If finalizing, set finalization data
         if (
-            isset($validated["status"]) &&
-            $validated["status"] === "finalizada" &&
-            $conferencia->status === "em_andamento"
+            isset($validated['status']) &&
+            $validated['status'] === 'finalizada' &&
+            $conferencia->status === 'em_andamento'
         ) {
             $conferencia->finalizar(Auth::user());
         }
 
         // Update observations if provided
-        if (isset($validated["observacoes"])) {
-            $conferencia->observacoes = $validated["observacoes"];
+        if (isset($validated['observacoes'])) {
+            $conferencia->observacoes = $validated['observacoes'];
             $conferencia->save();
         }
 
@@ -400,8 +392,8 @@ class ConferenciaController extends Controller
         $conferencia->calcularTotais();
 
         return redirect()
-            ->route("conferencias.show", $conferencia)
-            ->with("success", "Conferência atualizada com sucesso!");
+            ->route('conferencias.show', $conferencia)
+            ->with('success', 'Conferência atualizada com sucesso!');
     }
 
     /**
@@ -420,11 +412,11 @@ class ConferenciaController extends Controller
         $fornecedor = Fornecedor::query()->findOrFail($fornecedorId);
 
         // Parse period (e.g., "2024-01" for January 2024)
-        $periodoData = explode("-", $periodo);
+        $periodoData = explode('-', $periodo);
         if (count($periodoData) !== 2) {
             return redirect()
-                ->route("conferencias.index")
-                ->with("error", "Período inválido.");
+                ->route('conferencias.index')
+                ->with('error', 'Período inválido.');
         }
 
         $ano = (int) $periodoData[0];
@@ -433,31 +425,31 @@ class ConferenciaController extends Controller
         // Get requisições for the period
         $requisicoes = $fornecedor
             ->requisicoes()
-            ->where("status", "concretizada")
-            ->whereYear("data_concretizacao", $ano)
-            ->whereMonth("data_concretizacao", $mes)
-            ->with(["emitente", "destinatario"])
-            ->orderBy("data_concretizacao")
+            ->where('status', 'concretizada')
+            ->whereYear('data_concretizacao', $ano)
+            ->whereMonth('data_concretizacao', $mes)
+            ->with(['emitente', 'destinatario'])
+            ->orderBy('data_concretizacao')
             ->get()
             ->map(
-                fn($req) => [
-                    "id" => $req->id,
-                    "numero_completo" => $req->numero_completo,
-                    "solicitante" => $req->solicitante,
-                    "valor_final" => $req->valor_final,
-                    "numero_pedido_real" => $req->numero_pedido_real,
-                    "data_concretizacao" => $req->data_concretizacao->format(
-                        "d/m/Y",
+                fn ($req) => [
+                    'id' => $req->id,
+                    'numero_completo' => $req->numero_completo,
+                    'solicitante' => $req->solicitante,
+                    'valor_final' => $req->valor_final,
+                    'numero_pedido_real' => $req->numero_pedido_real,
+                    'data_concretizacao' => $req->data_concretizacao->format(
+                        'd/m/Y',
                     ),
-                    "emitente" => $req->emitente
+                    'emitente' => $req->emitente
                         ? [
-                            "nome" => $req->emitente->nome,
-                            "sigla" => $req->emitente->sigla,
+                            'nome' => $req->emitente->nome,
+                            'sigla' => $req->emitente->sigla,
                         ]
                         : null,
-                    "destinatario" => $req->destinatario
+                    'destinatario' => $req->destinatario
                         ? [
-                            "nome" => $req->destinatario->nome,
+                            'nome' => $req->destinatario->nome,
                         ]
                         : null,
                 ],
@@ -466,44 +458,43 @@ class ConferenciaController extends Controller
         // Get pedidos manuais for the period
         $pedidosManuais = $fornecedor
             ->pedidosManuais()
-            ->whereYear("data_pedido", $ano)
-            ->whereMonth("data_pedido", $mes)
-            ->orderBy("data_pedido")
+            ->whereYear('data_pedido', $ano)
+            ->whereMonth('data_pedido', $mes)
+            ->orderBy('data_pedido')
             ->get()
             ->map(
-                fn($pedido) => [
-                    "id" => $pedido->id,
-                    "descricao" => $pedido->descricao,
-                    "valor" => $pedido->valor,
-                    "numero_pedido" => $pedido->numero_pedido,
-                    "data_pedido" => $pedido->data_pedido,
+                fn ($pedido) => [
+                    'id' => $pedido->id,
+                    'descricao' => $pedido->descricao,
+                    'valor' => $pedido->valor,
+                    'numero_pedido' => $pedido->numero_pedido,
+                    'data_pedido' => $pedido->data_pedido,
                 ],
             );
 
         $totals = [
-            "requisicoes" => $requisicoes->sum("valor_final"),
-            "pedidos_manuais" => $pedidosManuais->sum("valor"),
-            "geral" =>
-                $requisicoes->sum("valor_final") +
-                $pedidosManuais->sum("valor"),
+            'requisicoes' => $requisicoes->sum('valor_final'),
+            'pedidos_manuais' => $pedidosManuais->sum('valor'),
+            'geral' => $requisicoes->sum('valor_final') +
+                $pedidosManuais->sum('valor'),
         ];
 
         $fornecedorData = [
-            "id" => $fornecedor->id,
-            "razao_social" => $fornecedor->razao_social,
-            "cnpj_formatado" => $fornecedor->cnpj_formatado,
-            "telefone_formatado" => $fornecedor->telefone_formatado,
-            "email" => $fornecedor->email,
-            "endereco_completo" => $fornecedor->endereco_completo,
+            'id' => $fornecedor->id,
+            'razao_social' => $fornecedor->razao_social,
+            'cnpj_formatado' => $fornecedor->cnpj_formatado,
+            'telefone_formatado' => $fornecedor->telefone_formatado,
+            'email' => $fornecedor->email,
+            'endereco_completo' => $fornecedor->endereco_completo,
         ];
 
-        return Inertia::render("Conferencias/Fornecedor", [
-            "fornecedor" => $fornecedorData,
-            "periodo" => $periodo,
-            "periodo_display" => sprintf("%02d/%d", $mes, $ano),
-            "requisicoes" => $requisicoes,
-            "pedidos_manuais" => $pedidosManuais,
-            "totals" => $totals,
+        return Inertia::render('Conferencias/Fornecedor', [
+            'fornecedor' => $fornecedorData,
+            'periodo' => $periodo,
+            'periodo_display' => sprintf('%02d/%d', $mes, $ano),
+            'requisicoes' => $requisicoes,
+            'pedidos_manuais' => $pedidosManuais,
+            'totals' => $totals,
         ]);
     }
 
@@ -512,45 +503,45 @@ class ConferenciaController extends Controller
      */
     public function export(Request $request): StreamedResponse
     {
-        $query = Conferencia::query()->with("fornecedor");
+        $query = Conferencia::query()->with('fornecedor');
 
         // Search functionality
-        if ($request->filled("search")) {
+        if ($request->filled('search')) {
             $query
-                ->whereHas("fornecedor", function ($q) use ($request) {
-                    $q->where("razao_social", "like", "%{$request->search}%");
+                ->whereHas('fornecedor', function ($q) use ($request) {
+                    $q->where('razao_social', 'like', "%{$request->search}%");
                 })
-                ->orWhere("periodo", "like", "%{$request->search}%");
+                ->orWhere('periodo', 'like', "%{$request->search}%");
         }
 
         // Fornecedor filter
-        if ($request->filled("fornecedor_id")) {
-            $query->where("fornecedor_id", $request->fornecedor_id);
+        if ($request->filled('fornecedor_id')) {
+            $query->where('fornecedor_id', $request->fornecedor_id);
         }
 
         // Date range filter
-        if ($request->filled("data_inicio")) {
-            $query->whereDate("data_conferencia", ">=", $request->data_inicio);
+        if ($request->filled('data_inicio')) {
+            $query->whereDate('data_conferencia', '>=', $request->data_inicio);
         }
 
-        if ($request->filled("data_fim")) {
-            $query->whereDate("data_conferencia", "<=", $request->data_fim);
+        if ($request->filled('data_fim')) {
+            $query->whereDate('data_conferencia', '<=', $request->data_fim);
         }
 
-        $conferencias = $query->orderBy("created_at", "desc")->get();
+        $conferencias = $query->orderBy('created_at', 'desc')->get();
 
-        $filename = "conferencias_" . now()->format("Y-m-d_H-i-s") . ".csv";
+        $filename = 'conferencias_'.now()->format('Y-m-d_H-i-s').'.csv';
 
         $headers = [
-            "Content-Type" => "text/csv; charset=utf-8",
-            "Content-Disposition" => 'attachment; filename="' . $filename . '"',
-            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-            "Expires" => "0",
-            "Pragma" => "public",
+            'Content-Type' => 'text/csv; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+            'Pragma' => 'public',
         ];
 
         $callback = function () use ($conferencias) {
-            $file = fopen("php://output", "w");
+            $file = fopen('php://output', 'w');
 
             // Add UTF-8 BOM for proper Excel handling
             fwrite($file, "\xEF\xBB\xBF");
@@ -559,20 +550,20 @@ class ConferenciaController extends Controller
             fputcsv(
                 $file,
                 [
-                    "ID",
-                    "Período",
-                    "Fornecedor",
-                    "Total Requisições",
-                    "Total Pedidos Manuais",
-                    "Total Geral",
-                    "Data Conferência",
-                    "Observações",
-                    "Data Criação",
-                    "Data Atualização",
+                    'ID',
+                    'Período',
+                    'Fornecedor',
+                    'Total Requisições',
+                    'Total Pedidos Manuais',
+                    'Total Geral',
+                    'Data Conferência',
+                    'Observações',
+                    'Data Criação',
+                    'Data Atualização',
                 ],
-                ";",
+                ';',
                 '"',
-                "\\",
+                '\\',
             );
 
             foreach ($conferencias as $conferencia) {
@@ -581,36 +572,36 @@ class ConferenciaController extends Controller
                     [
                         $conferencia->id,
                         $conferencia->periodo,
-                        $conferencia->fornecedor?->razao_social ?? "",
-                        'R$ ' .
+                        $conferencia->fornecedor?->razao_social ?? '',
+                        'R$ '.
                         number_format(
                             $conferencia->total_requisicoes ?? 0,
                             2,
-                            ",",
-                            ".",
+                            ',',
+                            '.',
                         ),
-                        'R$ ' .
+                        'R$ '.
                         number_format(
                             $conferencia->total_pedidos_manuais ?? 0,
                             2,
-                            ",",
-                            ".",
+                            ',',
+                            '.',
                         ),
-                        'R$ ' .
+                        'R$ '.
                         number_format(
                             $conferencia->total_geral ?? 0,
                             2,
-                            ",",
-                            ".",
+                            ',',
+                            '.',
                         ),
-                        $conferencia->data_conferencia?->format("d/m/Y") ?? "",
-                        $conferencia->observacoes ?? "",
-                        $conferencia->created_at->format("d/m/Y H:i"),
-                        $conferencia->updated_at->format("d/m/Y H:i"),
+                        $conferencia->data_conferencia?->format('d/m/Y') ?? '',
+                        $conferencia->observacoes ?? '',
+                        $conferencia->created_at->format('d/m/Y H:i'),
+                        $conferencia->updated_at->format('d/m/Y H:i'),
                     ],
-                    ";",
+                    ';',
                     '"',
-                    "\\",
+                    '\\',
                 );
             }
 
@@ -628,8 +619,8 @@ class ConferenciaController extends Controller
         $conferencia->delete();
 
         return redirect()
-            ->route("conferencias.index")
-            ->with("success", "Conferência excluída com sucesso!");
+            ->route('conferencias.index')
+            ->with('success', 'Conferência excluída com sucesso!');
     }
 
     /**
@@ -638,23 +629,23 @@ class ConferenciaController extends Controller
     public function storePedidoManual(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            "conferencia_id" => "required|exists:conferencias,id",
-            "descricao" => "required|string|max:500",
-            "valor" => "required|numeric|min:0",
-            "numero_pedido" => "nullable|string|max:100",
-            "data_pedido" => "required|date",
-            "observacoes" => "nullable|string|max:1000",
+            'conferencia_id' => 'required|exists:conferencias,id',
+            'descricao' => 'required|string|max:500',
+            'valor' => 'required|numeric|min:0',
+            'numero_pedido' => 'nullable|string|max:100',
+            'data_pedido' => 'required|date',
+            'observacoes' => 'nullable|string|max:1000',
         ]);
 
         $conferencia = Conferencia::query()->findOrFail(
-            $validated["conferencia_id"],
+            $validated['conferencia_id'],
         );
 
         // Check if can edit
-        if (!$conferencia->podeEditar()) {
+        if (! $conferencia->podeEditar()) {
             return redirect()
-                ->route("conferencias.show", $conferencia)
-                ->with("error", "Conferência finalizada não pode ser editada.");
+                ->route('conferencias.show', $conferencia)
+                ->with('error', 'Conferência finalizada não pode ser editada.');
         }
 
         $pedidoManual = new PedidoManual($validated);
@@ -666,8 +657,8 @@ class ConferenciaController extends Controller
         $conferencia->calcularTotais();
 
         return redirect()
-            ->route("conferencias.edit", $conferencia)
-            ->with("success", "Pedido manual adicionado com sucesso!");
+            ->route('conferencias.edit', $conferencia)
+            ->with('success', 'Pedido manual adicionado com sucesso!');
     }
 
     /**
@@ -680,10 +671,10 @@ class ConferenciaController extends Controller
         $conferencia = Conferencia::query()->findOrFail($conferenciaId);
 
         // Check if can edit
-        if (!$conferencia->podeEditar()) {
+        if (! $conferencia->podeEditar()) {
             return redirect()
-                ->route("conferencias.show", $conferencia)
-                ->with("error", "Conferência finalizada não pode ser editada.");
+                ->route('conferencias.show', $conferencia)
+                ->with('error', 'Conferência finalizada não pode ser editada.');
         }
 
         $pedidoManual = PedidoManual::query()->findOrFail($pedidoId);
@@ -694,8 +685,8 @@ class ConferenciaController extends Controller
             $pedidoManual->fornecedor_id != $conferencia->fornecedor_id
         ) {
             return redirect()
-                ->route("conferencias.edit", $conferencia)
-                ->with("error", "Pedido manual não encontrado.");
+                ->route('conferencias.edit', $conferencia)
+                ->with('error', 'Pedido manual não encontrado.');
         }
 
         $pedidoManual->delete();
@@ -704,8 +695,8 @@ class ConferenciaController extends Controller
         $conferencia->calcularTotais();
 
         return redirect()
-            ->route("conferencias.edit", $conferencia)
-            ->with("success", "Pedido manual excluído com sucesso!");
+            ->route('conferencias.edit', $conferencia)
+            ->with('success', 'Pedido manual excluído com sucesso!');
     }
 
     /**
@@ -719,11 +710,11 @@ class ConferenciaController extends Controller
         $fornecedor = Fornecedor::query()->findOrFail($fornecedorId);
 
         // Parse period (e.g., "2024-01" for January 2024)
-        $periodoData = explode("-", $periodo);
+        $periodoData = explode('-', $periodo);
         if (count($periodoData) !== 2) {
             return redirect()
-                ->route("conferencias.index")
-                ->with("error", "Período inválido.");
+                ->route('conferencias.index')
+                ->with('error', 'Período inválido.');
         }
 
         $ano = (int) $periodoData[0];
@@ -735,53 +726,52 @@ class ConferenciaController extends Controller
 
         // Check if conference already exists for this fornecedor and period
         $conferencia = Conferencia::query()
-            ->where("fornecedor_id", $fornecedorId)
-            ->where("periodo_inicio", $periodo_inicio)
-            ->where("periodo_fim", $periodo_fim)
+            ->where('fornecedor_id', $fornecedorId)
+            ->where('periodo_inicio', $periodo_inicio)
+            ->where('periodo_fim', $periodo_fim)
             ->first();
 
         if ($conferencia) {
             return redirect()
-                ->route("conferencias.show", $conferencia)
-                ->with("info", "Conferência já foi finalizada anteriormente.");
+                ->route('conferencias.show', $conferencia)
+                ->with('info', 'Conferência já foi finalizada anteriormente.');
         }
 
         // Calculate totals
         $totalRequisicoes =
             $fornecedor
                 ->requisicoes()
-                ->where("status", "concretizada")
-                ->whereYear("data_concretizacao", $ano)
-                ->whereMonth("data_concretizacao", $mes)
-                ->sum("valor_final") ?? 0;
+                ->where('status', 'concretizada')
+                ->whereYear('data_concretizacao', $ano)
+                ->whereMonth('data_concretizacao', $mes)
+                ->sum('valor_final') ?? 0;
 
         $totalPedidosManuais =
             $fornecedor
                 ->pedidosManuais()
-                ->whereYear("data_pedido", $ano)
-                ->whereMonth("data_pedido", $mes)
-                ->sum("valor") ?? 0;
+                ->whereYear('data_pedido', $ano)
+                ->whereMonth('data_pedido', $mes)
+                ->sum('valor') ?? 0;
 
         $totalGeral = $totalRequisicoes + $totalPedidosManuais;
 
         // Create the conference record
         $conferencia = new Conferencia([
-            "fornecedor_id" => $fornecedor->id,
-            "periodo_inicio" => $periodo_inicio,
-            "periodo_fim" => $periodo_fim,
-            "total_requisicoes" => $totalRequisicoes,
-            "total_pedidos_manuais" => $totalPedidosManuais,
-            "total_geral" => $totalGeral,
-            "status" => "finalizada",
-            "usuario_finalizacao_id" => Auth::id(),
-            "observacoes" =>
-                "Conferência finalizada através do módulo de conferência detalhada.",
+            'fornecedor_id' => $fornecedor->id,
+            'periodo_inicio' => $periodo_inicio,
+            'periodo_fim' => $periodo_fim,
+            'total_requisicoes' => $totalRequisicoes,
+            'total_pedidos_manuais' => $totalPedidosManuais,
+            'total_geral' => $totalGeral,
+            'status' => 'finalizada',
+            'usuario_finalizacao_id' => Auth::id(),
+            'observacoes' => 'Conferência finalizada através do módulo de conferência detalhada.',
         ]);
 
         $conferencia->save();
 
         return redirect()
-            ->route("conferencias.show", $conferencia)
-            ->with("success", "Conferência finalizada com sucesso!");
+            ->route('conferencias.show', $conferencia)
+            ->with('success', 'Conferência finalizada com sucesso!');
     }
 }

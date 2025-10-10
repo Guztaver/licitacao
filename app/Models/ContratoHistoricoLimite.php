@@ -10,25 +10,25 @@ class ContratoHistoricoLimite extends Model
 {
     use HasFactory;
 
-    protected $table = "contrato_historico_limites";
+    protected $table = 'contrato_historico_limites';
 
     protected $fillable = [
-        "contrato_id",
-        "usuario_id",
-        "tipo_alteracao",
-        "campo_alterado",
-        "valor_anterior",
-        "valor_novo",
-        "diferenca",
-        "descricao",
+        'contrato_id',
+        'usuario_id',
+        'tipo_alteracao',
+        'campo_alterado',
+        'valor_anterior',
+        'valor_novo',
+        'diferenca',
+        'descricao',
     ];
 
     protected $casts = [
-        "valor_anterior" => "decimal:2",
-        "valor_novo" => "decimal:2",
-        "diferenca" => "decimal:2",
-        "created_at" => "datetime",
-        "updated_at" => "datetime",
+        'valor_anterior' => 'decimal:2',
+        'valor_novo' => 'decimal:2',
+        'diferenca' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     /**
@@ -57,9 +57,9 @@ class ContratoHistoricoLimite extends Model
     public function getCampoDisplayAttribute(): string
     {
         $campoMap = [
-            "limite_requisicoes" => "Limite de Requisições",
-            "limite_conferencias" => "Limite de Conferências",
-            "limite_valor_mensal" => "Limite de Valor Mensal",
+            'limite_requisicoes' => 'Limite de Requisições',
+            'limite_conferencias' => 'Limite de Conferências',
+            'limite_valor_mensal' => 'Limite de Valor Mensal',
         ];
 
         return $campoMap[$this->campo_alterado] ?? $this->campo_alterado;
@@ -71,8 +71,8 @@ class ContratoHistoricoLimite extends Model
     public function getTipoDisplayAttribute(): string
     {
         $tipoMap = [
-            "criacao" => "Criação",
-            "atualizacao" => "Atualização",
+            'criacao' => 'Criação',
+            'atualizacao' => 'Atualização',
         ];
 
         return $tipoMap[$this->tipo_alteracao] ?? $this->tipo_alteracao;
@@ -83,22 +83,23 @@ class ContratoHistoricoLimite extends Model
      */
     public function getMensagemAttribute(): string
     {
-        if ($this->tipo_alteracao === "criacao") {
+        if ($this->tipo_alteracao === 'criacao') {
             if ($this->valor_novo === null) {
-                return "Criado como ilimitado";
+                return 'Criado como ilimitado';
             }
-            return "Criado com valor: " .
+
+            return 'Criado com valor: '.
                 $this->formatarValor($this->valor_novo);
         }
 
         // Atualização
         $valorAnterior =
             $this->valor_anterior === null
-                ? "ilimitado"
+                ? 'ilimitado'
                 : $this->formatarValor($this->valor_anterior);
         $valorNovo =
             $this->valor_novo === null
-                ? "ilimitado"
+                ? 'ilimitado'
                 : $this->formatarValor($this->valor_novo);
 
         return "Alterado de {$valorAnterior} para {$valorNovo}";
@@ -110,14 +111,14 @@ class ContratoHistoricoLimite extends Model
     private function formatarValor(?float $valor): string
     {
         if ($valor === null) {
-            return "ilimitado";
+            return 'ilimitado';
         }
 
-        if ($this->campo_alterado === "limite_valor_mensal") {
-            return "R$ " . number_format($valor, 2, ",", ".");
+        if ($this->campo_alterado === 'limite_valor_mensal') {
+            return 'R$ '.number_format($valor, 2, ',', '.');
         }
 
-        return number_format($valor, 0, ",", ".");
+        return number_format($valor, 0, ',', '.');
     }
 
     /**
@@ -125,16 +126,16 @@ class ContratoHistoricoLimite extends Model
      */
     public function getIconColorAttribute(): string
     {
-        if ($this->tipo_alteracao === "criacao") {
-            return "text-blue-600";
+        if ($this->tipo_alteracao === 'criacao') {
+            return 'text-blue-600';
         }
 
         if ($this->diferenca === null || $this->diferenca == 0) {
-            return "text-gray-600";
+            return 'text-gray-600';
         }
 
         // Positive difference = increase
-        return $this->diferenca > 0 ? "text-green-600" : "text-red-600";
+        return $this->diferenca > 0 ? 'text-green-600' : 'text-red-600';
     }
 
     /**
@@ -143,12 +144,12 @@ class ContratoHistoricoLimite extends Model
     public function getBadgeColorAttribute(): string
     {
         $colorMap = [
-            "limite_requisicoes" => "bg-blue-100 text-blue-800",
-            "limite_conferencias" => "bg-purple-100 text-purple-800",
-            "limite_valor_mensal" => "bg-green-100 text-green-800",
+            'limite_requisicoes' => 'bg-blue-100 text-blue-800',
+            'limite_conferencias' => 'bg-purple-100 text-purple-800',
+            'limite_valor_mensal' => 'bg-green-100 text-green-800',
         ];
 
-        return $colorMap[$this->campo_alterado] ?? "bg-gray-100 text-gray-800";
+        return $colorMap[$this->campo_alterado] ?? 'bg-gray-100 text-gray-800';
     }
 
     /**
@@ -159,21 +160,21 @@ class ContratoHistoricoLimite extends Model
         ?int $usuarioId,
     ): void {
         $campos = [
-            "limite_requisicoes" => $contrato->limite_requisicoes,
-            "limite_conferencias" => $contrato->limite_conferencias,
-            "limite_valor_mensal" => $contrato->limite_valor_mensal,
+            'limite_requisicoes' => $contrato->limite_requisicoes,
+            'limite_conferencias' => $contrato->limite_conferencias,
+            'limite_valor_mensal' => $contrato->limite_valor_mensal,
         ];
 
         foreach ($campos as $campo => $valor) {
             self::create([
-                "contrato_id" => $contrato->id,
-                "usuario_id" => $usuarioId,
-                "tipo_alteracao" => "criacao",
-                "campo_alterado" => $campo,
-                "valor_anterior" => null,
-                "valor_novo" => $valor,
-                "diferenca" => $valor,
-                "descricao" => "Limite inicial definido na criação do contrato",
+                'contrato_id' => $contrato->id,
+                'usuario_id' => $usuarioId,
+                'tipo_alteracao' => 'criacao',
+                'campo_alterado' => $campo,
+                'valor_anterior' => null,
+                'valor_novo' => $valor,
+                'diferenca' => $valor,
+                'descricao' => 'Limite inicial definido na criação do contrato',
             ]);
         }
     }
@@ -188,8 +189,8 @@ class ContratoHistoricoLimite extends Model
         ?string $descricao = null,
     ): void {
         foreach ($alteracoes as $campo => $valores) {
-            $valorAnterior = $valores["anterior"];
-            $valorNovo = $valores["novo"];
+            $valorAnterior = $valores['anterior'];
+            $valorNovo = $valores['novo'];
 
             // Calculate difference (handling nulls as 0 for calculation)
             $diffAnterior = $valorAnterior ?? 0;
@@ -197,14 +198,14 @@ class ContratoHistoricoLimite extends Model
             $diferenca = $diffNovo - $diffAnterior;
 
             self::create([
-                "contrato_id" => $contrato->id,
-                "usuario_id" => $usuarioId,
-                "tipo_alteracao" => "atualizacao",
-                "campo_alterado" => $campo,
-                "valor_anterior" => $valorAnterior,
-                "valor_novo" => $valorNovo,
-                "diferenca" => $diferenca,
-                "descricao" => $descricao ?? "Limite atualizado",
+                'contrato_id' => $contrato->id,
+                'usuario_id' => $usuarioId,
+                'tipo_alteracao' => 'atualizacao',
+                'campo_alterado' => $campo,
+                'valor_anterior' => $valorAnterior,
+                'valor_novo' => $valorNovo,
+                'diferenca' => $diferenca,
+                'descricao' => $descricao ?? 'Limite atualizado',
             ]);
         }
     }

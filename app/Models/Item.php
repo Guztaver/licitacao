@@ -8,14 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Item extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        "code",
-        "name",
-        "unit_of_measurement",
-        "medium_price",
+        'code',
+        'name',
+        'unit_of_measurement',
+        'medium_price',
     ];
 
     protected $casts = [
-        "medium_price" => "decimal:2",
+        'medium_price' => 'decimal:2',
     ];
 }

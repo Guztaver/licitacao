@@ -11,21 +11,21 @@ class PedidoManual extends Model
 {
     use HasFactory;
 
-    protected $table = "pedidos_manuais";
+    protected $table = 'pedidos_manuais';
 
     protected $fillable = [
-        "fornecedor_id",
-        "conferencia_id",
-        "descricao",
-        "valor",
-        "data_pedido",
-        "numero_pedido",
-        "observacoes",
+        'fornecedor_id',
+        'conferencia_id',
+        'descricao',
+        'valor',
+        'data_pedido',
+        'numero_pedido',
+        'observacoes',
     ];
 
     protected $casts = [
-        "valor" => "decimal:2",
-        "data_pedido" => "date",
+        'valor' => 'decimal:2',
+        'data_pedido' => 'date',
     ];
 
     /**
@@ -56,7 +56,7 @@ class PedidoManual extends Model
         \DateTime $inicio,
         \DateTime $fim,
     ): Builder {
-        return $query->whereBetween("data_pedido", [$inicio, $fim]);
+        return $query->whereBetween('data_pedido', [$inicio, $fim]);
     }
 
     /**
@@ -64,7 +64,7 @@ class PedidoManual extends Model
      */
     public function scopeFornecedor(Builder $query, int $fornecedorId): Builder
     {
-        return $query->where("fornecedor_id", $fornecedorId);
+        return $query->where('fornecedor_id', $fornecedorId);
     }
 
     /**
@@ -72,7 +72,7 @@ class PedidoManual extends Model
      */
     public function getValorFormatadoAttribute(): string
     {
-        return 'R$ ' . number_format((float) $this->valor, 2, ",", ".");
+        return 'R$ '.number_format((float) $this->valor, 2, ',', '.');
     }
 
     /**
@@ -80,7 +80,7 @@ class PedidoManual extends Model
      */
     public function getDataPedidoFormatadaAttribute(): string
     {
-        return $this->data_pedido ? $this->data_pedido->format("d/m/Y") : "";
+        return $this->data_pedido ? $this->data_pedido->format('d/m/Y') : '';
     }
 
     /**
@@ -89,7 +89,7 @@ class PedidoManual extends Model
     public function getDescricaoCurtaAttribute(): string
     {
         return strlen($this->descricao) > 50
-            ? substr($this->descricao, 0, 50) . "..."
+            ? substr($this->descricao, 0, 50).'...'
             : $this->descricao;
     }
 
@@ -114,6 +114,6 @@ class PedidoManual extends Model
      */
     public function getDisplayTextAttribute(): string
     {
-        return $this->descricao_curta . " - " . $this->valor_formatado;
+        return $this->descricao_curta.' - '.$this->valor_formatado;
     }
 }

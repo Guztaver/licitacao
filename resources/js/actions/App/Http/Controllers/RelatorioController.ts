@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:383
+* @see app/Http/Controllers/RelatorioController.php:379
 * @route '/relatorios/requisicoes/export'
 */
 export const exportRequisicoes = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ exportRequisicoes.definition = {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:383
+* @see app/Http/Controllers/RelatorioController.php:379
 * @route '/relatorios/requisicoes/export'
 */
 exportRequisicoes.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ exportRequisicoes.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:383
+* @see app/Http/Controllers/RelatorioController.php:379
 * @route '/relatorios/requisicoes/export'
 */
 exportRequisicoes.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ exportRequisicoes.get = (options?: RouteQueryOptions): RouteDefinition<'get'> =>
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:383
+* @see app/Http/Controllers/RelatorioController.php:379
 * @route '/relatorios/requisicoes/export'
 */
 exportRequisicoes.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ exportRequisicoes.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:383
+* @see app/Http/Controllers/RelatorioController.php:379
 * @route '/relatorios/requisicoes/export'
 */
 const exportRequisicoesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const exportRequisicoesForm = (options?: RouteQueryOptions): RouteFormDefinition
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:383
+* @see app/Http/Controllers/RelatorioController.php:379
 * @route '/relatorios/requisicoes/export'
 */
 exportRequisicoesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ exportRequisicoesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:383
+* @see app/Http/Controllers/RelatorioController.php:379
 * @route '/relatorios/requisicoes/export'
 */
 exportRequisicoesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ exportRequisicoes.form = exportRequisicoesForm
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:664
+* @see app/Http/Controllers/RelatorioController.php:659
 * @route '/relatorios/fornecedores/export'
 */
 export const exportFornecedores = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ exportFornecedores.definition = {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:664
+* @see app/Http/Controllers/RelatorioController.php:659
 * @route '/relatorios/fornecedores/export'
 */
 exportFornecedores.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ exportFornecedores.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:664
+* @see app/Http/Controllers/RelatorioController.php:659
 * @route '/relatorios/fornecedores/export'
 */
 exportFornecedores.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -116,7 +116,7 @@ exportFornecedores.get = (options?: RouteQueryOptions): RouteDefinition<'get'> =
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:664
+* @see app/Http/Controllers/RelatorioController.php:659
 * @route '/relatorios/fornecedores/export'
 */
 exportFornecedores.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -126,7 +126,7 @@ exportFornecedores.head = (options?: RouteQueryOptions): RouteDefinition<'head'>
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:664
+* @see app/Http/Controllers/RelatorioController.php:659
 * @route '/relatorios/fornecedores/export'
 */
 const exportFornecedoresForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -136,7 +136,7 @@ const exportFornecedoresForm = (options?: RouteQueryOptions): RouteFormDefinitio
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:664
+* @see app/Http/Controllers/RelatorioController.php:659
 * @route '/relatorios/fornecedores/export'
 */
 exportFornecedoresForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -146,7 +146,7 @@ exportFornecedoresForm.get = (options?: RouteQueryOptions): RouteFormDefinition<
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:664
+* @see app/Http/Controllers/RelatorioController.php:659
 * @route '/relatorios/fornecedores/export'
 */
 exportFornecedoresForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -163,7 +163,7 @@ exportFornecedores.form = exportFornecedoresForm
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:913
+* @see app/Http/Controllers/RelatorioController.php:908
 * @route '/relatorios/conferencias/export'
 */
 export const exportConferencias = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -178,7 +178,7 @@ exportConferencias.definition = {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:913
+* @see app/Http/Controllers/RelatorioController.php:908
 * @route '/relatorios/conferencias/export'
 */
 exportConferencias.url = (options?: RouteQueryOptions) => {
@@ -187,7 +187,7 @@ exportConferencias.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:913
+* @see app/Http/Controllers/RelatorioController.php:908
 * @route '/relatorios/conferencias/export'
 */
 exportConferencias.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -197,7 +197,7 @@ exportConferencias.get = (options?: RouteQueryOptions): RouteDefinition<'get'> =
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:913
+* @see app/Http/Controllers/RelatorioController.php:908
 * @route '/relatorios/conferencias/export'
 */
 exportConferencias.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -207,7 +207,7 @@ exportConferencias.head = (options?: RouteQueryOptions): RouteDefinition<'head'>
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:913
+* @see app/Http/Controllers/RelatorioController.php:908
 * @route '/relatorios/conferencias/export'
 */
 const exportConferenciasForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -217,7 +217,7 @@ const exportConferenciasForm = (options?: RouteQueryOptions): RouteFormDefinitio
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:913
+* @see app/Http/Controllers/RelatorioController.php:908
 * @route '/relatorios/conferencias/export'
 */
 exportConferenciasForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -227,7 +227,7 @@ exportConferenciasForm.get = (options?: RouteQueryOptions): RouteFormDefinition<
 
 /**
 * @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:913
+* @see app/Http/Controllers/RelatorioController.php:908
 * @route '/relatorios/conferencias/export'
 */
 exportConferenciasForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -325,7 +325,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:73
+* @see app/Http/Controllers/RelatorioController.php:72
 * @route '/relatorios/requisicoes'
 */
 export const requisicoes = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -340,7 +340,7 @@ requisicoes.definition = {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:73
+* @see app/Http/Controllers/RelatorioController.php:72
 * @route '/relatorios/requisicoes'
 */
 requisicoes.url = (options?: RouteQueryOptions) => {
@@ -349,7 +349,7 @@ requisicoes.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:73
+* @see app/Http/Controllers/RelatorioController.php:72
 * @route '/relatorios/requisicoes'
 */
 requisicoes.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -359,7 +359,7 @@ requisicoes.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:73
+* @see app/Http/Controllers/RelatorioController.php:72
 * @route '/relatorios/requisicoes'
 */
 requisicoes.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -369,7 +369,7 @@ requisicoes.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:73
+* @see app/Http/Controllers/RelatorioController.php:72
 * @route '/relatorios/requisicoes'
 */
 const requisicoesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -379,7 +379,7 @@ const requisicoesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'
 
 /**
 * @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:73
+* @see app/Http/Controllers/RelatorioController.php:72
 * @route '/relatorios/requisicoes'
 */
 requisicoesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -389,7 +389,7 @@ requisicoesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> 
 
 /**
 * @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:73
+* @see app/Http/Controllers/RelatorioController.php:72
 * @route '/relatorios/requisicoes'
 */
 requisicoesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -406,7 +406,7 @@ requisicoes.form = requisicoesForm
 
 /**
 * @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:195
+* @see app/Http/Controllers/RelatorioController.php:193
 * @route '/relatorios/fornecedores'
 */
 export const fornecedores = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -421,7 +421,7 @@ fornecedores.definition = {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:195
+* @see app/Http/Controllers/RelatorioController.php:193
 * @route '/relatorios/fornecedores'
 */
 fornecedores.url = (options?: RouteQueryOptions) => {
@@ -430,7 +430,7 @@ fornecedores.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:195
+* @see app/Http/Controllers/RelatorioController.php:193
 * @route '/relatorios/fornecedores'
 */
 fornecedores.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -440,7 +440,7 @@ fornecedores.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:195
+* @see app/Http/Controllers/RelatorioController.php:193
 * @route '/relatorios/fornecedores'
 */
 fornecedores.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -450,7 +450,7 @@ fornecedores.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:195
+* @see app/Http/Controllers/RelatorioController.php:193
 * @route '/relatorios/fornecedores'
 */
 const fornecedoresForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -460,7 +460,7 @@ const fornecedoresForm = (options?: RouteQueryOptions): RouteFormDefinition<'get
 
 /**
 * @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:195
+* @see app/Http/Controllers/RelatorioController.php:193
 * @route '/relatorios/fornecedores'
 */
 fornecedoresForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -470,7 +470,7 @@ fornecedoresForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'>
 
 /**
 * @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:195
+* @see app/Http/Controllers/RelatorioController.php:193
 * @route '/relatorios/fornecedores'
 */
 fornecedoresForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -487,7 +487,7 @@ fornecedores.form = fornecedoresForm
 
 /**
 * @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:280
+* @see app/Http/Controllers/RelatorioController.php:278
 * @route '/relatorios/conferencias'
 */
 export const conferencias = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -502,7 +502,7 @@ conferencias.definition = {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:280
+* @see app/Http/Controllers/RelatorioController.php:278
 * @route '/relatorios/conferencias'
 */
 conferencias.url = (options?: RouteQueryOptions) => {
@@ -511,7 +511,7 @@ conferencias.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:280
+* @see app/Http/Controllers/RelatorioController.php:278
 * @route '/relatorios/conferencias'
 */
 conferencias.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -521,7 +521,7 @@ conferencias.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:280
+* @see app/Http/Controllers/RelatorioController.php:278
 * @route '/relatorios/conferencias'
 */
 conferencias.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -531,7 +531,7 @@ conferencias.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:280
+* @see app/Http/Controllers/RelatorioController.php:278
 * @route '/relatorios/conferencias'
 */
 const conferenciasForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -541,7 +541,7 @@ const conferenciasForm = (options?: RouteQueryOptions): RouteFormDefinition<'get
 
 /**
 * @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:280
+* @see app/Http/Controllers/RelatorioController.php:278
 * @route '/relatorios/conferencias'
 */
 conferenciasForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -551,7 +551,7 @@ conferenciasForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'>
 
 /**
 * @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:280
+* @see app/Http/Controllers/RelatorioController.php:278
 * @route '/relatorios/conferencias'
 */
 conferenciasForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
