@@ -544,7 +544,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::destroy
-* @see app/Http/Controllers/RequisicaoController.php:581
+* @see app/Http/Controllers/RequisicaoController.php:628
 * @route '/requisicoes/{requisicao}'
 */
 export const destroy = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -559,7 +559,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::destroy
-* @see app/Http/Controllers/RequisicaoController.php:581
+* @see app/Http/Controllers/RequisicaoController.php:628
 * @route '/requisicoes/{requisicao}'
 */
 destroy.url = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -592,7 +592,7 @@ destroy.url = (args: { requisicao: number | { id: number } } | [requisicao: numb
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::destroy
-* @see app/Http/Controllers/RequisicaoController.php:581
+* @see app/Http/Controllers/RequisicaoController.php:628
 * @route '/requisicoes/{requisicao}'
 */
 destroy.delete = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -602,7 +602,7 @@ destroy.delete = (args: { requisicao: number | { id: number } } | [requisicao: n
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::destroy
-* @see app/Http/Controllers/RequisicaoController.php:581
+* @see app/Http/Controllers/RequisicaoController.php:628
 * @route '/requisicoes/{requisicao}'
 */
 const destroyForm = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -617,7 +617,7 @@ const destroyForm = (args: { requisicao: number | { id: number } } | [requisicao
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::destroy
-* @see app/Http/Controllers/RequisicaoController.php:581
+* @see app/Http/Controllers/RequisicaoController.php:628
 * @route '/requisicoes/{requisicao}'
 */
 destroyForm.delete = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -634,7 +634,7 @@ destroy.form = destroyForm
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::excluidas
-* @see app/Http/Controllers/RequisicaoController.php:635
+* @see app/Http/Controllers/RequisicaoController.php:682
 * @route '/requisicoes-excluidas'
 */
 export const excluidas = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -649,7 +649,7 @@ excluidas.definition = {
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::excluidas
-* @see app/Http/Controllers/RequisicaoController.php:635
+* @see app/Http/Controllers/RequisicaoController.php:682
 * @route '/requisicoes-excluidas'
 */
 excluidas.url = (options?: RouteQueryOptions) => {
@@ -658,7 +658,7 @@ excluidas.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::excluidas
-* @see app/Http/Controllers/RequisicaoController.php:635
+* @see app/Http/Controllers/RequisicaoController.php:682
 * @route '/requisicoes-excluidas'
 */
 excluidas.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -668,7 +668,7 @@ excluidas.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::excluidas
-* @see app/Http/Controllers/RequisicaoController.php:635
+* @see app/Http/Controllers/RequisicaoController.php:682
 * @route '/requisicoes-excluidas'
 */
 excluidas.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -678,7 +678,7 @@ excluidas.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::excluidas
-* @see app/Http/Controllers/RequisicaoController.php:635
+* @see app/Http/Controllers/RequisicaoController.php:682
 * @route '/requisicoes-excluidas'
 */
 const excluidasForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -688,7 +688,7 @@ const excluidasForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> 
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::excluidas
-* @see app/Http/Controllers/RequisicaoController.php:635
+* @see app/Http/Controllers/RequisicaoController.php:682
 * @route '/requisicoes-excluidas'
 */
 excluidasForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -698,7 +698,7 @@ excluidasForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> =>
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::excluidas
-* @see app/Http/Controllers/RequisicaoController.php:635
+* @see app/Http/Controllers/RequisicaoController.php:682
 * @route '/requisicoes-excluidas'
 */
 excluidasForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -715,7 +715,7 @@ excluidas.form = excluidasForm
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::exportMethod
-* @see app/Http/Controllers/RequisicaoController.php:735
+* @see app/Http/Controllers/RequisicaoController.php:782
 * @route '/requisicoes-export'
 */
 export const exportMethod = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -730,7 +730,7 @@ exportMethod.definition = {
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::exportMethod
-* @see app/Http/Controllers/RequisicaoController.php:735
+* @see app/Http/Controllers/RequisicaoController.php:782
 * @route '/requisicoes-export'
 */
 exportMethod.url = (options?: RouteQueryOptions) => {
@@ -739,7 +739,7 @@ exportMethod.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::exportMethod
-* @see app/Http/Controllers/RequisicaoController.php:735
+* @see app/Http/Controllers/RequisicaoController.php:782
 * @route '/requisicoes-export'
 */
 exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -749,7 +749,7 @@ exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::exportMethod
-* @see app/Http/Controllers/RequisicaoController.php:735
+* @see app/Http/Controllers/RequisicaoController.php:782
 * @route '/requisicoes-export'
 */
 exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -759,7 +759,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::exportMethod
-* @see app/Http/Controllers/RequisicaoController.php:735
+* @see app/Http/Controllers/RequisicaoController.php:782
 * @route '/requisicoes-export'
 */
 const exportMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -769,7 +769,7 @@ const exportMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'get
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::exportMethod
-* @see app/Http/Controllers/RequisicaoController.php:735
+* @see app/Http/Controllers/RequisicaoController.php:782
 * @route '/requisicoes-export'
 */
 exportMethodForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -779,7 +779,7 @@ exportMethodForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'>
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::exportMethod
-* @see app/Http/Controllers/RequisicaoController.php:735
+* @see app/Http/Controllers/RequisicaoController.php:782
 * @route '/requisicoes-export'
 */
 exportMethodForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -796,7 +796,7 @@ exportMethod.form = exportMethodForm
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::anexo
-* @see app/Http/Controllers/RequisicaoController.php:711
+* @see app/Http/Controllers/RequisicaoController.php:758
 * @route '/requisicoes/{requisicao}/anexo'
 */
 export const anexo = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -811,7 +811,7 @@ anexo.definition = {
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::anexo
-* @see app/Http/Controllers/RequisicaoController.php:711
+* @see app/Http/Controllers/RequisicaoController.php:758
 * @route '/requisicoes/{requisicao}/anexo'
 */
 anexo.url = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -844,7 +844,7 @@ anexo.url = (args: { requisicao: number | { id: number } } | [requisicao: number
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::anexo
-* @see app/Http/Controllers/RequisicaoController.php:711
+* @see app/Http/Controllers/RequisicaoController.php:758
 * @route '/requisicoes/{requisicao}/anexo'
 */
 anexo.get = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -854,7 +854,7 @@ anexo.get = (args: { requisicao: number | { id: number } } | [requisicao: number
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::anexo
-* @see app/Http/Controllers/RequisicaoController.php:711
+* @see app/Http/Controllers/RequisicaoController.php:758
 * @route '/requisicoes/{requisicao}/anexo'
 */
 anexo.head = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -864,7 +864,7 @@ anexo.head = (args: { requisicao: number | { id: number } } | [requisicao: numbe
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::anexo
-* @see app/Http/Controllers/RequisicaoController.php:711
+* @see app/Http/Controllers/RequisicaoController.php:758
 * @route '/requisicoes/{requisicao}/anexo'
 */
 const anexoForm = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -874,7 +874,7 @@ const anexoForm = (args: { requisicao: number | { id: number } } | [requisicao: 
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::anexo
-* @see app/Http/Controllers/RequisicaoController.php:711
+* @see app/Http/Controllers/RequisicaoController.php:758
 * @route '/requisicoes/{requisicao}/anexo'
 */
 anexoForm.get = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -884,7 +884,7 @@ anexoForm.get = (args: { requisicao: number | { id: number } } | [requisicao: nu
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::anexo
-* @see app/Http/Controllers/RequisicaoController.php:711
+* @see app/Http/Controllers/RequisicaoController.php:758
 * @route '/requisicoes/{requisicao}/anexo'
 */
 anexoForm.head = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -981,7 +981,7 @@ concretizar.form = concretizarForm
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::cancelar
-* @see app/Http/Controllers/RequisicaoController.php:608
+* @see app/Http/Controllers/RequisicaoController.php:655
 * @route '/requisicoes/{requisicao}/cancelar'
 */
 export const cancelar = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -996,7 +996,7 @@ cancelar.definition = {
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::cancelar
-* @see app/Http/Controllers/RequisicaoController.php:608
+* @see app/Http/Controllers/RequisicaoController.php:655
 * @route '/requisicoes/{requisicao}/cancelar'
 */
 cancelar.url = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -1029,7 +1029,7 @@ cancelar.url = (args: { requisicao: number | { id: number } } | [requisicao: num
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::cancelar
-* @see app/Http/Controllers/RequisicaoController.php:608
+* @see app/Http/Controllers/RequisicaoController.php:655
 * @route '/requisicoes/{requisicao}/cancelar'
 */
 cancelar.post = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1039,7 +1039,7 @@ cancelar.post = (args: { requisicao: number | { id: number } } | [requisicao: nu
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::cancelar
-* @see app/Http/Controllers/RequisicaoController.php:608
+* @see app/Http/Controllers/RequisicaoController.php:655
 * @route '/requisicoes/{requisicao}/cancelar'
 */
 const cancelarForm = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1049,7 +1049,7 @@ const cancelarForm = (args: { requisicao: number | { id: number } } | [requisica
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::cancelar
-* @see app/Http/Controllers/RequisicaoController.php:608
+* @see app/Http/Controllers/RequisicaoController.php:655
 * @route '/requisicoes/{requisicao}/cancelar'
 */
 cancelarForm.post = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1061,7 +1061,7 @@ cancelar.form = cancelarForm
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::pdf
-* @see app/Http/Controllers/RequisicaoController.php:694
+* @see app/Http/Controllers/RequisicaoController.php:741
 * @route '/requisicoes/{requisicao}/pdf'
 */
 export const pdf = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1076,7 +1076,7 @@ pdf.definition = {
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::pdf
-* @see app/Http/Controllers/RequisicaoController.php:694
+* @see app/Http/Controllers/RequisicaoController.php:741
 * @route '/requisicoes/{requisicao}/pdf'
 */
 pdf.url = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -1109,7 +1109,7 @@ pdf.url = (args: { requisicao: number | { id: number } } | [requisicao: number |
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::pdf
-* @see app/Http/Controllers/RequisicaoController.php:694
+* @see app/Http/Controllers/RequisicaoController.php:741
 * @route '/requisicoes/{requisicao}/pdf'
 */
 pdf.get = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1119,7 +1119,7 @@ pdf.get = (args: { requisicao: number | { id: number } } | [requisicao: number |
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::pdf
-* @see app/Http/Controllers/RequisicaoController.php:694
+* @see app/Http/Controllers/RequisicaoController.php:741
 * @route '/requisicoes/{requisicao}/pdf'
 */
 pdf.head = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -1129,7 +1129,7 @@ pdf.head = (args: { requisicao: number | { id: number } } | [requisicao: number 
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::pdf
-* @see app/Http/Controllers/RequisicaoController.php:694
+* @see app/Http/Controllers/RequisicaoController.php:741
 * @route '/requisicoes/{requisicao}/pdf'
 */
 const pdfForm = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1139,7 +1139,7 @@ const pdfForm = (args: { requisicao: number | { id: number } } | [requisicao: nu
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::pdf
-* @see app/Http/Controllers/RequisicaoController.php:694
+* @see app/Http/Controllers/RequisicaoController.php:741
 * @route '/requisicoes/{requisicao}/pdf'
 */
 pdfForm.get = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1149,7 +1149,7 @@ pdfForm.get = (args: { requisicao: number | { id: number } } | [requisicao: numb
 
 /**
 * @see \App\Http\Controllers\RequisicaoController::pdf
-* @see app/Http/Controllers/RequisicaoController.php:694
+* @see app/Http/Controllers/RequisicaoController.php:741
 * @route '/requisicoes/{requisicao}/pdf'
 */
 pdfForm.head = (args: { requisicao: number | { id: number } } | [requisicao: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

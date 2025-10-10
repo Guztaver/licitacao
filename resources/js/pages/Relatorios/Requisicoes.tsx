@@ -60,7 +60,7 @@ const StatisticsCards = ({ stats }: { stats: RequisicoesStats }) => (
                 <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{formatters.number(stats.total_requisicoes, 'Nenhuma requisição')}</div>
+                <div className="text-2xl font-bold">{stats.total_requisicoes}</div>
                 <p className="text-xs text-muted-foreground">
                     {stats.total_requisicoes === 0 ? 'Nenhuma requisição no período' : 'requisições no período'}
                 </p>
@@ -70,12 +70,12 @@ const StatisticsCards = ({ stats }: { stats: RequisicoesStats }) => (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Valor Total</CardTitle>
-                <DollarSign className="h-4 w-4 text-gray-600" />
+                <DollarSign className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold text-gray-600">{formatters.currency(stats.valor_total, 'Sem valor movimentado')}</div>
+                <div className="text-2xl font-bold text-green-600">{formatters.currency(stats.valor_total, 'R$ 0,00')}</div>
                 <p className="text-xs text-muted-foreground">
-                    {stats.valor_total === 0 ? 'Nenhum valor foi concretizado' : 'requisições concretizadas'}
+                    {stats.valor_total === 0 ? 'Nenhum valor concretizado' : 'em requisições concretizadas'}
                 </p>
             </CardContent>
         </Card>
@@ -83,14 +83,12 @@ const StatisticsCards = ({ stats }: { stats: RequisicoesStats }) => (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Concretizadas</CardTitle>
-                <BarChart3 className="h-4 w-4 text-gray-800" />
+                <BarChart3 className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold text-gray-800">
-                    {formatters.number(stats.requisicoes_por_status.concretizada || 0, 'Nenhuma concretizada')}
-                </div>
+                <div className="text-2xl font-bold text-blue-600">{stats.requisicoes_por_status.concretizada || 0}</div>
                 <p className="text-xs text-muted-foreground">
-                    {(stats.requisicoes_por_status.concretizada || 0) === 0 ? 'Nenhuma requisição finalizada' : 'finalizadas com sucesso'}
+                    {(stats.requisicoes_por_status.concretizada || 0) === 0 ? 'Nenhuma finalizada' : 'finalizadas com sucesso'}
                 </p>
             </CardContent>
         </Card>
@@ -98,14 +96,12 @@ const StatisticsCards = ({ stats }: { stats: RequisicoesStats }) => (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
-                <Calendar className="h-4 w-4 text-gray-600" />
+                <Calendar className="h-4 w-4 text-yellow-600" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold text-gray-600">
-                    {formatters.number(stats.requisicoes_por_status.pendente || 0, 'Nenhuma pendente')}
-                </div>
+                <div className="text-2xl font-bold text-yellow-600">{stats.requisicoes_por_status.pendente || 0}</div>
                 <p className="text-xs text-muted-foreground">
-                    {(stats.requisicoes_por_status.pendente || 0) === 0 ? 'Todas as requisições foram processadas' : 'aguardando processamento'}
+                    {(stats.requisicoes_por_status.pendente || 0) === 0 ? 'Todas processadas' : 'aguardando processamento'}
                 </p>
             </CardContent>
         </Card>
@@ -208,7 +204,7 @@ const FiltersCard = ({
                         </div>
                     </div>
                     <div className="flex justify-end space-x-2">
-                        <Button type="button" variant="outline" onClick={onReset}>
+                        <Button type="button" variant="outline" onClick={onReset} disabled={processing}>
                             Limpar
                         </Button>
                         <Button type="submit" disabled={processing}>
@@ -234,20 +230,20 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 // Component for Requisicao Table Row
 const RequisicaoTableRow = ({ requisicao }: { requisicao: RequisicaoExtended }) => (
-    <TableRow key={requisicao.id}>
+    <TableRow>
         <TableCell className="font-medium">{requisicao.numero_completo}</TableCell>
-        <TableCell>{requisicao.solicitante || <span className="text-gray-400 italic">Solicitante não informado</span>}</TableCell>
+        <TableCell>{requisicao.solicitante || <span className="text-gray-400 italic">Não informado</span>}</TableCell>
         <TableCell>
             {requisicao.emitente ? (
                 <div>
                     <div className="font-medium">{requisicao.emitente.nome}</div>
-                    <div className="text-sm text-gray-500">{requisicao.emitente.sigla}</div>
+                    <div className="text-xs text-muted-foreground">{requisicao.emitente.sigla}</div>
                 </div>
             ) : (
-                <span className="text-gray-400 italic">Emitente não informado</span>
+                <span className="text-gray-400 italic">Não informado</span>
             )}
         </TableCell>
-        <TableCell>{formatters.date(requisicao.data_recebimento)}</TableCell>
+        <TableCell>{requisicao.data_recebimento || '-'}</TableCell>
         <TableCell>
             <StatusBadge status={requisicao.status} />
         </TableCell>
@@ -255,14 +251,14 @@ const RequisicaoTableRow = ({ requisicao }: { requisicao: RequisicaoExtended }) 
             {requisicao.fornecedor ? (
                 <div className="font-medium">{formatters.truncateText(requisicao.fornecedor.razao_social, 40)}</div>
             ) : (
-                <span className="text-gray-400 italic">Fornecedor não definido</span>
+                <span className="text-gray-400 italic">Não definido</span>
             )}
         </TableCell>
         <TableCell className="text-right">
             {requisicao.valor_final ? (
                 <span className="font-medium text-green-600">{formatters.currency(requisicao.valor_final)}</span>
             ) : (
-                <span className="text-sm text-gray-400 italic">Valor não definido</span>
+                <span className="text-sm text-gray-400 italic">-</span>
             )}
         </TableCell>
     </TableRow>
@@ -274,105 +270,94 @@ const ResultsTable = ({ requisicoes, stats, hasFilters }: { requisicoes: Requisi
         <CardHeader>
             <CardTitle>Requisições Encontradas</CardTitle>
             <CardDescription>
-                {formatters.number(stats.total_requisicoes, 'Nenhuma requisição')} encontradas (ordenadas por data de recebimento)
+                {stats.total_requisicoes} {stats.total_requisicoes === 1 ? 'requisição encontrada' : 'requisições encontradas'}
             </CardDescription>
         </CardHeader>
         <CardContent>
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Número</TableHead>
-                            <TableHead>Solicitante</TableHead>
-                            <TableHead>Emitente</TableHead>
-                            <TableHead>Data Recebimento</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Fornecedor</TableHead>
-                            <TableHead className="text-right">Valor</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {requisicoes.length > 0 ? (
-                            requisicoes.map((requisicao) => <RequisicaoTableRow key={requisicao.id} requisicao={requisicao} />)
-                        ) : (
+            {requisicoes.length === 0 ? (
+                <div className="py-12 text-center">
+                    <FileText className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">
+                        {reportUtils.getEmptyStateMessage('requisicoes', hasFilters)}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-500">
+                        {hasFilters ? 'Tente ajustar os filtros para encontrar mais resultados.' : 'Comece criando uma nova requisição.'}
+                    </p>
+                </div>
+            ) : (
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
-                                <TableCell colSpan={7} className="py-8 text-center">
-                                    <FileText className="mx-auto h-8 w-8 text-gray-400" />
-                                    <p className="mt-2 text-gray-500">{reportUtils.getEmptyStateMessage('requisicoes', hasFilters)}</p>
-                                </TableCell>
+                                <TableHead>Número</TableHead>
+                                <TableHead>Solicitante</TableHead>
+                                <TableHead>Emitente</TableHead>
+                                <TableHead>Data Recebimento</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Fornecedor</TableHead>
+                                <TableHead className="text-right">Valor Final</TableHead>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
+                        </TableHeader>
+                        <TableBody>
+                            {requisicoes.map((requisicao) => (
+                                <RequisicaoTableRow key={requisicao.id} requisicao={requisicao} />
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            )}
         </CardContent>
     </Card>
 );
 
 // Component for Summary Cards
 const SummaryCards = ({ stats }: { stats: RequisicoesStats }) => {
-    const hasStatusData = Object.keys(stats.requisicoes_por_status).length > 0;
-    const hasEmitenteData = Object.keys(stats.valor_por_emitente).length > 0;
-
-    if (!hasStatusData && !hasEmitenteData) {
-        return null;
-    }
-
-    const topEmitentes = reportUtils.getTopEntries(stats.valor_por_emitente, (value) => Number(value), 5);
+    const topEmitentes = reportUtils.getTopEntries(stats.valor_por_emitente, (value) => value as number, 5);
+    const topFornecedores = reportUtils.getTopEntries(stats.valor_por_fornecedor, (value) => value as number, 5);
 
     return (
-        <div className="grid gap-4 md:grid-cols-2">
-            {hasStatusData && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Resumo por Status</CardTitle>
-                        <CardDescription>Distribuição das requisições por status atual</CardDescription>
-                    </CardHeader>
-                    <CardContent>
+        <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-base">Top 5 Emitentes por Valor</CardTitle>
+                    <CardDescription>Maiores valores em requisições concretizadas</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {topEmitentes.length === 0 ? (
+                        <p className="py-4 text-center text-sm text-muted-foreground">Nenhum dado disponível</p>
+                    ) : (
                         <div className="space-y-3">
-                            {Object.entries(stats.requisicoes_por_status).length > 0 ? (
-                                Object.entries(stats.requisicoes_por_status).map(([status, count]) => (
-                                    <div key={status} className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-                                        <div className="flex items-center space-x-2">
-                                            <StatusBadge status={status} />
-                                        </div>
-                                        <span className="font-medium">{formatters.number(count, '0')}</span>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="py-4 text-center text-gray-500">
-                                    <p>Nenhum dado de status disponível</p>
+                            {topEmitentes.map(([nome, valor]) => (
+                                <div key={nome} className="flex items-center justify-between">
+                                    <span className="text-sm font-medium">{nome}</span>
+                                    <span className="text-sm text-green-600">{formatters.currency(valor as number)}</span>
                                 </div>
-                            )}
+                            ))}
                         </div>
-                    </CardContent>
-                </Card>
-            )}
+                    )}
+                </CardContent>
+            </Card>
 
-            {hasEmitenteData && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Top 5 Emitentes por Valor</CardTitle>
-                        <CardDescription>Emitentes com maior valor total em requisições</CardDescription>
-                    </CardHeader>
-                    <CardContent>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-base">Top 5 Fornecedores por Valor</CardTitle>
+                    <CardDescription>Maiores valores em requisições concretizadas</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {topFornecedores.length === 0 ? (
+                        <p className="py-4 text-center text-sm text-muted-foreground">Nenhum dado disponível</p>
+                    ) : (
                         <div className="space-y-3">
-                            {topEmitentes.length > 0 ? (
-                                topEmitentes.map(([emitente, valor]) => (
-                                    <div key={emitente} className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-                                        <span className="text-sm font-medium">{formatters.truncateText(emitente, 30)}</span>
-                                        <span className="text-sm font-medium text-green-600">{formatters.currency(Number(valor), 'R$ 0,00')}</span>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="py-4 text-center text-gray-500">
-                                    <p>Nenhum emitente com valor registrado</p>
+                            {topFornecedores.map(([nome, valor]) => (
+                                <div key={nome} className="flex items-center justify-between">
+                                    <span className="text-sm font-medium">{formatters.truncateText(nome, 30)}</span>
+                                    <span className="text-sm text-green-600">{formatters.currency(valor as number)}</span>
                                 </div>
-                            )}
+                            ))}
                         </div>
-                    </CardContent>
-                </Card>
-            )}
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 };
@@ -411,8 +396,15 @@ export default function RelatorioRequisicoes({ requisicoes, stats, filters, emit
     };
 
     const handleExport = (format: string) => {
-        const exportUrl = reportUtils.buildExportUrl('/relatorios/requisicoes/export', data as Record<string, string>, format);
-        window.location.href = exportUrl;
+        const params = new URLSearchParams();
+        if (data.data_inicio) params.append('data_inicio', data.data_inicio);
+        if (data.data_fim) params.append('data_fim', data.data_fim);
+        if (data.status) params.append('status', data.status);
+        if (data.emitente_id) params.append('emitente_id', data.emitente_id);
+        if (data.fornecedor_id) params.append('fornecedor_id', data.fornecedor_id);
+        params.append('formato', format);
+
+        window.location.href = `/relatorios/requisicoes/export?${params.toString()}`;
     };
 
     return (
@@ -435,15 +427,11 @@ export default function RelatorioRequisicoes({ requisicoes, stats, filters, emit
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <Button variant="outline" onClick={() => handleExport('pdf')}>
-                            <Download className="mr-2 h-4 w-4" />
-                            PDF
-                        </Button>
-                        <Button variant="outline" onClick={() => handleExport('excel')}>
+                        <Button variant="outline" onClick={() => handleExport('excel')} disabled={requisicoes.length === 0}>
                             <Download className="mr-2 h-4 w-4" />
                             Excel
                         </Button>
-                        <Button variant="outline" onClick={() => handleExport('csv')}>
+                        <Button variant="outline" onClick={() => handleExport('csv')} disabled={requisicoes.length === 0}>
                             <Download className="mr-2 h-4 w-4" />
                             CSV
                         </Button>
@@ -468,7 +456,7 @@ export default function RelatorioRequisicoes({ requisicoes, stats, filters, emit
                 <ResultsTable requisicoes={requisicoes} stats={stats} hasFilters={hasActiveFilters} />
 
                 {/* Summary Cards */}
-                <SummaryCards stats={stats} />
+                {requisicoes.length > 0 && <SummaryCards stats={stats} />}
             </div>
         </AppLayout>
     );

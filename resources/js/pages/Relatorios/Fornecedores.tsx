@@ -4,7 +4,6 @@ import type { FormEventHandler } from 'react';
 import { useId } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -59,10 +58,8 @@ const StatisticsCards = ({ stats }: { stats: FornecedoresStats }) => (
                 <Building className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{formatters.number(stats.total_fornecedores, 'Nenhum fornecedor')}</div>
-                <p className="text-xs text-muted-foreground">
-                    {stats.total_fornecedores === 0 ? 'Nenhum fornecedor cadastrado' : 'fornecedores cadastrados'}
-                </p>
+                <div className="text-2xl font-bold">{stats.total_fornecedores}</div>
+                <p className="text-xs text-muted-foreground">{stats.total_fornecedores === 0 ? 'Nenhum cadastrado' : 'fornecedores cadastrados'}</p>
             </CardContent>
         </Card>
 
@@ -72,8 +69,8 @@ const StatisticsCards = ({ stats }: { stats: FornecedoresStats }) => (
                 <Users className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold text-green-600">{formatters.number(stats.fornecedores_ativos, 'Nenhum ativo')}</div>
-                <p className="text-xs text-muted-foreground">{stats.fornecedores_ativos === 0 ? 'Nenhum fornecedor ativo' : 'fornecedores ativos'}</p>
+                <div className="text-2xl font-bold text-green-600">{stats.fornecedores_ativos}</div>
+                <p className="text-xs text-muted-foreground">{stats.fornecedores_ativos === 0 ? 'Nenhum ativo' : 'fornecedores ativos'}</p>
             </CardContent>
         </Card>
 
@@ -83,22 +80,20 @@ const StatisticsCards = ({ stats }: { stats: FornecedoresStats }) => (
                 <Users className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold text-red-600">{formatters.number(stats.fornecedores_inativos, 'Nenhum inativo')}</div>
-                <p className="text-xs text-muted-foreground">
-                    {stats.fornecedores_inativos === 0 ? 'Nenhum fornecedor inativo' : 'fornecedores inativos'}
-                </p>
+                <div className="text-2xl font-bold text-red-600">{stats.fornecedores_inativos}</div>
+                <p className="text-xs text-muted-foreground">{stats.fornecedores_inativos === 0 ? 'Nenhum inativo' : 'fornecedores inativos'}</p>
             </CardContent>
         </Card>
 
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Com Movimento</CardTitle>
-                <TrendingUp className="h-4 w-4 text-blue-800" />
+                <TrendingUp className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold text-blue-800">{formatters.number(stats.fornecedores_com_movimento, 'Nenhum com movimento')}</div>
+                <div className="text-2xl font-bold text-blue-600">{stats.fornecedores_com_movimento}</div>
                 <p className="text-xs text-muted-foreground">
-                    {stats.fornecedores_com_movimento === 0 ? 'Nenhum fornecedor com requisições' : 'com requisições'}
+                    {stats.fornecedores_com_movimento === 0 ? 'Nenhum com movimento' : 'com requisições no período'}
                 </p>
             </CardContent>
         </Card>
@@ -106,26 +101,22 @@ const StatisticsCards = ({ stats }: { stats: FornecedoresStats }) => (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Requisições</CardTitle>
-                <TrendingUp className="h-4 w-4 text-purple-600" />
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold text-purple-600">{formatters.number(stats.total_requisicoes, 'Nenhuma requisição')}</div>
-                <p className="text-xs text-muted-foreground">
-                    {stats.total_requisicoes === 0 ? 'Nenhuma requisição atendida' : 'requisições atendidas'}
-                </p>
+                <div className="text-2xl font-bold">{stats.total_requisicoes}</div>
+                <p className="text-xs text-muted-foreground">{stats.total_requisicoes === 0 ? 'Nenhuma requisição' : 'requisições concretizadas'}</p>
             </CardContent>
         </Card>
 
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Valor Total</CardTitle>
-                <DollarSign className="h-4 w-4 text-emerald-600" />
+                <DollarSign className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold text-emerald-600">{formatters.currency(stats.valor_total_geral, 'Sem movimento financeiro')}</div>
-                <p className="text-xs text-muted-foreground">
-                    {stats.valor_total_geral === 0 ? 'Nenhum valor foi movimentado' : 'valor movimentado'}
-                </p>
+                <div className="text-2xl font-bold text-green-600">{formatters.currency(stats.valor_total_geral, 'R$ 0,00')}</div>
+                <p className="text-xs text-muted-foreground">{stats.valor_total_geral === 0 ? 'Sem movimentação' : 'em requisições'}</p>
             </CardContent>
         </Card>
     </div>
@@ -159,7 +150,7 @@ const FiltersCard = ({
                     <Filter className="mr-2 h-5 w-5" />
                     Filtros
                 </CardTitle>
-                <CardDescription>Use os filtros para refinar o relatório por período e status</CardDescription>
+                <CardDescription>Use os filtros para refinar o relatório de fornecedores</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={onFilter} className="space-y-4">
@@ -180,14 +171,14 @@ const FiltersCard = ({
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="">Todos os status</SelectItem>
-                                    <SelectItem value="1">Ativo</SelectItem>
-                                    <SelectItem value="0">Inativo</SelectItem>
+                                    <SelectItem value="1">Ativos</SelectItem>
+                                    <SelectItem value="0">Inativos</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                     </div>
                     <div className="flex justify-end space-x-2">
-                        <Button type="button" variant="outline" onClick={onReset}>
+                        <Button type="button" variant="outline" onClick={onReset} disabled={processing}>
                             Limpar
                         </Button>
                         <Button type="submit" disabled={processing}>
@@ -210,20 +201,20 @@ const FornecedorStatusBadge = ({ status, statusDisplay }: { status: boolean; sta
 
 // Component for Fornecedor Table Row
 const FornecedorTableRow = ({ fornecedor }: { fornecedor: FornecedorRelatorio }) => (
-    <TableRow key={fornecedor.id}>
+    <TableRow>
         <TableCell>
             <div className="font-medium">{fornecedor.razao_social}</div>
         </TableCell>
-        <TableCell className="font-mono text-sm">{formatters.cnpj(fornecedor.cnpj_formatado || '')}</TableCell>
+        <TableCell className="font-mono text-sm">{fornecedor.cnpj_formatado || '-'}</TableCell>
         <TableCell>
             <div className="text-sm">
                 {fornecedor.telefone_formatado || fornecedor.email ? (
                     <>
                         {fornecedor.telefone_formatado && <div>{fornecedor.telefone_formatado}</div>}
-                        {fornecedor.email && <div className="text-gray-500">{fornecedor.email}</div>}
+                        {fornecedor.email && <div className="text-muted-foreground">{fornecedor.email}</div>}
                     </>
                 ) : (
-                    <span className="text-gray-400 italic">Contato não informado</span>
+                    <span className="text-gray-400 italic">Não informado</span>
                 )}
             </div>
         </TableCell>
@@ -232,21 +223,21 @@ const FornecedorTableRow = ({ fornecedor }: { fornecedor: FornecedorRelatorio })
         </TableCell>
         <TableCell className="text-center">
             {fornecedor.total_requisicoes > 0 ? (
-                <span className="inline-flex items-center justify-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">
-                    {formatters.number(fornecedor.total_requisicoes)}
+                <span className="inline-flex items-center justify-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                    {fornecedor.total_requisicoes}
                 </span>
             ) : (
-                <span className="text-sm text-gray-400 italic">Sem requisições</span>
+                <span className="text-sm text-gray-400 italic">0</span>
             )}
         </TableCell>
         <TableCell className="text-right">
             {fornecedor.valor_total > 0 ? (
                 <span className="font-medium text-green-600">{formatters.currency(fornecedor.valor_total)}</span>
             ) : (
-                <span className="text-sm text-gray-400 italic">Sem movimento</span>
+                <span className="text-sm text-gray-400 italic">R$ 0,00</span>
             )}
         </TableCell>
-        <TableCell className="text-sm text-gray-500">{formatters.date(fornecedor.created_at, 'Data não informada')}</TableCell>
+        <TableCell className="text-sm text-muted-foreground">{fornecedor.created_at}</TableCell>
     </TableRow>
 );
 
@@ -264,87 +255,80 @@ const ResultsTable = ({
         <CardHeader>
             <CardTitle>Fornecedores Encontrados</CardTitle>
             <CardDescription>
-                {formatters.number(stats.total_fornecedores, 'Nenhum fornecedor')} encontrados (ordenados por valor total)
+                {stats.total_fornecedores} {stats.total_fornecedores === 1 ? 'fornecedor encontrado' : 'fornecedores encontrados'}
             </CardDescription>
         </CardHeader>
         <CardContent>
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Razão Social</TableHead>
-                            <TableHead>CNPJ</TableHead>
-                            <TableHead>Contato</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-center">Requisições</TableHead>
-                            <TableHead className="text-right">Valor Total</TableHead>
-                            <TableHead>Cadastro</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {fornecedores.length > 0 ? (
-                            fornecedores.map((fornecedor) => <FornecedorTableRow key={fornecedor.id} fornecedor={fornecedor} />)
-                        ) : (
+            {fornecedores.length === 0 ? (
+                <div className="py-12 text-center">
+                    <Building className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">
+                        {reportUtils.getEmptyStateMessage('fornecedores', hasFilters)}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-500">
+                        {hasFilters ? 'Tente ajustar os filtros para encontrar mais resultados.' : 'Comece cadastrando um novo fornecedor.'}
+                    </p>
+                </div>
+            ) : (
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
-                                <TableCell colSpan={7} className="py-8 text-center">
-                                    <Building className="mx-auto h-8 w-8 text-gray-400" />
-                                    <p className="mt-2 text-gray-500">{reportUtils.getEmptyStateMessage('fornecedores', hasFilters)}</p>
-                                </TableCell>
+                                <TableHead>Razão Social</TableHead>
+                                <TableHead>CNPJ</TableHead>
+                                <TableHead>Contato</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-center">Requisições</TableHead>
+                                <TableHead className="text-right">Valor Total</TableHead>
+                                <TableHead>Data Cadastro</TableHead>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
+                        </TableHeader>
+                        <TableBody>
+                            {fornecedores.map((fornecedor) => (
+                                <FornecedorTableRow key={fornecedor.id} fornecedor={fornecedor} />
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            )}
         </CardContent>
     </Card>
 );
 
 // Component for Top Performers Cards
 const TopPerformersCards = ({ fornecedores }: { fornecedores: FornecedorRelatorio[] }) => {
-    if (fornecedores.length === 0) return null;
-
     const topByValue = fornecedores.filter((f) => f.valor_total > 0).slice(0, 5);
-
-    const topByRequests = fornecedores
+    const topByRequests = [...fornecedores]
         .sort((a, b) => b.total_requisicoes - a.total_requisicoes)
         .filter((f) => f.total_requisicoes > 0)
         .slice(0, 5);
 
     if (topByValue.length === 0 && topByRequests.length === 0) {
-        return (
-            <Card>
-                <CardContent className="py-8 text-center">
-                    <Building className="mx-auto h-8 w-8 text-gray-400" />
-                    <p className="mt-2 text-gray-500">Nenhum fornecedor possui movimentação no período selecionado</p>
-                </CardContent>
-            </Card>
-        );
+        return null;
     }
 
     return (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
             {topByValue.length > 0 && (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Top 5 - Maior Valor</CardTitle>
+                        <CardTitle className="text-base">Top 5 - Maior Valor</CardTitle>
                         <CardDescription>Fornecedores com maior valor total em requisições</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-3">
                             {topByValue.map((fornecedor, index) => (
-                                <div key={fornecedor.id} className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+                                <div key={fornecedor.id} className="flex items-center justify-between">
                                     <div className="flex items-center space-x-3">
-                                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-800">
+                                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">
                                             {index + 1}
                                         </div>
                                         <div>
                                             <div className="text-sm font-medium">{formatters.truncateText(fornecedor.razao_social, 30)}</div>
-                                            <div className="text-xs text-gray-500">{formatters.number(fornecedor.total_requisicoes)} requisições</div>
+                                            <div className="text-xs text-muted-foreground">{fornecedor.total_requisicoes} requisições</div>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="font-medium text-green-600">{formatters.currency(fornecedor.valor_total)}</div>
-                                    </div>
+                                    <div className="text-sm font-medium text-green-600">{formatters.currency(fornecedor.valor_total)}</div>
                                 </div>
                             ))}
                         </div>
@@ -355,25 +339,23 @@ const TopPerformersCards = ({ fornecedores }: { fornecedores: FornecedorRelatori
             {topByRequests.length > 0 && (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Top 5 - Mais Requisições</CardTitle>
+                        <CardTitle className="text-base">Top 5 - Mais Requisições</CardTitle>
                         <CardDescription>Fornecedores com maior número de requisições</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-3">
                             {topByRequests.map((fornecedor, index) => (
-                                <div key={fornecedor.id} className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+                                <div key={fornecedor.id} className="flex items-center justify-between">
                                     <div className="flex items-center space-x-3">
-                                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 text-xs font-medium text-purple-600">
+                                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">
                                             {index + 1}
                                         </div>
                                         <div>
                                             <div className="text-sm font-medium">{formatters.truncateText(fornecedor.razao_social, 30)}</div>
-                                            <div className="text-xs text-gray-500">{formatters.currency(fornecedor.valor_total, 'Sem valor')}</div>
+                                            <div className="text-xs text-muted-foreground">{formatters.currency(fornecedor.valor_total)}</div>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="font-medium text-purple-600">{formatters.number(fornecedor.total_requisicoes)} req.</div>
-                                    </div>
+                                    <div className="text-sm font-medium text-blue-600">{fornecedor.total_requisicoes}</div>
                                 </div>
                             ))}
                         </div>
@@ -414,8 +396,13 @@ export default function RelatorioFornecedores({ fornecedores, stats, filters }: 
     };
 
     const handleExport = (format: string) => {
-        const exportUrl = reportUtils.buildExportUrl('/relatorios/fornecedores/export', data as Record<string, string>, format);
-        window.location.href = exportUrl;
+        const params = new URLSearchParams();
+        if (data.data_inicio) params.append('data_inicio', data.data_inicio);
+        if (data.data_fim) params.append('data_fim', data.data_fim);
+        if (data.status) params.append('status', data.status);
+        params.append('formato', format);
+
+        window.location.href = `/relatorios/fornecedores/export?${params.toString()}`;
     };
 
     return (
@@ -434,19 +421,15 @@ export default function RelatorioFornecedores({ fornecedores, stats, filters }: 
                         </Link>
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Relatório de Fornecedores</h1>
-                            <p className="text-gray-600 dark:text-gray-400">Análise detalhada dos fornecedores e seu desempenho no sistema</p>
+                            <p className="text-gray-600 dark:text-gray-400">Análise detalhada dos fornecedores do sistema</p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <Button variant="outline" onClick={() => handleExport('pdf')}>
-                            <Download className="mr-2 h-4 w-4" />
-                            PDF
-                        </Button>
-                        <Button variant="outline" onClick={() => handleExport('excel')}>
+                        <Button variant="outline" onClick={() => handleExport('excel')} disabled={fornecedores.length === 0}>
                             <Download className="mr-2 h-4 w-4" />
                             Excel
                         </Button>
-                        <Button variant="outline" onClick={() => handleExport('csv')}>
+                        <Button variant="outline" onClick={() => handleExport('csv')} disabled={fornecedores.length === 0}>
                             <Download className="mr-2 h-4 w-4" />
                             CSV
                         </Button>
@@ -462,8 +445,8 @@ export default function RelatorioFornecedores({ fornecedores, stats, filters }: 
                 {/* Results Table */}
                 <ResultsTable fornecedores={fornecedores} stats={stats} hasFilters={hasActiveFilters} />
 
-                {/* Top Performers */}
-                <TopPerformersCards fornecedores={fornecedores} />
+                {/* Top Performers Cards */}
+                {fornecedores.length > 0 && <TopPerformersCards fornecedores={fornecedores} />}
             </div>
         </AppLayout>
     );

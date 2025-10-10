@@ -21,6 +21,7 @@ class Contrato extends Model
         "data_fim",
         "limite_requisicoes",
         "limite_conferencias",
+        "limite_valor_mensal",
         "descricao",
         "status",
         "usuario_criacao_id",
@@ -31,6 +32,7 @@ class Contrato extends Model
         "data_fim" => "date",
         "limite_requisicoes" => "integer",
         "limite_conferencias" => "integer",
+        "limite_valor_mensal" => "decimal:2",
     ];
 
     /**
@@ -51,6 +53,90 @@ class Contrato extends Model
     public function usuarioCriacao(): BelongsTo
     {
         return $this->belongsTo(User::class, "usuario_criacao_id");
+    }
+
+    /**
+     * Get the valores mensais for the contrato.
+     *
+     * @return HasMany<ContratoValorMensal, Contrato>
+     */
+    public function valoresMensais(): HasMany
+    {
+        return $this->hasMany(ContratoValorMensal::class);
+    }
+
+    /**
+     * Get the historico de limites for the contrato.
+     *
+     * @return HasMany<ContratoHistoricoLimite, Contrato>
+     */
+    public function historicoLimites(): HasMany
+    {
+        return $this->hasMany(ContratoHistoricoLimite::class);
+    }
+
+    /**
+     * Temporary storage for pending limit changes.
+     */
+    private static $pendingChanges = [];
+
+    /**
+     * Boot the model and register observers.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Register creation event
+        static::created(function ($contrato) {
+            ContratoHistoricoLimite::registrarCriacao(
+                $contrato,
+                $contrato->usuario_criacao_id,
+            );
+        });
+
+        // Register update event
+        static::updating(function ($contrato) {
+            $camposMonitorados = [
+                "limite_requisicoes",
+                "limite_conferencias",
+                "limite_valor_mensal",
+            ];
+
+            $alteracoes = [];
+
+            foreach ($camposMonitorados as $campo) {
+                $original = $contrato->getOriginal($campo);
+                $novo = $contrato->getAttribute($campo);
+
+                // Check if value changed
+                if ($original != $novo) {
+                    $alteracoes[$campo] = [
+                        "anterior" => $original,
+                        "novo" => $novo,
+                    ];
+                }
+            }
+
+            // Register changes if any
+            if (!empty($alteracoes)) {
+                // Store changes in static property
+                self::$pendingChanges[$contrato->id] = $alteracoes;
+            }
+        });
+
+        // Register after update to capture user context
+        static::updated(function ($contrato) {
+            if (isset(self::$pendingChanges[$contrato->id])) {
+                ContratoHistoricoLimite::registrarAtualizacao(
+                    $contrato,
+                    self::$pendingChanges[$contrato->id],
+                    auth()->id(),
+                    "Atualização dos limites do contrato",
+                );
+                unset(self::$pendingChanges[$contrato->id]);
+            }
+        });
     }
 
     /**
@@ -237,6 +323,144 @@ class Contrato extends Model
 
         $restantes = $this->limite_conferencias - $this->getCountConferencias();
         return max(0, $restantes);
+    }
+
+    /**
+     * Get total value used in a specific month.
+     */
+    public function getValorUsadoNoMes(int $ano, int $mes): float
+    {
+        return (float) $this->valoresMensais()
+            ->where("ano", $ano)
+            ->where("mes", $mes)
+            ->sum("valor");
+    }
+
+    /**
+     * Get remaining value for a specific month.
+     */
+    public function getValorRestanteNoMes(int $ano, int $mes): ?float
+    {
+        if ($this->limite_valor_mensal === null) {
+            return null; // Unlimited
+        }
+
+        $usado = $this->getValorUsadoNoMes($ano, $mes);
+        $restante = (float) $this->limite_valor_mensal - $usado;
+        return max(0, $restante);
+    }
+
+    /**
+     * Check if adding a value would exceed monthly limit.
+     */
+    public function excedeLimiteMensal(float $valor, int $ano, int $mes): bool
+    {
+        if ($this->limite_valor_mensal === null) {
+            return false; // No limit
+        }
+
+        $valorUsado = $this->getValorUsadoNoMes($ano, $mes);
+        return $valorUsado + $valor > (float) $this->limite_valor_mensal;
+    }
+
+    /**
+     * Get the amount that exceeds the monthly limit.
+     */
+    public function getValorExcedente(float $valor, int $ano, int $mes): float
+    {
+        if ($this->limite_valor_mensal === null) {
+            return 0;
+        }
+
+        $valorUsado = $this->getValorUsadoNoMes($ano, $mes);
+        $total = $valorUsado + $valor;
+        $limite = (float) $this->limite_valor_mensal;
+
+        if ($total > $limite) {
+            return $total - $limite;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Register a monthly value entry.
+     */
+    public function registrarValorMensal(
+        Requisicao $requisicao,
+        User $usuario,
+    ): ?ContratoValorMensal {
+        $dataRecebimento = $requisicao->data_recebimento;
+        $ano = $dataRecebimento->year;
+        $mes = $dataRecebimento->month;
+        $valor = (float) ($requisicao->valor_final ?? 0);
+
+        // Check if already registered
+        $existente = ContratoValorMensal::query()
+            ->where("contrato_id", $this->id)
+            ->where("requisicao_id", $requisicao->id)
+            ->first();
+
+        if ($existente) {
+            return $existente;
+        }
+
+        $excedeuLimite = $this->excedeLimiteMensal($valor, $ano, $mes);
+        $valorExcedente = $excedeuLimite
+            ? $this->getValorExcedente($valor, $ano, $mes)
+            : null;
+
+        return ContratoValorMensal::create([
+            "contrato_id" => $this->id,
+            "requisicao_id" => $requisicao->id,
+            "usuario_id" => $usuario->id,
+            "ano" => $ano,
+            "mes" => $mes,
+            "valor" => $valor,
+            "excedeu_limite" => $excedeuLimite,
+            "valor_excedente" => $valorExcedente,
+        ]);
+    }
+
+    /**
+     * Get monthly values summary.
+     */
+    public function getValoresMensaisSummary(): array
+    {
+        $summary = [];
+
+        $valores = $this->valoresMensais()
+            ->orderBy("ano", "desc")
+            ->orderBy("mes", "desc")
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->ano .
+                    "-" .
+                    str_pad($item->mes, 2, "0", STR_PAD_LEFT);
+            });
+
+        foreach ($valores as $periodo => $items) {
+            [$ano, $mes] = explode("-", $periodo);
+            $total = $items->sum("valor");
+            $excedentes = $items->where("excedeu_limite", true);
+
+            $summary[] = [
+                "ano" => (int) $ano,
+                "mes" => (int) $mes,
+                "periodo_display" => sprintf("%02d/%d", (int) $mes, (int) $ano),
+                "total" => $total,
+                "limite" => $this->limite_valor_mensal,
+                "restante" => $this->getValorRestanteNoMes(
+                    (int) $ano,
+                    (int) $mes,
+                ),
+                "excedeu" => $excedentes->count() > 0,
+                "quantidade_requisicoes" => $items->count(),
+                "valor_total_excedente" => $excedentes->sum("valor_excedente"),
+            ];
+        }
+
+        return $summary;
     }
 
     /**

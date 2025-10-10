@@ -96,6 +96,10 @@ Route::middleware(["auth", "verified"])->group(function () {
             ContratoController::class,
             "checkLimits",
         ])->name("contratos.check-limits");
+        Route::get("contratos/{contrato}/historico-limites", [
+            ContratoController::class,
+            "historicoLimites",
+        ])->name("contratos.historico-limites");
 
         // Emitentes routes
         Route::resource("emitentes", EmitenteController::class);

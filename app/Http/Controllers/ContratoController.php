@@ -117,6 +117,7 @@ class ContratoController extends Controller
             "data_fim" => "required|date|after:data_inicio",
             "limite_requisicoes" => "nullable|integer|min:0",
             "limite_conferencias" => "nullable|integer|min:0",
+            "limite_valor_mensal" => "nullable|numeric|min:0",
             "descricao" => "nullable|string|max:1000",
             "status" => "required|in:ativo,inativo",
         ]);
@@ -151,6 +152,52 @@ class ContratoController extends Controller
         $requisicoesRestantes = $contrato->getRequisicoesRestantes();
         $conferenciasRestantes = $contrato->getConferenciasRestantes();
 
+        // Get monthly values summary
+        $valoresMensais = $contrato->getValoresMensaisSummary();
+
+        // Get historico de limites (timeline)
+        $historicoLimites = $contrato
+            ->historicoLimites()
+            ->with("usuario")
+            ->orderBy("created_at", "desc")
+            ->get()
+            ->map(function ($historico) {
+                return [
+                    "id" => $historico->id,
+                    "tipo_alteracao" => $historico->tipo_alteracao,
+                    "tipo_display" => $historico->tipo_display,
+                    "campo_alterado" => $historico->campo_alterado,
+                    "campo_display" => $historico->campo_display,
+                    "valor_anterior" => $historico->valor_anterior,
+                    "valor_novo" => $historico->valor_novo,
+                    "diferenca" => $historico->diferenca,
+                    "mensagem" => $historico->mensagem,
+                    "descricao" => $historico->descricao,
+                    "icon_color" => $historico->icon_color,
+                    "badge_color" => $historico->badge_color,
+                    "usuario" => $historico->usuario
+                        ? [
+                            "id" => $historico->usuario->id,
+                            "name" => $historico->usuario->name,
+                        ]
+                        : null,
+                    "created_at" => $historico->created_at->format("d/m/Y H:i"),
+                    "created_at_diff" => $historico->created_at->diffForHumans(),
+                ];
+            });
+
+        // Get current month stats
+        $mesAtual = now()->month;
+        $anoAtual = now()->year;
+        $valorUsadoMesAtual = $contrato->getValorUsadoNoMes(
+            $anoAtual,
+            $mesAtual,
+        );
+        $valorRestanteMesAtual = $contrato->getValorRestanteNoMes(
+            $anoAtual,
+            $mesAtual,
+        );
+
         // Get related items
         $requisicoes = $contrato->getRequisicoes()->take(10);
         $conferencias = $contrato->getConferencias()->take(10);
@@ -171,6 +218,7 @@ class ContratoController extends Controller
                 "data_fim" => $contrato->data_fim->format("d/m/Y"),
                 "limite_requisicoes" => $contrato->limite_requisicoes,
                 "limite_conferencias" => $contrato->limite_conferencias,
+                "limite_valor_mensal" => $contrato->limite_valor_mensal,
                 "status" => $contrato->status,
                 "status_display" => $contrato->status_display,
                 "status_color" => $contrato->status_color,
@@ -188,7 +236,14 @@ class ContratoController extends Controller
                     "limite" => $contrato->limite_conferencias,
                     "restantes" => $conferenciasRestantes,
                 ],
+                "valores" => [
+                    "limite_mensal" => $contrato->limite_valor_mensal,
+                    "usado_mes_atual" => $valorUsadoMesAtual,
+                    "restante_mes_atual" => $valorRestanteMesAtual,
+                    "mes_atual" => sprintf("%02d/%d", $mesAtual, $anoAtual),
+                ],
             ],
+            "valores_mensais" => $valoresMensais,
             "requisicoes" => $requisicoes->map(function ($req) {
                 return [
                     "id" => $req->id,
@@ -206,6 +261,7 @@ class ContratoController extends Controller
                     "total_geral" => $conf->total_geral,
                 ];
             }),
+            "historico_limites" => $historicoLimites,
         ]);
     }
 
@@ -234,6 +290,7 @@ class ContratoController extends Controller
                 "data_fim" => $contrato->data_fim->format("Y-m-d"),
                 "limite_requisicoes" => $contrato->limite_requisicoes,
                 "limite_conferencias" => $contrato->limite_conferencias,
+                "limite_valor_mensal" => $contrato->limite_valor_mensal,
                 "descricao" => $contrato->descricao,
                 "status" => $contrato->status,
             ],
@@ -263,6 +320,7 @@ class ContratoController extends Controller
             "data_fim" => "required|date|after:data_inicio",
             "limite_requisicoes" => "nullable|integer|min:0",
             "limite_conferencias" => "nullable|integer|min:0",
+            "limite_valor_mensal" => "nullable|numeric|min:0",
             "descricao" => "nullable|string|max:1000",
             "status" => "required|in:ativo,inativo,expirado",
         ]);
@@ -370,6 +428,78 @@ class ContratoController extends Controller
                     "atingido" => $contrato->limiteConferenciasAtingido(),
                 ],
             ],
+        ]);
+    }
+
+    /**
+     * Get timeline of limit changes for a contract (API endpoint for reports).
+     */
+    public function historicoLimites(Request $request, Contrato $contrato)
+    {
+        $campoFiltro = $request->input("campo");
+        $tipoFiltro = $request->input("tipo");
+        $dataInicio = $request->input("data_inicio");
+        $dataFim = $request->input("data_fim");
+
+        $query = $contrato
+            ->historicoLimites()
+            ->with("usuario")
+            ->orderBy("created_at", "desc");
+
+        // Apply filters
+        if ($campoFiltro) {
+            $query->where("campo_alterado", $campoFiltro);
+        }
+
+        if ($tipoFiltro) {
+            $query->where("tipo_alteracao", $tipoFiltro);
+        }
+
+        if ($dataInicio) {
+            $query->whereDate("created_at", ">=", $dataInicio);
+        }
+
+        if ($dataFim) {
+            $query->whereDate("created_at", "<=", $dataFim);
+        }
+
+        $historico = $query->get()->map(function ($h) {
+            return [
+                "id" => $h->id,
+                "tipo_alteracao" => $h->tipo_alteracao,
+                "tipo_display" => $h->tipo_display,
+                "campo_alterado" => $h->campo_alterado,
+                "campo_display" => $h->campo_display,
+                "valor_anterior" => $h->valor_anterior,
+                "valor_novo" => $h->valor_novo,
+                "diferenca" => $h->diferenca,
+                "mensagem" => $h->mensagem,
+                "descricao" => $h->descricao,
+                "usuario" => $h->usuario
+                    ? [
+                        "id" => $h->usuario->id,
+                        "name" => $h->usuario->name,
+                    ]
+                    : null,
+                "created_at" => $h->created_at->format("Y-m-d H:i:s"),
+                "created_at_formatted" => $h->created_at->format("d/m/Y H:i"),
+            ];
+        });
+
+        return response()->json([
+            "success" => true,
+            "contrato" => [
+                "id" => $contrato->id,
+                "numero_contrato" => $contrato->numero_contrato,
+                "fornecedor" => $contrato->fornecedor
+                    ? [
+                        "id" => $contrato->fornecedor->id,
+                        "razao_social" => $contrato->fornecedor->razao_social,
+                    ]
+                    : null,
+            ],
+            "historico" => $historico,
+            "total" => $historico->count(),
         ]);
     }
 }

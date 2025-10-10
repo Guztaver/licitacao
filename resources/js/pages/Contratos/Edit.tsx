@@ -23,6 +23,7 @@ interface Contrato {
     data_fim: string;
     limite_requisicoes: number | null;
     limite_conferencias: number | null;
+    limite_valor_mensal: number | null;
     descricao: string;
     status: 'ativo' | 'inativo' | 'expirado';
 }
@@ -39,6 +40,7 @@ interface ContratoFormData {
     data_fim: string;
     limite_requisicoes: string;
     limite_conferencias: string;
+    limite_valor_mensal: string;
     descricao: string;
     status: 'ativo' | 'inativo' | 'expirado';
 }
@@ -62,6 +64,7 @@ export default function ContratoEdit({ contrato, fornecedores }: ContratoEditPro
         data_fim: contrato.data_fim,
         limite_requisicoes: contrato.limite_requisicoes?.toString() || '',
         limite_conferencias: contrato.limite_conferencias?.toString() || '',
+        limite_valor_mensal: contrato.limite_valor_mensal?.toString() || '',
         descricao: contrato.descricao || '',
         status: contrato.status,
     });
@@ -220,6 +223,24 @@ export default function ContratoEdit({ contrato, fornecedores }: ContratoEditPro
                                         {errors.limite_conferencias && <p className="text-sm text-red-500">{errors.limite_conferencias}</p>}
                                         <p className="text-xs text-gray-500">Número máximo de conferências permitidas neste contrato</p>
                                     </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="limite_valor_mensal">Limite de Valor Mensal (R$)</Label>
+                                    <Input
+                                        id="limite_valor_mensal"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={data.limite_valor_mensal}
+                                        onChange={(e) => setData('limite_valor_mensal', e.target.value)}
+                                        placeholder="Deixe vazio para ilimitado"
+                                    />
+                                    {errors.limite_valor_mensal && <p className="text-sm text-red-500">{errors.limite_valor_mensal}</p>}
+                                    <p className="text-xs text-gray-500">
+                                        Valor máximo permitido por mês. Ao exceder, o sistema adiciona a requisição mas gera um alerta com o valor
+                                        excedente.
+                                    </p>
                                 </div>
                             </CardContent>
                         </Card>

@@ -36,6 +36,7 @@ class ContratoSeeder extends Seeder
                 "data_fim" => now()->endOfYear(),
                 "limite_requisicoes" => 50,
                 "limite_conferencias" => 12,
+                "limite_valor_mensal" => 100000.0,
                 "descricao" =>
                     "Contrato anual para fornecimento de materiais de escritório com limites definidos.",
                 "status" => "ativo",
@@ -48,6 +49,7 @@ class ContratoSeeder extends Seeder
                 "data_fim" => now()->addMonths(6),
                 "limite_requisicoes" => 30,
                 "limite_conferencias" => 6,
+                "limite_valor_mensal" => 50000.0,
                 "descricao" =>
                     "Contrato semestral para serviços de manutenção.",
                 "status" => "ativo",
@@ -60,6 +62,7 @@ class ContratoSeeder extends Seeder
                 "data_fim" => now()->addMonths(3),
                 "limite_requisicoes" => null, // Unlimited
                 "limite_conferencias" => null, // Unlimited
+                "limite_valor_mensal" => null, // Unlimited
                 "descricao" =>
                     "Contrato trimestral sem limites de requisições e conferências.",
                 "status" => "ativo",
@@ -72,6 +75,7 @@ class ContratoSeeder extends Seeder
                 "data_fim" => now()->addYear(),
                 "limite_requisicoes" => 100,
                 "limite_conferencias" => 24,
+                "limite_valor_mensal" => 200000.0,
                 "descricao" =>
                     "Contrato geral para múltiplos fornecedores com limites amplos.",
                 "status" => "ativo",
@@ -84,6 +88,7 @@ class ContratoSeeder extends Seeder
                 "data_fim" => now()->subMonths(1),
                 "limite_requisicoes" => 25,
                 "limite_conferencias" => 12,
+                "limite_valor_mensal" => 30000.0,
                 "descricao" => "Contrato do ano anterior já expirado.",
                 "status" => "expirado",
                 "usuario_criacao_id" => $user->id ?? null,
@@ -95,6 +100,7 @@ class ContratoSeeder extends Seeder
                 "data_fim" => now()->addYear(),
                 "limite_requisicoes" => 40,
                 "limite_conferencias" => 8,
+                "limite_valor_mensal" => 75000.0,
                 "descricao" => "Contrato futuro ainda não iniciado.",
                 "status" => "inativo",
                 "usuario_criacao_id" => $user->id ?? null,

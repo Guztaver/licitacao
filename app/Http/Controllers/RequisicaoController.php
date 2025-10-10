@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contrato;
+use App\Models\ContratoValorMensal;
 use App\Models\Destinatario;
 use App\Models\Emitente;
 use App\Models\Fornecedor;
-use App\Models\Item;
 use App\Models\Requisicao;
 use App\Services\PdfService;
 use Illuminate\Http\RedirectResponse;
@@ -570,9 +570,56 @@ class RequisicaoController extends Controller
 
         $requisicao->concretizar($validated, $request->user());
 
+        // Check for active contract and register monthly value
+        $dataRecebimento = $requisicao->data_recebimento;
+        $contrato = Contrato::findContratoVigente(
+            $requisicao->fornecedor_id,
+            $dataRecebimento,
+        );
+
+        $warningMessage = null;
+        if ($contrato && $contrato->limite_valor_mensal !== null) {
+            $ano = $dataRecebimento->year;
+            $mes = $dataRecebimento->month;
+            $valor = (float) $validated["valor_final"];
+
+            // Check if exceeds monthly limit
+            if ($contrato->excedeLimiteMensal($valor, $ano, $mes)) {
+                $valorExcedente = $contrato->getValorExcedente(
+                    $valor,
+                    $ano,
+                    $mes,
+                );
+                $warningMessage = sprintf(
+                    "ATENÇÃO: O valor desta requisição (R$ %s) excede o limite mensal do contrato %s. " .
+                        "Limite: R$ %s. Valor utilizado no mês: R$ %s. Valor excedente: R$ %s. " .
+                        "A requisição foi adicionada, mas está marcada como excedente.",
+                    number_format($valor, 2, ",", "."),
+                    $contrato->numero_contrato,
+                    number_format(
+                        (float) $contrato->limite_valor_mensal,
+                        2,
+                        ",",
+                        ".",
+                    ),
+                    number_format(
+                        $contrato->getValorUsadoNoMes($ano, $mes),
+                        2,
+                        ",",
+                        ".",
+                    ),
+                    number_format($valorExcedente, 2, ",", "."),
+                );
+            }
+
+            // Register the monthly value
+            $contrato->registrarValorMensal($requisicao, $request->user());
+        }
+
         return redirect()
             ->route("requisicoes.show", $requisicao)
-            ->with("success", "Requisição concretizada com sucesso!");
+            ->with("success", "Requisição concretizada com sucesso!")
+            ->with("warning", $warningMessage);
     }
 
     /**
