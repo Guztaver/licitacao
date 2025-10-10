@@ -130,6 +130,7 @@ jobs:
 
       - name: Generate SBOM
         if: github.event_name != 'pull_request' || github.event.inputs.push_image == 'true'
+        continue-on-error: true
         uses: anchore/sbom-action@v0
         with:
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
@@ -138,6 +139,7 @@ jobs:
 
       - name: Upload SBOM
         if: github.event_name != 'pull_request' || github.event.inputs.push_image == 'true'
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: sbom-report
