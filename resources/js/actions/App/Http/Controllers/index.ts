@@ -6,6 +6,12 @@ import ProcessoLicitatorioController from './ProcessoLicitatorioController'
 import ContratoController from './ContratoController'
 import CategoriaMaterialController from './CategoriaMaterialController'
 import DispensaLicitacaoController from './DispensaLicitacaoController'
+import ItemController from './ItemController'
+import EmitenteController from './EmitenteController'
+import DestinatarioController from './DestinatarioController'
+import PedidoCompraController from './PedidoCompraController'
+import RequisicaoController from './RequisicaoController'
+import ConferenciaController from './ConferenciaController'
 import LimiteDispensaAlertaController from './LimiteDispensaAlertaController'
 import Auth from './Auth'
 
@@ -18,6 +24,12 @@ const Controllers = {
     ContratoController: Object.assign(ContratoController, ContratoController),
     CategoriaMaterialController: Object.assign(CategoriaMaterialController, CategoriaMaterialController),
     DispensaLicitacaoController: Object.assign(DispensaLicitacaoController, DispensaLicitacaoController),
+    ItemController: Object.assign(ItemController, ItemController),
+    EmitenteController: Object.assign(EmitenteController, EmitenteController),
+    DestinatarioController: Object.assign(DestinatarioController, DestinatarioController),
+    PedidoCompraController: Object.assign(PedidoCompraController, PedidoCompraController),
+    RequisicaoController: Object.assign(RequisicaoController, RequisicaoController),
+    ConferenciaController: Object.assign(ConferenciaController, ConferenciaController),
     LimiteDispensaAlertaController: Object.assign(LimiteDispensaAlertaController, LimiteDispensaAlertaController),
     Auth: Object.assign(Auth, Auth),
 }

@@ -19,15 +19,17 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RelatorioMateriaisExport;
 use App\Exports\RelatorioContratosExport;
 use App\Exports\RelatorioDispensasExport;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class RelatorioController extends Controller
 {
     /**
      * Display the reports page.
      */
-    public function index()
+    public function index(): Response
     {
-        return view("relatorios.index");
+        return Inertia::render("Relatorios/Index");
     }
 
     /**

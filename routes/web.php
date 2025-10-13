@@ -16,10 +16,16 @@ use App\Http\Controllers\DispensaLicitacaoController;
 use App\Http\Controllers\LimiteDispensaAlertaController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\EmitenteController;
+use App\Http\Controllers\DestinatarioController;
+use App\Http\Controllers\PedidoCompraController;
+use App\Http\Controllers\RequisicaoController;
+use App\Http\Controllers\ConferenciaController;
 
 // Rota principal
 Route::get("/", function () {
-    return view("welcome");
+    return redirect()->route("dashboard");
 });
 
 // Dashboard
@@ -140,6 +146,72 @@ Route::prefix("dispensas")
             DispensaLicitacaoController::class,
             "validar",
         ])->name("validar");
+    });
+
+// Itens/Materiais
+Route::resource("items", ItemController::class)->middleware([
+    "auth",
+    "verified",
+]);
+
+// Emitentes
+Route::resource("emitentes", EmitenteController::class)->middleware([
+    "auth",
+    "verified",
+]);
+
+// Destinatarios
+Route::resource("destinatarios", DestinatarioController::class)->middleware([
+    "auth",
+    "verified",
+]);
+
+// Pedidos de Compras
+Route::prefix("pedidos-compras")
+    ->name("pedidos-compras.")
+    ->middleware(["auth", "verified"])
+    ->group(function () {
+        Route::get("/", [PedidoCompraController::class, "index"])->name("index");
+        Route::post("/", [PedidoCompraController::class, "store"])->name("store");
+        Route::get("/create", [PedidoCompraController::class, "create"])->name("create");
+        Route::get("/{pedido}", [PedidoCompraController::class, "show"])->name("show");
+        Route::get("/{pedido}/edit", [PedidoCompraController::class, "edit"])->name("edit");
+        Route::put("/{pedido}", [PedidoCompraController::class, "update"])->name("update");
+        Route::delete("/{pedido}", [PedidoCompraController::class, "destroy"])->name("destroy");
+        Route::patch("/{pedido}/aprovar", [PedidoCompraController::class, "aprovar"])->name("aprovar");
+        Route::patch("/{pedido}/rejeitar", [PedidoCompraController::class, "rejeitar"])->name("rejeitar");
+    });
+
+// Requisições
+Route::prefix("requisicoes")
+    ->name("requisicoes.")
+    ->middleware(["auth", "verified"])
+    ->group(function () {
+        Route::get("/", [RequisicaoController::class, "index"])->name("index");
+        Route::post("/", [RequisicaoController::class, "store"])->name("store");
+        Route::get("/create", [RequisicaoController::class, "create"])->name("create");
+        Route::get("/{requisicao}", [RequisicaoController::class, "show"])->name("show");
+        Route::get("/{requisicao}/edit", [RequisicaoController::class, "edit"])->name("edit");
+        Route::put("/{requisicao}", [RequisicaoController::class, "update"])->name("update");
+        Route::delete("/{requisicao}", [RequisicaoController::class, "destroy"])->name("destroy");
+        Route::patch("/{requisicao}/aprovar", [RequisicaoController::class, "aprovar"])->name("aprovar");
+        Route::patch("/{requisicao}/rejeitar", [RequisicaoController::class, "rejeitar"])->name("rejeitar");
+        Route::patch("/{requisicao}/finalizar", [RequisicaoController::class, "finalizar"])->name("finalizar");
+    });
+
+// Conferências
+Route::prefix("conferencias")
+    ->name("conferencias.")
+    ->middleware(["auth", "verified"])
+    ->group(function () {
+        Route::get("/", [ConferenciaController::class, "index"])->name("index");
+        Route::post("/", [ConferenciaController::class, "store"])->name("store");
+        Route::get("/create", [ConferenciaController::class, "create"])->name("create");
+        Route::get("/{conferencia}", [ConferenciaController::class, "show"])->name("show");
+        Route::get("/{conferencia}/edit", [ConferenciaController::class, "edit"])->name("edit");
+        Route::put("/{conferencia}", [ConferenciaController::class, "update"])->name("update");
+        Route::delete("/{conferencia}", [ConferenciaController::class, "destroy"])->name("destroy");
+        Route::patch("/{conferencia}/finalizar", [ConferenciaController::class, "finalizar"])->name("finalizar");
     });
 
 // Alertas de Limites

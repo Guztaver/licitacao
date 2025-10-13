@@ -6,7 +6,9 @@
       "Bash(curl:*)",
       "Bash(php:*)",
       "Bash(timeout:*)",
-      "Bash(bun:*)"
+      "Bash(bun:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)"
     ],
     "deny": [],
     "ask": []
