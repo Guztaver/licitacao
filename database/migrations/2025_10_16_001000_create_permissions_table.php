@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('slug')->unique(); // Slug único para URLs
 
             // Categorização
-            <field>enum('module', [
+            $table->enum('module', [
                 'users',           // Gestão de usuários
                 'roles',           // Gestão de papéis
                 'fornecedores',    // Gestão de fornecedores
@@ -37,7 +37,7 @@ return new class extends Migration
                 'custom'           // Módulos personalizados
             ])->default('custom');
 
-            <field>enum('type', [
+            $table->enum('type', [
                 'create',          // Criar
                 'read',            // Ler/Visualizar
                 'update',          // Atualizar
@@ -54,7 +54,7 @@ return new class extends Migration
             ])->default('read');
 
             // Escopo e contexto
-            <field>enum('scope', [
+            $table->enum('scope', [
                 'global',          // Global, afeta todo o sistema
                 'own',             // Apenas próprio conteúdo
                 'department',      // Apenas departamento
@@ -62,10 +62,10 @@ return new class extends Migration
                 'custom'           // Escopo personalizado
             ])->default('global');
 
-            <field>json('scope_conditions')->nullable(); // Condições específicas do escopo
+            $table->json('scope_conditions')->nullable(); // Condições específicas do escopo
 
             // Controle de acesso
-            <field>enum('level', [
+            $table->enum('level', [
                 'basic',           // Nível básico de acesso
                 'intermediate',    // Nível intermediário
                 'advanced',        // Nível avançado
@@ -74,14 +74,14 @@ return new class extends Migration
             ])->default('basic');
 
             // Restrições e condições
-            <field->json('restrictions')->nullable(); // Array de restrições
-            <field>json('conditions')->nullable(); // Condições para acesso
-            <field->boolean('requires_approval')->default(false); // Requer aprovação
-            <field->integer('approval_level')->nullable(); // Nível necessário para aprovação
+            $table->json('restrictions')->nullable(); // Array de restrições
+            $table->json('conditions')->nullable(); // Condições para acesso
+            $table->boolean('requires_approval')->default(false); // Requer aprovação
+            $table->integer('approval_level')->nullable(); // Nível necessário para aprovação
 
             // Sistema
-            <field>boolean('is_system')->default(false); // Permissão do sistema
-            <field>enum('status', [
+            $table->boolean('is_system')->default(false); // Permissão do sistema
+            $table->enum('status', [
                 'active',          // Ativa
                 'inactive',        // Inativa
                 'deprecated',      // Obsoleta
@@ -89,8 +89,8 @@ return new class extends Migration
             ])->default('active');
 
             // Auditoria
-            <field->foreignId('created_by')->nullable()->constrained('users');
-            <field->text('change_reason')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users');
+            $table->text('change_reason')->nullable();
 
             $table->timestamps();
 

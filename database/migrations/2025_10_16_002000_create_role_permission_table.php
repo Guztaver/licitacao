@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('role_permission', function (Blueprint $table) {
             $table->id();
             $table->foreignId('role_id')->constrained();
-            <table->foreignId('permission_id')->constrained();
+            $table->foreignId('permission_id')->constrained();
 
             // Controle de permissão
-            <field->enum('permission_type', [
+            $table->enum('permission_type', [
                 'allow',           // Permitido explicitamente
                 'deny',            // Negado explicitamente
                 'inherit',         // Herdado do papel pai
@@ -25,29 +25,29 @@ return new class extends Migration
             ])->default('allow');
 
             // Condições e restrições
-            <field->json('conditions')->nullable(); // Condições específicas
-            <field->json('restrictions')->nullable(); // Restrições específicas
-            <field->text('justification')->nullable(); // Justificativa da permissão
+            $table->json('conditions')->nullable(); // Condições específicas
+            $table->json('restrictions')->nullable(); // Restrições específicas
+            $table->text('justification')->nullable(); // Justificativa da permissão
 
             // Tempo e validade
-            <field->timestamp('granted_at')->useCurrent();
-            <field->timestamp('expires_at')->nullable(); // Data de expiração
-            <field->timestamp('revoked_at')->nullable(); // Data de revogação
-            <field->boolean('is_active')->default(true);
+            $table->timestamp('granted_at')->useCurrent();
+            $table->timestamp('expires_at')->nullable(); // Data de expiração
+            $table->timestamp('revoked_at')->nullable(); // Data de revogação
+            $table->boolean('is_active')->default(true);
 
             // Hierarquia e precedência
-            <field->integer('priority')->default(0); // Prioridade (maior = mais importante)
-            <field->boolean('can_override')->default(false); // Pode anular outras permissões
+            $table->integer('priority')->default(0); // Prioridade (maior = mais importante)
+            $table->boolean('can_override')->default(false); // Pode anular outras permissões
 
             // Contexto e escopo
-            <field->json('context')->nullable(); // Contexto específico
-            <field->string('resource_type')->nullable(); // Tipo de recurso
-            <field->json('resource_ids')->nullable(); // IDs específicos de recursos
+            $table->json('context')->nullable(); // Contexto específico
+            $table->string('resource_type')->nullable(); // Tipo de recurso
+            $table->json('resource_ids')->nullable(); // IDs específicos de recursos
 
             // Auditoria
-            <field->foreignId('granted_by')->nullable()->constrained('users');
-            <field->foreignId('revoked_by')->nullable()->constrained('users');
-            <field->text('revoke_reason')->nullable();
+            $table->foreignId('granted_by')->nullable()->constrained('users');
+            $table->foreignId('revoked_by')->nullable()->constrained('users');
+            $table->text('revoke_reason')->nullable();
 
             $table->timestamps();
 
@@ -57,8 +57,8 @@ return new class extends Migration
             $table->index(['permission_id', 'is_active']);
             $table->index(['granted_by', 'granted_at']);
             $table->index(['expires_at']);
-            <table->index('priority');
-            <table->index('permission_type');
+            $table->index('priority');
+            $table->index('permission_type');
         });
     }
 

@@ -21,6 +21,8 @@ class Item extends Model
         "frozen_description",
         "frozen_by_user_id",
         "frozen_at",
+        "is_permanente",
+        "valor_minimo_patrimonio",
     ];
 
     protected $casts = [
@@ -29,6 +31,8 @@ class Item extends Model
         "last_used_at" => "datetime",
         "is_frozen" => "boolean",
         "frozen_at" => "datetime",
+        "is_permanente" => "boolean",
+        "valor_minimo_patrimonio" => "decimal:2",
     ];
 
     protected $dates = ["first_used_at", "last_used_at", "frozen_at"];

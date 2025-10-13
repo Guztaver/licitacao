@@ -28,6 +28,7 @@ interface ContratosCreateProps {
     fornecedores: Fornecedor[];
     processos: ProcessoLicitatorio[];
     items: Item[];
+    users: Array<{ id: number; name: string }>;
 }
 
 // Constants
@@ -74,6 +75,9 @@ const MESSAGES = {
     status: 'Status',
     active: 'Ativo',
     inactive: 'Inativo',
+    fiscal: 'Fiscal do Contrato',
+    fiscalDesignation: 'Data de Designação',
+    fiscalNotes: 'Observações do Fiscal',
 };
 
 // Utility Functions
@@ -215,7 +219,7 @@ function ContratoItemForm({ item, availableItems, onChange, onRemove }: Contrato
 }
 
 // Main Component
-export default function ContratosCreate({ fornecedores, processos, items }: ContratosCreateProps) {
+export default function ContratosCreate({ fornecedores, processos, items, users }: ContratosCreateProps) {
     const [contratoItems, setContratoItems] = useState<ContratoItemForm[]>([]);
 
     const { data, setData, post, processing, errors } = useForm({
@@ -229,6 +233,9 @@ export default function ContratosCreate({ fornecedores, processos, items }: Cont
         limite_valor_mensal: '',
         descricao: '',
         status: 'ativo',
+        fiscal_id: '',
+        data_designacao_fiscal: '',
+        observacoes_fiscal: '',
         items: [] as ContratoItemForm[],
     });
 
@@ -396,6 +403,46 @@ export default function ContratosCreate({ fornecedores, processos, items }: Cont
                                             <SelectItem value="inativo">{MESSAGES.inactive}</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="fiscal_id">{MESSAGES.fiscal}</Label>
+                                    <Select value={data.fiscal_id} onValueChange={(value) => setData('fiscal_id', value)}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Selecione um fiscal (opcional)" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {users.map((user) => (
+                                                <SelectItem key={user.id} value={user.id.toString()}>
+                                                    {user.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.fiscal_id && <p className="text-sm text-red-600">{errors.fiscal_id}</p>}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="data_designacao_fiscal">{MESSAGES.fiscalDesignation}</Label>
+                                    <Input
+                                        id="data_designacao_fiscal"
+                                        type="date"
+                                        value={data.data_designacao_fiscal}
+                                        onChange={(e) => setData('data_designacao_fiscal', e.target.value)}
+                                    />
+                                    {errors.data_designacao_fiscal && <p className="text-sm text-red-600">{errors.data_designacao_fiscal}</p>}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="observacoes_fiscal">{MESSAGES.fiscalNotes}</Label>
+                                    <Textarea
+                                        id="observacoes_fiscal"
+                                        value={data.observacoes_fiscal}
+                                        onChange={(e) => setData('observacoes_fiscal', e.target.value)}
+                                        placeholder="Observações do fiscal do contrato..."
+                                        rows={3}
+                                    />
+                                    {errors.observacoes_fiscal && <p className="text-sm text-red-600">{errors.observacoes_fiscal}</p>}
                                 </div>
                             </CardContent>
                         </Card>

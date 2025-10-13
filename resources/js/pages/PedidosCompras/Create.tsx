@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Calculator, Plus, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, Calculator, Plus, Save, Trash2, Search } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import PriceResearchModal from '@/components/ui/price-research-modal';
 import AppLayout from '@/layouts/app-layout';
 import { pedidosCompras } from '@/routes';
 import type { BreadcrumbItem, Secretaria, Fornecedor, Contrato, Item } from '@/types';
@@ -18,7 +19,7 @@ interface PedidoItemForm {
     id?: string;
     item_id: string;
     descricao_material: string;
-    quantidade_solicitada: string;
+    quantidade: string;
     unidade_medida: string;
     valor_unitario_estimado: string;
     especificacoes: string;
@@ -123,6 +124,7 @@ interface PedidoItemFormProps {
 }
 
 function PedidoItemForm({ item, availableItems, onChange, onRemove }: PedidoItemFormProps) {
+    const [showPriceModal, setShowPriceModal] = useState(false);
     const selectedItem = availableItems.find((i) => i.id.toString() === item.item_id);
     const totalValue = calculateItemTotal(item.quantidade, item.valor_unitario_estimado);
 
@@ -136,118 +138,161 @@ function PedidoItemForm({ item, availableItems, onChange, onRemove }: PedidoItem
         }
     };
 
+    // Handle proposal selection from price research
+    const handleSelectProposal = (proposal: any) => {
+        // Fill form with data from selected proposal
+        onChange('descricao_material', proposal.itemDescription);
+        onChange('valor_unitario_estimado', proposal.unitPrice.toString());
+        onChange('especificacoes', `Fornecedor: ${proposal.supplierName}`);
+
+        // Try to find a matching item from available items
+        const matchingItem = availableItems.find(availableItem =>
+            availableItem.descricao.toLowerCase().includes(proposal.itemDescription.toLowerCase().split(' ').slice(0, 2).join(' '))
+        );
+
+        if (matchingItem) {
+            onChange('item_id', matchingItem.id.toString());
+            onChange('unidade_medida', matchingItem.unidade_medida);
+        } else {
+            // Use data from proposal if no matching item found
+            onChange('unidade_medida', 'UN'); // Default unit
+        }
+    };
+
     return (
-        <Card>
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm">Item do Pedido</CardTitle>
-                    <Button type="button" variant="ghost" size="sm" onClick={onRemove} className="text-red-600 hover:text-red-700">
-                        <Trash2 className="h-4 w-4" />
-                    </Button>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                        <Label htmlFor={`item-${item.id}`}>{MESSAGES.itemDescription}</Label>
-                        <Select value={item.item_id} onValueChange={handleItemChange}>
-                            <SelectTrigger>
-                                <SelectValue placeholder={MESSAGES.selectItem} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {availableItems.map((availableItem) => (
-                                    <SelectItem key={availableItem.id} value={availableItem.id.toString()}>
-                                        {availableItem.codigo} - {availableItem.descricao}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+        <>
+            <Card>
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm">Item do Pedido</CardTitle>
+                        <Button type="button" variant="ghost" size="sm" onClick={onRemove} className="text-red-600 hover:text-red-700">
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
                     </div>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor={`item-${item.id}`}>{MESSAGES.itemDescription}</Label>
+                            <Select value={item.item_id} onValueChange={handleItemChange}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder={MESSAGES.selectItem} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {availableItems.map((availableItem) => (
+                                        <SelectItem key={availableItem.id} value={availableItem.id.toString()}>
+                                            {availableItem.codigo} - {availableItem.descricao}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor={`quantidade-${item.id}`}>{MESSAGES.quantity}</Label>
-                        <Input
-                            id={`quantidade-${item.id}`}
-                            type="number"
-                            step="0.001"
-                            min="0"
-                            value={item.quantidade}
-                            onChange={(e) => onChange('quantidade', e.target.value)}
-                            placeholder="0"
-                        />
-                    </div>
+                        <div className="space-y-2">
+                            <Label htmlFor={`quantidade-${item.id}`}>{MESSAGES.quantity}</Label>
+                            <Input
+                                id={`quantidade-${item.id}`}
+                                type="number"
+                                step="0.001"
+                                min="0"
+                                value={item.quantidade}
+                                onChange={(e) => onChange('quantidade', e.target.value)}
+                                placeholder="0"
+                            />
+                        </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor={`valor-${item.id}`}>{MESSAGES.unitValue}</Label>
-                        <Input
-                            id={`valor-${item.id}`}
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={item.valor_unitario_estimado}
-                            onChange={(e) => onChange('valor_unitario_estimado', e.target.value)}
-                            placeholder="0,00"
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor={`unidade-medida-${item.id}`}>{MESSAGES.unitMeasure}</Label>
-                        <Input
-                            id={`unidade-medida-${item.id}`}
-                            value={item.unidade_medida}
-                            onChange={(e) => onChange('unidade_medida', e.target.value)}
-                            placeholder="Unidade de medida"
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor={`especificacoes-${item.id}`}>{MESSAGES.specifications}</Label>
-                        <Input
-                            id={`especificacoes-${item.id}`}
-                            value={item.especificacoes}
-                            onChange={(e) => onChange('especificacoes', e.target.value)}
-                            placeholder="Especificações técnicas"
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor={`observacoes-item-${item.id}`}>{MESSAGES.itemObservations}</Label>
-                        <Input
-                            id={`observacoes-item-${item.id}`}
-                            value={item.observacoes}
-                            onChange={(e) => onChange('observacoes', e.target.value)}
-                            placeholder="Observações do item"
-                        />
-                    </div>
-
-                    <div className="md:col-span-2 lg:col-span-3">
-                        <Label htmlFor={`descricao-material-${item.id}`}>{MESSAGES.itemDescription}</Label>
-                        <Textarea
-                            id={`descricao-material-${item.id}`}
-                            value={item.descricao_material}
-                            onChange={(e) => onChange('descricao_material', e.target.value)}
-                            placeholder="Descrição detalhada do material"
-                            rows={2}
-                        />
-                    </div>
-
-                    {selectedItem && (
-                        <div className="md:col-span-2 lg:col-span-3">
-                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-                                <div className="flex items-center space-x-4">
-                                    <Badge variant="outline">{selectedItem.codigo}</Badge>
-                                    <span className="text-sm text-gray-600">{selectedItem.descricao}</span>
-                                    <span className="text-sm text-gray-500">Un: {selectedItem.unidade_medida}</span>
-                                </div>
-                                <div className="text-sm font-medium">
-                                    {MESSAGES.totalValue}: {formatCurrency(totalValue)}
-                                </div>
+                        <div className="space-y-2">
+                            <Label htmlFor={`valor-${item.id}`}>{MESSAGES.unitValue}</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    id={`valor-${item.id}`}
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={item.valor_unitario_estimado}
+                                    onChange={(e) => onChange('valor_unitario_estimado', e.target.value)}
+                                    placeholder="0,00"
+                                    className="flex-1"
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setShowPriceModal(true)}
+                                    className="whitespace-nowrap"
+                                    title="Pesquisar preços no PNCP"
+                                >
+                                    <Search className="h-4 w-4" />
+                                </Button>
                             </div>
                         </div>
-                    )}
-                </div>
-            </CardContent>
-        </Card>
+
+                        <div className="space-y-2">
+                            <Label htmlFor={`unidade-medida-${item.id}`}>{MESSAGES.unitMeasure}</Label>
+                            <Input
+                                id={`unidade-medida-${item.id}`}
+                                value={item.unidade_medida}
+                                onChange={(e) => onChange('unidade_medida', e.target.value)}
+                                placeholder="Unidade de medida"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor={`especificacoes-${item.id}`}>{MESSAGES.specifications}</Label>
+                            <Input
+                                id={`especificacoes-${item.id}`}
+                                value={item.especificacoes}
+                                onChange={(e) => onChange('especificacoes', e.target.value)}
+                                placeholder="Especificações técnicas"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor={`observacoes-item-${item.id}`}>{MESSAGES.itemObservations}</Label>
+                            <Input
+                                id={`observacoes-item-${item.id}`}
+                                value={item.observacoes}
+                                onChange={(e) => onChange('observacoes', e.target.value)}
+                                placeholder="Observações do item"
+                            />
+                        </div>
+
+                        <div className="md:col-span-2 lg:col-span-3">
+                            <Label htmlFor={`descricao-material-${item.id}`}>{MESSAGES.itemDescription}</Label>
+                            <Textarea
+                                id={`descricao-material-${item.id}`}
+                                value={item.descricao_material}
+                                onChange={(e) => onChange('descricao_material', e.target.value)}
+                                placeholder="Descrição detalhada do material"
+                                rows={2}
+                            />
+                        </div>
+
+                        {selectedItem && (
+                            <div className="md:col-span-2 lg:col-span-3">
+                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                                    <div className="flex items-center space-x-4">
+                                        <Badge variant="outline">{selectedItem.codigo}</Badge>
+                                        <span className="text-sm text-gray-600">{selectedItem.descricao}</span>
+                                        <span className="text-sm text-gray-500">Un: {selectedItem.unidade_medida}</span>
+                                    </div>
+                                    <div className="text-sm font-medium">
+                                        {MESSAGES.totalValue}: {formatCurrency(totalValue)}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Price Research Modal */}
+            <PriceResearchModal
+                open={showPriceModal}
+                onOpenChange={setShowPriceModal}
+                onSelectProposal={handleSelectProposal}
+            />
+        </>
     );
 }
 
@@ -275,7 +320,7 @@ export default function PedidosComprasCreate({ secretarias, fornecedores, contra
             id: Date.now().toString(),
             item_id: '',
             descricao_material: '',
-            quantidade_solicitada: '',
+            quantidade: '',
             unidade_medida: '',
             valor_unitario_estimado: '',
             especificacoes: '',
@@ -299,14 +344,13 @@ export default function PedidosComprasCreate({ secretarias, fornecedores, contra
 
         // Filter out empty items
         const validItems = pedidoItems.filter(
-            (item) => item.item_id && item.quantidade_solicitada && item.valor_unitario_estimado && item.descricao_material
+            (item) => item.item_id && item.quantidade && item.valor_unitario_estimado && item.descricao_material
         );
 
         post(pedidosCompras.store(), {
-            data: {
-                ...data,
-                items: validItems,
-            },
+            ...data,
+            items: validItems,
+        }, {
             onSuccess: () => {
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
@@ -316,7 +360,7 @@ export default function PedidosComprasCreate({ secretarias, fornecedores, contra
 
     const contractTotal = calculateContractTotal(pedidoItems);
     const hasValidItems = pedidoItems.some(
-        (item) => item.item_id && item.quantidade_solicitada && item.valor_unitario_estimado && item.descricao_material
+        (item) => item.item_id && item.quantidade && item.valor_unitario_estimado && item.descricao_material
     );
 
     // Filter fornecedores based on selected contract

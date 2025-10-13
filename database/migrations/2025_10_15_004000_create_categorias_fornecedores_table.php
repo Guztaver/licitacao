@@ -14,19 +14,19 @@ return new class extends Migration
         Schema::create('categorias_fornecedores', function (Blueprint $table) {
             $table->id();
             $table->string('nome');
-            <field>text('descricao')->nullable();
-            <field>string('codigo')->unique(); // Código da categoria
-            <field>foreignId('categoria_pai_id')->nullable()->constrained('categorias_fornecedores');
+            $table->text('descricao')->nullable();
+            $table->string('codigo')->unique(); // Código da categoria
+            $table->foreignId('categoria_pai_id')->nullable()->constrained('categorias_fornecedores');
 
             // Classification and requirements
-            <field>enum('tipo_categoria', [
+            $table->enum('tipo_categoria', [
                 'material',         // Fornecedores de materiais
                 'servico',          // Fornecedores de serviços
                 'misto',            // Ambos
                 'especializado'     // Especializado em nicho específico
             ])->default('material');
 
-            <field>enum('segmento_mercado', [
+            $table->enum('segmento_mercado', [
                 'construcao_civil', // Construção civil
                 'tecnologia',       // TI e tecnologia
                 'saude',           // Saúde
@@ -40,49 +40,49 @@ return new class extends Migration
             ])->nullable();
 
             // Requirements for this category
-            <field>json('requisitos_obrigatorios')->nullable(); // Requisitos obrigatórios
-            <field>json('requisitos_desejaveis')->nullable(); // Requisitos desejáveis
-            <field>json('certificacoes_exigidas')->nullable(); // Certificações exigidas
-            <field>decimal('faturamento_minimo', 15, 2)->nullable(); // Faturamento mínimo anual
-            <field>integer('anos_experiencia_minimos')->nullable(); // Experiência mínima
-            <field>integer('capacidade_maxima_projetos')->nullable(); // Capacidade máxima
+            $table->json('requisitos_obrigatorios')->nullable(); // Requisitos obrigatórios
+            $table->json('requisitos_desejaveis')->nullable(); // Requisitos desejáveis
+            $table->json('certificacoes_exigidas')->nullable(); // Certificações exigidas
+            $table->decimal('faturamento_minimo', 15, 2)->nullable(); // Faturamento mínimo anual
+            $table->integer('anos_experiencia_minimos')->nullable(); // Experiência mínima
+            $table->integer('capacidade_maxima_projetos')->nullable(); // Capacidade máxima
 
             // Risk and performance expectations
-            <field>enum('nivel_risco_padrao', [
+            $table->enum('nivel_risco_padrao', [
                 'baixo',
                 'medio',
                 'alto',
                 'critico'
             ])->default('medio');
 
-            <field>decimal('classificacao_minima', 5, 2)->default(70); // Nota mínima aceitável
-            <field>decimal('prazo_maximo_entrega', 5, 2)->nullable(); // Prazo máximo em dias
-            <field>decimal('percentual_maximo_atraso', 5, 2)->default(10); // Percentual máximo de atraso
+            $table->decimal('classificacao_minima', 5, 2)->default(70); // Nota mínima aceitável
+            $table->decimal('prazo_maximo_entrega', 5, 2)->nullable(); // Prazo máximo em dias
+            $table->decimal('percentual_maximo_atraso', 5, 2)->default(10); // Percentual máximo de atraso
 
             // Financial requirements
-            <field>enum('exigencia_seguro', [
+            $table->enum('exigencia_seguro', [
                 'nao_exigido',
                 'basico',
                 'completo',
                 'especifico'
             ])->default('basico');
 
-            <field>decimal('valor_seguro_minimo', 15, 2)->nullable();
-            <field>json('coberturas_seguro_exigidas')->nullable();
+            $table->decimal('valor_seguro_minimo', 15, 2)->nullable();
+            $table->json('coberturas_seguro_exigidas')->nullable();
 
             // Quality and compliance
-            <field>boolean('exige_certificacao_qualidade')->default(false);
-            <field>string('certificacao_qualidade_exigida')->nullable(); // ISO específica
-            <field>boolean('exige_auditoria_periodica')->default(false);
-            <field>integer('frequencia_auditoria_meses')->nullable();
+            $table->boolean('exige_certificacao_qualidade')->default(false);
+            $table->string('certificacao_qualidade_exigida')->nullable(); // ISO específica
+            $table->boolean('exige_auditoria_periodica')->default(false);
+            $table->integer('frequencia_auditoria_meses')->nullable();
 
             // Service level requirements
-            <field>decimal('disponibilidade_minima', 5, 2)->nullable(); // Percentual
-            <field>decimal('tempo_resposta_maximo', 5, 2)->nullable(); // Horas
-            <field>decimal('tempo_solucao_maximo', 5, 2)->nullable(); // Horas
+            $table->decimal('disponibilidade_minima', 5, 2)->nullable(); // Percentual
+            $table->decimal('tempo_resposta_maximo', 5, 2)->nullable(); // Horas
+            $table->decimal('tempo_solucao_maximo', 5, 2)->nullable(); // Horas
 
             // Monitoring and evaluation
-            <field>enum('frequencia_avaliacao', [
+            $table->enum('frequencia_avaliacao', [
                 'mensal',
                 'trimestral',
                 'semestral',
@@ -90,11 +90,11 @@ return new class extends Migration
                 'sob_demanda'
             ])->default('trimestral');
 
-            <field>json('criterios_avaliacao')->nullable(); // Critérios específicos da categoria
-            <field>json('indicadores_desempenho')->nullable(); // KPIs específicos
+            $table->json('criterios_avaliacao')->nullable(); // Critérios específicos da categoria
+            $table->json('indicadores_desempenho')->nullable(); // KPIs específicos
 
             // Commercial terms
-            <field>enum('forma_pagamento_padrao', [
+            $table->enum('forma_pagamento_padrao', [
                 'vista',
                 '30_dias',
                 '60_dias',
@@ -102,25 +102,25 @@ return new class extends Migration
                 'personalizado'
             ])->default('30_dias');
 
-            <field>decimal('multa_atraso_padrao', 5, 2)->default(2); // Percentual ao dia
-            <field>decimal('garantia_minima_meses')->default(12);
+            $table->decimal('multa_atraso_padrao', 5, 2)->default(2); // Percentual ao dia
+            $table->decimal('garantia_minima_meses')->default(12);
 
             // Status and management
-            <field>boolean('ativa')->default(true);
-            <field>date('data_inativacao')->nullable();
-            <field>text('motivo_inativacao')->nullable();
+            $table->boolean('ativa')->default(true);
+            $table->date('data_inativacao')->nullable();
+            $table->text('motivo_inativacao')->nullable();
 
             // Audit fields
-            <field>foreignId('usuario_criacao_id')->constrained('users');
-            <field>foreignId('usuario_atualizacao_id')->nullable()->constrained('users');
+            $table->foreignId('usuario_criacao_id')->constrained('users');
+            $table->foreignId('usuario_atualizacao_id')->nullable()->constrained('users');
 
             $table->timestamps();
 
             // Indexes
             $table->index(['tipo_categoria', 'segmento_mercado']);
             $table->index('ativa');
-            <table->index('nivel_risco_padrao');
-            <table->index(['exige_certificacao_qualidade', 'certificacao_qualidade_exigida']);
+            $table->index('nivel_risco_padrao');
+            $table->index(['exige_certificacao_qualidade', 'certificacao_qualidade_exigida']);
         });
     }
 

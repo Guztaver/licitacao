@@ -31,8 +31,8 @@ return new class extends Migration
             // Validity period
             $table->date('data_emissao');
             $table->date('data_validade');
-            <field>date('data_ultima_auditoria')->nullable();
-            <field>date('data_proxima_auditoria')->nullable();
+            $table->date('data_ultima_auditoria')->nullable();
+            $table->date('data_proxima_auditoria')->nullable();
 
             // Scope and coverage
             $table->text('escopo')->nullable(); // Escopo da certificação
@@ -40,7 +40,7 @@ return new class extends Migration
             $table->text('localidades_cobertas')->nullable(); // Unidades/endereços cobertos
 
             // Status
-            <field>enum('status_certificacao', [
+            $table->enum('status_certificacao', [
                 'ativa',            // Certificação válida
                 'suspensa',         // Suspensa temporariamente
                 'cancelada',        // Cancelada
@@ -50,27 +50,27 @@ return new class extends Migration
             ])->default('ativa');
 
             // Audit information
-            <field>enum('resultado_auditoria', [
+            $table->enum('resultado_auditoria', [
                 'aprovado',         // Aprovado sem não conformidades
                 'aprovado_nc',      // Aprovado com não conformidades menores
                 'reprovado',        // Reprovado
                 'em_andamento'      // Auditoria em andamento
             ])->nullable();
 
-            <field>integer('nao_conformidades_encontradas')->default(0);
-            <field>integer('nao_conformidades_menores')->default(0);
-            <field>integer('nao_conformidades_maiores')->default(0);
-            <field>integer('nao_conformidades_criticas')->default(0);
+            $table->integer('nao_conformidades_encontradas')->default(0);
+            $table->integer('nao_conformidades_menores')->default(0);
+            $table->integer('nao_conformidades_maiores')->default(0);
+            $table->integer('nao_conformidades_criticas')->default(0);
 
             // Documents and evidence
-            <field>string('caminho_certificado')->nullable(); // Path do arquivo PDF
-            <field>string('caminho_relatorio_auditoria')->nullable();
-            <field>json('documentos_comprobatorios')->nullable(); // Array de paths de documentos
+            $table->string('caminho_certificado')->nullable(); // Path do arquivo PDF
+            $table->string('caminho_relatorio_auditoria')->nullable();
+            $table->json('documentos_comprobatorios')->nullable(); // Array de paths de documentos
 
             // Monitoring and follow-up
-            <field>boolean('requer_acao_corretiva')->default(false);
-            <field>date('data_limite_acoes')->nullable();
-            <field>enum('status_acoes_corretivas', [
+            $table->boolean('requer_acao_corretiva')->default(false);
+            $table->date('data_limite_acoes')->nullable();
+            $table->enum('status_acoes_corretivas', [
                 'nao_aplicavel',
                 'pendente',
                 'em_andamento',
@@ -79,7 +79,7 @@ return new class extends Migration
             ])->default('nao_aplicavel');
 
             // Risk assessment
-            <field>enum('nivel_risco_certificacao', [
+            $table->enum('nivel_risco_certificacao', [
                 'baixo',           // Sem não conformidades ou apenas menores
                 'medio',           // Algumas não conformidades menores
                 'alto',            // Não conformidades maiores
@@ -87,18 +87,18 @@ return new class extends Migration
             ])->nullable();
 
             // Additional information
-            <field>text('observacoes')->nullable();
-            <field>foreignId('usuario_cadastro_id')->constrained('users');
-            <field>foreignId('responsavel_acompanhamento_id')->nullable()->constrained('users');
+            $table->text('observacoes')->nullable();
+            $table->foreignId('usuario_cadastro_id')->constrained('users');
+            $table->foreignId('responsavel_acompanhamento_id')->nullable()->constrained('users');
 
             $table->timestamps();
 
             // Indexes
             $table->index(['fornecedor_id', 'status_certificacao']);
-            <table->index(['fornecedor_id', 'data_validade']);
+            $table->index(['fornecedor_id', 'data_validade']);
             $table->index('tipo_certificacao');
             $table->index('status_certificacao');
-            <table->index('data_validade');
+            $table->index('data_validade');
             $table->index('data_proxima_auditoria');
             $table->index(['requer_acao_corretiva', 'status_acoes_corretivas']);
 

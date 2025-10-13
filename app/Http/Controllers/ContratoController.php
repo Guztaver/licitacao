@@ -112,10 +112,16 @@ class ContratoController extends Controller
             ->orderBy("descricao")
             ->get(["id", "codigo", "descricao", "unidade_medida"]);
 
+        $users = \App\Models\User::query()
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
         return Inertia::render("Contratos/Create", [
             "fornecedores" => $fornecedores,
             "processos" => $processos,
             "items" => $items,
+            "users" => $users,
         ]);
     }
 
@@ -137,6 +143,9 @@ class ContratoController extends Controller
             "limite_valor_mensal" => "nullable|numeric|min:0",
             "descricao" => "nullable|string|max:1000",
             "status" => "required|in:ativo,inativo",
+            "fiscal_id" => "nullable|exists:users,id",
+            "data_designacao_fiscal" => "nullable|date",
+            "observacoes_fiscal" => "nullable|string|max:1000",
             "items" => "nullable|array",
             "items.*.item_id" => "required|exists:items,id",
             "items.*.quantidade" => "required|integer|min:1",
@@ -200,6 +209,7 @@ class ContratoController extends Controller
         $contrato->load([
             "fornecedor",
             "usuarioCriacao",
+            "fiscal",
             "processoLicitatorio",
             "items.item",
         ]);
@@ -292,6 +302,14 @@ class ContratoController extends Controller
                 "status_display" => $contrato->status_display,
                 "status_color" => $contrato->status_color,
                 "descricao" => $contrato->descricao,
+                "fiscal" => $contrato->fiscal
+                    ? [
+                        "id" => $contrato->fiscal->id,
+                        "name" => $contrato->fiscal->name,
+                    ]
+                    : null,
+                "data_designacao_fiscal" => $contrato->data_designacao_fiscal?->format("d/m/Y"),
+                "observacoes_fiscal" => $contrato->observacoes_fiscal,
                 "created_at" => $contrato->created_at->format("d/m/Y H:i"),
                 "items" => $contrato->items->map(function ($item) {
                     return [
@@ -381,6 +399,11 @@ class ContratoController extends Controller
             ->orderBy("descricao")
             ->get(["id", "codigo", "descricao", "unidade_medida"]);
 
+        $users = \App\Models\User::query()
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
         return Inertia::render("Contratos/Edit", [
             "contrato" => [
                 "id" => $contrato->id,
@@ -394,6 +417,9 @@ class ContratoController extends Controller
                 "limite_valor_mensal" => $contrato->limite_valor_mensal,
                 "descricao" => $contrato->descricao,
                 "status" => $contrato->status,
+                "fiscal_id" => $contrato->fiscal_id,
+                "data_designacao_fiscal" => $contrato->data_designacao_fiscal?->format("Y-m-d"),
+                "observacoes_fiscal" => $contrato->observacoes_fiscal,
                 "items" => $contrato->items->map(function ($item) {
                     return [
                         "id" => $item->id,
@@ -409,6 +435,7 @@ class ContratoController extends Controller
             "fornecedores" => $fornecedores,
             "processos" => $processos,
             "items" => $items,
+            "users" => $users,
         ]);
     }
 
@@ -439,6 +466,9 @@ class ContratoController extends Controller
             "limite_valor_mensal" => "nullable|numeric|min:0",
             "descricao" => "nullable|string|max:1000",
             "status" => "required|in:ativo,inativo,expirado",
+            "fiscal_id" => "nullable|exists:users,id",
+            "data_designacao_fiscal" => "nullable|date",
+            "observacoes_fiscal" => "nullable|string|max:1000",
             "items" => "nullable|array",
             "items.*.id" => "nullable|exists:contrato_items,id",
             "items.*.item_id" => "required|exists:items,id",

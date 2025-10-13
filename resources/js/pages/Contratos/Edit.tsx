@@ -37,11 +37,15 @@ interface ContratoEditProps {
         limite_valor_mensal: number | null;
         descricao: string;
         status: string;
+        fiscal_id: number | null;
+        data_designacao_fiscal: string | null;
+        observacoes_fiscal: string | null;
         items: ContratoItemForm[];
     };
     fornecedores: Fornecedor[];
     processos: ProcessoLicitatorio[];
     items: Item[];
+    users: Array<{ id: number; name: string }>;
 }
 
 // Constants
@@ -71,6 +75,9 @@ const MESSAGES = {
     startDate: 'Data de Início',
     endDate: 'Data de Término',
     description: 'Descrição',
+    fiscal: 'Fiscal do Contrato',
+    fiscalDesignation: 'Data de Designação',
+    fiscalNotes: 'Observações do Fiscal',
     items: 'Itens do Contrato',
     itemCode: 'Código',
     itemDescription: 'Descrição',
@@ -230,7 +237,7 @@ function ContratoItemForm({ item, availableItems, onChange, onRemove }: Contrato
 }
 
 // Main Component
-export default function ContratosEdit({ contrato, fornecedores, processos, items }: ContratoEditProps) {
+export default function ContratosEdit({ contrato, fornecedores, processos, items, users }: ContratoEditProps) {
     const [contratoItems, setContratoItems] = useState<ContratoItemForm[]>([]);
 
     const { data, setData, post, processing, errors } = useForm({
@@ -244,6 +251,9 @@ export default function ContratosEdit({ contrato, fornecedores, processos, items
         limite_valor_mensal: contrato.limite_valor_mensal?.toString() || '',
         descricao: contrato.descricao,
         status: contrato.status,
+        fiscal_id: contrato.fiscal_id?.toString() || '',
+        data_designacao_fiscal: contrato.data_designacao_fiscal || '',
+        observacoes_fiscal: contrato.observacoes_fiscal || '',
         items: [] as ContratoItemForm[],
     });
 
@@ -424,6 +434,46 @@ export default function ContratosEdit({ contrato, fornecedores, processos, items
                                             <SelectItem value="expirado">{MESSAGES.expired}</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="fiscal_id">{MESSAGES.fiscal}</Label>
+                                    <Select value={data.fiscal_id} onValueChange={(value) => setData('fiscal_id', value)}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Selecione um fiscal (opcional)" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {users.map((user) => (
+                                                <SelectItem key={user.id} value={user.id.toString()}>
+                                                    {user.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.fiscal_id && <p className="text-sm text-red-600">{errors.fiscal_id}</p>}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="data_designacao_fiscal">{MESSAGES.fiscalDesignation}</Label>
+                                    <Input
+                                        id="data_designacao_fiscal"
+                                        type="date"
+                                        value={data.data_designacao_fiscal}
+                                        onChange={(e) => setData('data_designacao_fiscal', e.target.value)}
+                                    />
+                                    {errors.data_designacao_fiscal && <p className="text-sm text-red-600">{errors.data_designacao_fiscal}</p>}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="observacoes_fiscal">{MESSAGES.fiscalNotes}</Label>
+                                    <Textarea
+                                        id="observacoes_fiscal"
+                                        value={data.observacoes_fiscal}
+                                        onChange={(e) => setData('observacoes_fiscal', e.target.value)}
+                                        placeholder="Observações do fiscal do contrato..."
+                                        rows={3}
+                                    />
+                                    {errors.observacoes_fiscal && <p className="text-sm text-red-600">{errors.observacoes_fiscal}</p>}
                                 </div>
                             </CardContent>
                         </Card>

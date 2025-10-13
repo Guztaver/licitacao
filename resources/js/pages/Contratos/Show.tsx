@@ -51,6 +51,12 @@ interface ContratoData {
     status_display: string;
     status_color: string;
     descricao: string;
+    fiscal: {
+        id: number;
+        name: string;
+    } | null;
+    data_designacao_fiscal: string | null;
+    observacoes_fiscal: string | null;
     created_at: string;
     items: ContratoItem[];
     total_itens: number;
@@ -121,6 +127,9 @@ const MESSAGES = {
     biddingProcess: 'Processo Licitatório',
     validity: 'Vigência',
     description: 'Descrição',
+    fiscal: 'Fiscal do Contrato',
+    fiscalDesignation: 'Data de Designação',
+    fiscalNotes: 'Observações do Fiscal',
     items: 'Itens do Contrato',
     usageStats: 'Estatísticas de Uso',
     requests: 'Requisições',
@@ -367,6 +376,25 @@ export default function ContratosShow({ contrato, stats, historico_limites }: Co
                                 <div>
                                     <p className="text-sm font-medium text-gray-500">{MESSAGES.description}</p>
                                     <p className="text-gray-700">{contrato.descricao}</p>
+                                </div>
+                            )}
+
+                            {contrato.fiscal && (
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">{MESSAGES.fiscal}</p>
+                                    <p className="font-medium">{contrato.fiscal.name}</p>
+                                    {contrato.data_designacao_fiscal && (
+                                        <p className="text-sm text-gray-600">
+                                            {MESSAGES.fiscalDesignation}: {contrato.data_designacao_fiscal}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+
+                            {contrato.observacoes_fiscal && (
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">{MESSAGES.fiscalNotes}</p>
+                                    <p className="text-gray-700">{contrato.observacoes_fiscal}</p>
                                 </div>
                             )}
 

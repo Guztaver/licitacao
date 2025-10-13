@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('level')->default(0); // Nível hierárquico (0 = nível mais alto)
 
             // Controle de acesso
-            <field>enum('type', [
+            $table->enum('type', [
                 'system',      // Papéis do sistema (Super Admin, etc.)
                 'organizational', // Papéis organizacionais (Gerente, etc.)
                 'functional',  // Papéis funcionais (Comprador, etc.)
@@ -32,26 +32,26 @@ return new class extends Migration
             ])->default('functional');
 
             // Status e validade
-            <field>enum('status', [
+            $table->enum('status', [
                 'active',      // Ativo e pode ser atribuído
                 'inactive',    // Inativo, não pode ser atribuído
                 'deprecated',  // Obsoleto, não deve ser usado
                 'locked'       // Bloqueado, não pode ser modificado
             ])->default('active');
 
-            <field>date('expires_at')->nullable(); // Data de expiração do papel
-            <field>boolean('is_system')->default(false); // Papel do sistema, não pode ser excluído
-            <field>boolean('is_default')->default(false); // Papel padrão para novos usuários
+            $table->date('expires_at')->nullable(); // Data de expiração do papel
+            $table->boolean('is_system')->default(false); // Papel do sistema, não pode ser excluído
+            $table->boolean('is_default')->default(false); // Papel padrão para novos usuários
 
             // Permissões e limites
-            <field>json('permissions')->nullable(); // Array de permissões diretas (legado)
-            <field>integer('max_users')->nullable(); // Limite máximo de usuários
-            <field>integer('current_users')->default(0); // Usuários atuais com este papel
+            $table->json('permissions')->nullable(); // Array de permissões diretas (legado)
+            $table->integer('max_users')->nullable(); // Limite máximo de usuários
+            $table->integer('current_users')->default(0); // Usuários atuais com este papel
 
             // Auditoria
-            <field>foreignId('created_by')->nullable()->constrained('users');
-            <field>foreignId('updated_by')->nullable()->constrained('users');
-            <field>text('change_reason')->nullable(); // Motivo da alteração
+            $table->foreignId('created_by')->nullable()->constrained('users');
+            $table->foreignId('updated_by')->nullable()->constrained('users');
+            $table->text('change_reason')->nullable(); // Motivo da alteração
 
             $table->timestamps();
 

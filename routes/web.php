@@ -22,6 +22,7 @@ use App\Http\Controllers\DestinatarioController;
 use App\Http\Controllers\PedidoCompraController;
 use App\Http\Controllers\RequisicaoController;
 use App\Http\Controllers\ConferenciaController;
+use App\Http\Controllers\PesquisaPrecoController;
 
 // Rota principal
 Route::get("/", function () {
@@ -280,6 +281,12 @@ Route::middleware(["auth", "verified"])
             LimiteDispensaAlertaController::class,
             "checkNewAlerts",
         ])->name("api.limite-alertas.check-new");
+
+        // PNCP Price Research
+        Route::get("/price-research/pncp", [
+            PesquisaPrecoController::class,
+            "pesquisarPncp",
+        ])->name("api.price-research.pncp");
     });
 
 // Autenticação
@@ -345,6 +352,15 @@ Route::middleware("auth")->group(function () {
     ])
         ->middleware("signed")
         ->name("verification.verify");
+});
+
+// Temporary test route for PNCP integration (remove in production)
+Route::get('/test/pncp/{term}', function ($term) {
+    $controller = new PesquisaPrecoController();
+    $request = new \Illuminate\Http\Request();
+    $request->merge(['term' => $term]);
+
+    return $controller->pesquisarPncp($request);
 });
 
 require __DIR__ . "/auth.php";

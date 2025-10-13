@@ -74,7 +74,7 @@ return new class extends Migration
             $table->decimal('indice_desempenho_geral', 5, 2)->default(0); // 0-100
             $table->decimal('indice_confianca', 5, 2)->default(0); // 0-100
             $table->decimal('rentabilidade_media', 5, 2)->nullable(); // percentual
-            <field>enum('nivel_desempenho', [
+            $table->enum('nivel_desempenho', [
                 'excelente',    // 90-100
                 'bom',         // 75-89
                 'regular',     // 60-74
@@ -83,9 +83,9 @@ return new class extends Migration
             ])->nullable();
 
             // Comparison with previous period
-            <field>decimal('variacao_desempenho', 5, 2)->nullable(); // percentual vs período anterior
-            <field>decimal('variacao_entregas', 5, 2)->nullable(); // percentual vs período anterior
-            <field>decimal('variacao_valor', 5, 2)->nullable(); // percentual vs período anterior
+            $table->decimal('variacao_desempenho', 5, 2)->nullable(); // percentual vs período anterior
+            $table->decimal('variacao_entregas', 5, 2)->nullable(); // percentual vs período anterior
+            $table->decimal('variacao_valor', 5, 2)->nullable(); // percentual vs período anterior
 
             $table->timestamps();
 

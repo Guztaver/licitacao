@@ -26,12 +26,16 @@ class Contrato extends Model
         "descricao",
         "status",
         "usuario_criacao_id",
+        "fiscal_id",
+        "data_designacao_fiscal",
+        "observacoes_fiscal",
         "valor_total",
     ];
 
     protected $casts = [
         "data_inicio" => "date",
         "data_fim" => "date",
+        "data_designacao_fiscal" => "date",
         "limite_requisicoes" => "integer",
         "limite_conferencias" => "integer",
         "limite_valor_mensal" => "decimal:2",
@@ -68,6 +72,16 @@ class Contrato extends Model
     public function usuarioCriacao(): BelongsTo
     {
         return $this->belongsTo(User::class, "usuario_criacao_id");
+    }
+
+    /**
+     * Get the fiscal of the contrato.
+     *
+     * @return BelongsTo<User, Contrato>
+     */
+    public function fiscal(): BelongsTo
+    {
+        return $this->belongsTo(User::class, "fiscal_id");
     }
 
     /**

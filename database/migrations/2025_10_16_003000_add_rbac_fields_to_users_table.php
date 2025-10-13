@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // Campos RBAC
-            <field->foreignId('default_role_id')->nullable()->constrained('roles');
-            <field->enum('auth_type', [
+            $table->foreignId('default_role_id')->nullable()->constrained('roles');
+            $table->enum('auth_type', [
                 'local',           // Autenticação local
                 'ldap',            // LDAP/Active Directory
                 'oauth',           // OAuth (Google, etc.)
@@ -24,7 +24,7 @@ return new class extends Migration
             ])->default('local');
 
             // Status e validade
-            <field->enum('status', [
+            $table->enum('status', [
                 'active',          // Ativo
                 'inactive',        // Inativo
                 'suspended',       // Suspenso
@@ -33,60 +33,60 @@ return new class extends Migration
                 'expired'          // Expirado
             ])->default('pending_approval');
 
-            <field->timestamp('last_login_at')->nullable();
-            <field->timestamp('password_changed_at')->nullable();
-            <field->timestamp('email_verified_at')->nullable();
-            <field->timestamp('suspended_at')->nullable();
-            <field->timestamp('locked_at')->nullable();
-            <field->timestamp('expires_at')->nullable();
+            $table->timestamp('last_login_at')->nullable();
+            $table->timestamp('password_changed_at')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('suspended_at')->nullable();
+            $table->timestamp('locked_at')->nullable();
+            $table->timestamp('expires_at')->nullable();
 
             // Segurança
-            <field->string('two_factor_secret')->nullable();
-            <field->boolean('two_factor_enabled')->default(false);
-            <field->json('two_factor_recovery_codes')->nullable();
-            <field->timestamp('two_factor_confirmed_at')->nullable();
+            $table->string('two_factor_secret')->nullable();
+            $table->boolean('two_factor_enabled')->default(false);
+            $table->json('two_factor_recovery_codes')->nullable();
+            $table->timestamp('two_factor_confirmed_at')->nullable();
 
-            <field->integer('failed_login_attempts')->default(0);
-            <field->timestamp('last_failed_login_at')->nullable();
-            <field->string('locked_until')->nullable();
-            <field->string('password_reset_token')->nullable();
-            <field->timestamp('password_reset_expires_at')->nullable();
+            $table->integer('failed_login_attempts')->default(0);
+            $table->timestamp('last_failed_login_at')->nullable();
+            $table->string('locked_until')->nullable();
+            $table->string('password_reset_token')->nullable();
+            $table->timestamp('password_reset_expires_at')->nullable();
 
             // Perfil e informações
-            <field->string('first_name')->nullable();
-            <field->string('last_name')->nullable();
-            <field->string('phone')->nullable();
-            <field->string('avatar')->nullable();
-            <field->string('department')->nullable();
-            <field->string('position')->nullable();
-            <field->json('metadata')->nullable(); // Metadados adicionais
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('avatar')->nullable();
+            $table->string('department')->nullable();
+            $table->string('position')->nullable();
+            $table->json('metadata')->nullable(); // Metadados adicionais
 
             // Preferências
-            <field->string('timezone')->default('America/Sao_Paulo');
-            <field->string('language')->default('pt-BR');
-            <field->json('preferences')->nullable(); // Preferências do usuário
-            <field->boolean('email_notifications')->default(true);
-            <field->boolean('push_notifications')->default(false);
+            $table->string('timezone')->default('America/Sao_Paulo');
+            $table->string('language')->default('pt-BR');
+            $table->json('preferences')->nullable(); // Preferências do usuário
+            $table->boolean('email_notifications')->default(true);
+            $table->boolean('push_notifications')->default(false);
 
             // Auditoria
-            <field->foreignId('created_by')->nullable()->constrained('users');
-            <field->foreignId('approved_by')->nullable()->constrained('users');
-            <field->timestamp('approved_at')->nullable();
-            <field->text('approval_notes')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users');
+            $table->foreignId('approved_by')->nullable()->constrained('users');
+            $table->timestamp('approved_at')->nullable();
+            $table->text('approval_notes')->nullable();
 
             // Sistema
-            <field->boolean('is_system')->default(false);
-            <field->boolean('must_change_password')->default(false);
-            <field->timestamp('last_activity_at')->nullable();
-            <field->string('remember_token')->nullable();
+            $table->boolean('is_system')->default(false);
+            $table->boolean('must_change_password')->default(false);
+            $table->timestamp('last_activity_at')->nullable();
+            $table->string('remember_token')->nullable();
 
             // Indexes
-            <table->index(['status', 'expires_at']);
-            <table->index('email');
-            <table->index('last_login_at');
-            <table->index(['failed_login_attempts', 'locked_until']);
-            <table->index('default_role_id');
-            <table->index(['department', 'position']);
+            $table->index(['status', 'expires_at']);
+            $table->index('email');
+            $table->index('last_login_at');
+            $table->index(['failed_login_attempts', 'locked_until']);
+            $table->index('default_role_id');
+            $table->index(['department', 'position']);
             $table->index('created_by');
         });
     }

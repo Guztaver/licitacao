@@ -26,10 +26,10 @@ return new class extends Migration
             $table->decimal('demanda_prevista', 15, 3);
             $table->decimal('demanda_minima', 15, 3)->nullable();
             $table->decimal('demanda_maxima', 15, 3)->nullable();
-            <field>decimal('precisao_percentual', 5, 2)->nullable(); // Precisão da previsão
+            $table->decimal('precisao_percentual', 5, 2)->nullable(); // Precisão da previsão
             $table->integer('periodo_analise')->default(12); // Meses usados para análise
-            <field>decimal('fator_saudezonal', 5, 3)->nullable(); // Fator de sazonalidade
-            <field>enum('status', [
+            $table->decimal('fator_sazonal', 5, 3)->nullable(); // Fator de sazonalidade
+            $table->enum('status', [
                 'em_calculo',      // Em cálculo
                 'ativa',           // Ativa para uso
                 'arquivada',       // Arquivada

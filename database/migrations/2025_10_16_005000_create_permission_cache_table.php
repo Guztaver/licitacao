@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('permission_cache', function (Blueprint $table) {
             $table->id();
-            <table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained();
 
             // Dados cacheados
-            <field->json('permissions')->nullable(); // Array de permissões do usuário
-            <field->json('roles')->nullable(); // Array de papéis do usuário
-            <field->json('role_hierarchy')->nullable(); // Hierarquia de papéis
-            <field->json('inherited_permissions')->nullable(); // Permissões herdadas
+            $table->json('permissions')->nullable(); // Array de permissões do usuário
+            $table->json('roles')->nullable(); // Array de papéis do usuário
+            $table->json('role_hierarchy')->nullable(); // Hierarquia de papéis
+            $table->json('inherited_permissions')->nullable(); // Permissões herdadas
 
             // Controle de cache
-            <field->enum('cache_type', [
+            $table->enum('cache_type', [
                 'user_permissions', // Permissões do usuário
                 'role_permissions', // Permissões dos papéis
                 'session_data',     // Dados da sessão
@@ -30,18 +30,18 @@ return new class extends Migration
             ])->default('user_permissions');
 
             // Metadados do cache
-            <field->json('metadata')->nullable(); // Metadados adicionais
-            <field->integer('version')->default(1); // Versão dos dados cacheados
-            <field->string('hash')->nullable(); // Hash para validação de integridade
+            $table->json('metadata')->nullable(); // Metadados adicionais
+            $table->integer('version')->default(1); // Versão dos dados cacheados
+            $table->string('hash')->nullable(); // Hash para validação de integridade
 
             // Tempo e validade
-            <field->timestamp('cached_at')->useCurrent();
-            <field->timestamp('expires_at')->nullable(); // Data de expiração do cache
-            <field->timestamp('last_used_at')->nullable(); // Última vez que foi usado
-            <field->integer('hit_count')->default(0); // Contador de acessos
+            $table->timestamp('cached_at')->useCurrent();
+            $table->timestamp('expires_at')->nullable(); // Data de expiração do cache
+            $table->timestamp('last_used_at')->nullable(); // Última vez que foi usado
+            $table->integer('hit_count')->default(0); // Contador de acessos
 
             // Status
-            <field->enum('status', [
+            $table->enum('status', [
                 'active',          // Cache ativo
                 'expired',         // Cache expirado
                 'invalidated',     // Cache invalidado
@@ -50,9 +50,9 @@ return new class extends Migration
             ])->default('active');
 
             // Sistema
-            <field->string('cache_key')->nullable(); // Chave do cache
-            <field->json('build_time')->nullable(); // Tempo de construção em ms
-            <field->integer('memory_usage')->nullable(); // Uso de memória em bytes
+            $table->string('cache_key')->nullable(); // Chave do cache
+            $table->json('build_time')->nullable(); // Tempo de construção em ms
+            $table->integer('memory_usage')->nullable(); // Uso de memória em bytes
 
             $table->timestamps();
 
