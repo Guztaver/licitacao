@@ -29,8 +29,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // Add CORS middleware to global stack to handle all requests
-        $middleware->global([
-            'cors',
+        $middleware->use([
+            \Illuminate\Http\Middleware\HandleCors::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
