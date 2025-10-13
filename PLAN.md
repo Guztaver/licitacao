@@ -9,7 +9,7 @@
 - [x] 5. Ter controle através de alerta e relatório no sistema quando o limite de dispensa de licitações for excedido de acordo com o tipo de material / serviço.
 - [x] 6. Controlar a vigência dos contratos;
 - [x] 7. Permitir a realização de apostilamentos dentro do Sistema.
-- [ ] 8. Permitir total controle sobre mercadorias em recebimento ou recebidas.
+- [x] 8. Permitir total controle sobre mercadorias em recebimento ou recebidas.
 - [ ] 9. Permitir a inserção de um fiscal do contrato para fins de acompanhamento de processo de recebimento de bens e serviços.
 - [ ] 10. Permitir anexar documentos nos processos de solicitações de despesas para acompanhamento dos servidores responsáveis pelo contrato.
 - [ ] 11. Possuir integração com o sistema patrimonial efetuando automaticamente a inclusão do item patrimonial naquele sistema
