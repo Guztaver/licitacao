@@ -7,6 +7,7 @@ use App\Http\Controllers\DestinatarioController;
 use App\Http\Controllers\EmitenteController;
 use App\Http\Controllers\FornecedorController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\PedidoCompraController;
 use App\Http\Controllers\ProcessoLicitatorioController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\RequisicaoController;
@@ -117,6 +118,29 @@ Route::middleware(["auth", "verified"])->group(function () {
             ContratoController::class,
             "historicoLimites",
         ])->name("contratos.historico-limites");
+
+        // Pedidos de Compras routes
+        Route::resource("pedidos-compras", PedidoCompraController::class);
+        Route::post("pedidos-compras/{pedidoCompra}/enviar-aprovacao", [
+            PedidoCompraController::class,
+            "enviarParaAprovacao",
+        ])->name("pedidos-compras.enviar-aprovacao");
+        Route::post("pedidos-compras/{pedidoCompra}/aprovar", [
+            PedidoCompraController::class,
+            "aprovar",
+        ])->name("pedidos-compras.aprovar");
+        Route::post("pedidos-compras/{pedidoCompra}/rejeitar", [
+            PedidoCompraController::class,
+            "rejeitar",
+        ])->name("pedidos-compras.rejeitar");
+        Route::post("pedidos-compras/{pedidoCompra}/cancelar", [
+            PedidoCompraController::class,
+            "cancelar",
+        ])->name("pedidos-compras.cancelar");
+        Route::get("pedidos-compras-pendentes-aprovacao", [
+            PedidoCompraController::class,
+            "pendentesAprovacao",
+        ])->name("pedidos-compras.pendentes-aprovacao");
 
         // Emitentes routes
         Route::resource("emitentes", EmitenteController::class);

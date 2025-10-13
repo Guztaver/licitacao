@@ -106,12 +106,154 @@ export interface Destinatario {
 
 export interface Item {
     id: number;
-    code: string;
-    name: string;
-    unit_of_measurement: string;
-    medium_price: number;
+    codigo: string;
+    descricao: string;
+    unidade_medida: string;
+    preco_medio: number;
     created_at: string;
     updated_at: string;
+}
+
+export interface ProcessoLicitatorio {
+    id: number;
+    numero_processo: string;
+    modalidade: string;
+    objeto: string;
+    status: string;
+    modalidade_display?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Contrato {
+    id: number;
+    fornecedor_id: number | null;
+    processo_licitatorio_id: number | null;
+    numero_contrato: string;
+    data_inicio: string;
+    data_fim: string;
+    limite_requisicoes: number | null;
+    limite_conferencias: number | null;
+    limite_valor_mensal: number | null;
+    valor_total: number | null;
+    descricao: string;
+    status: 'ativo' | 'inativo' | 'expirado';
+    status_display?: string;
+    status_color?: string;
+    usuario_criacao_id: number | null;
+    created_at: string;
+    updated_at: string;
+    // Computed attributes
+    pode_editar?: boolean;
+    pode_excluir?: boolean;
+    total_itens?: number;
+    // Relationships
+    fornecedor?: Fornecedor;
+    processo_licitatorio?: ProcessoLicitatorio;
+    usuario_criacao?: User;
+    items?: ContratoItem[];
+}
+
+export interface ContratoItem {
+    id: number;
+    contrato_id: number;
+    item_id: number;
+    quantidade: number;
+    valor_unitario: number;
+    valor_total: number | null;
+    marca: string | null;
+    especificacao: string | null;
+    observacoes: string | null;
+    unidade_medida: string | null;
+    created_at: string;
+    updated_at: string;
+    // Relationships
+    contrato?: Contrato;
+    item?: Item;
+}
+
+export interface Secretaria {
+    id: number;
+    nome: string;
+    sigla: string;
+    descricao: string | null;
+    responsavel: string | null;
+    email_responsavel: string | null;
+    ativa: boolean;
+    created_at: string;
+    updated_at: string;
+    // Computed attributes
+    status_display?: string;
+    status_color?: string;
+    display_text?: string;
+}
+
+export interface PedidoCompra {
+    id: number;
+    numero_pedido: string;
+    secretaria_id: number;
+    fornecedor_id: number | null;
+    contrato_id: number | null;
+    usuario_solicitante_id: number;
+    usuario_autorizador_id: number | null;
+    titulo: string;
+    descricao: string;
+    justificativa: string | null;
+    valor_total_estimado: number;
+    data_solicitacao: string;
+    data_necessidade: string | null;
+    status: 'rascunho' | 'pendente_aprovacao' | 'aprovado' | 'rejeitado' | 'cancelado' | 'em_execucao' | 'concluido';
+    prioridade: 'baixa' | 'normal' | 'alta' | 'urgente';
+    observacoes: string | null;
+    motivo_rejeicao: string | null;
+    data_aprovacao: string | null;
+    data_rejeicao: string | null;
+    created_at: string;
+    updated_at: string;
+    // Computed attributes
+    status_display?: string;
+    status_color?: string;
+    prioridade_display?: string;
+    prioridade_color?: string;
+    valor_total_estimado_formatado?: string;
+    data_solicitacao_formatada?: string;
+    pode_editar?: boolean;
+    pode_enviar_aprovacao?: boolean;
+    pode_aprovar?: boolean;
+    pode_rejeitar?: boolean;
+    pode_cancelar?: boolean;
+    // Relationships
+    secretaria?: Secretaria;
+    fornecedor?: Fornecedor;
+    contrato?: Contrato;
+    usuario_solicitante?: User;
+    usuario_autorizador?: User;
+    items?: PedidoCompraItem[];
+}
+
+export interface PedidoCompraItem {
+    id: number;
+    pedido_compra_id: number;
+    item_id: number;
+    contrato_item_id: number | null;
+    descricao_material: string;
+    quantidade_solicitada: number;
+    unidade_medida: string;
+    valor_unitario_estimado: number;
+    valor_total_estimado: number;
+    especificacoes: string | null;
+    observacoes: string | null;
+    created_at: string;
+    updated_at: string;
+    // Computed attributes
+    quantidade_solicitada_formatada?: string;
+    valor_unitario_estimado_formatado?: string;
+    valor_total_estimado_formatado?: string;
+    pode_editar?: boolean;
+    // Relationships
+    pedido_compra?: PedidoCompra;
+    item?: Item;
+    contrato_item?: ContratoItem;
 }
 
 export interface RequisicaoItem {

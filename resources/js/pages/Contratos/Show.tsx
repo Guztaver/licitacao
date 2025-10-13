@@ -1,35 +1,62 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { AlertCircle, ArrowDown, ArrowUp, Clock, Edit, FileText, Plus, Power, Trash2, TrendingUp } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ArrowLeft, Calendar, CheckCircle, DollarSign, Edit2, FileText, Package, ToggleLeft, ToggleRight, Users, Warning } from 'lucide-react';
+import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
+import { contratos } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 
-interface Contrato {
+// Types
+interface ContratoItem {
+    id: number;
+    item: {
+        id: number;
+        codigo: string;
+        descricao: string;
+    };
+    quantidade: number;
+    valor_unitario: number;
+    valor_total: number;
+    marca: string;
+    unidade_medida: string;
+    especificacao: string;
+    observacoes: string;
+}
+
+interface ContratoData {
     id: number;
     numero_contrato: string;
-    fornecedor?: {
+    fornecedor: {
         id: number;
         razao_social: string;
         cnpj_formatado: string;
-    };
+    } | null;
+    processo_licitatorio: {
+        id: number;
+        numero_processo: string;
+        objeto: string;
+        modalidade_display: string;
+    } | null;
     data_inicio: string;
     data_fim: string;
     limite_requisicoes: number | null;
     limite_conferencias: number | null;
     limite_valor_mensal: number | null;
-    status: 'ativo' | 'inativo' | 'expirado';
+    valor_total: number | null;
+    status: string;
     status_display: string;
     status_color: string;
-    descricao?: string;
+    descricao: string;
     created_at: string;
+    items: ContratoItem[];
+    total_itens: number;
 }
 
-interface Stats {
+interface ContratoStats {
     requisicoes: {
         total: number;
         limite: number | null;
@@ -48,44 +75,13 @@ interface Stats {
     };
 }
 
-interface ValorMensal {
-    ano: number;
-    mes: number;
-    periodo_display: string;
-    total: number;
-    limite: number | null;
-    restante: number | null;
-    excedeu: boolean;
-    quantidade_requisicoes: number;
-    valor_total_excedente: number;
-}
-
-interface Requisicao {
-    id: number;
-    numero_completo: string;
-    data_recebimento: string;
-    valor_final: number;
-}
-
-interface Conferencia {
-    id: number;
-    periodo_display: string;
-    total_geral: number;
-}
-
 interface HistoricoLimite {
     id: number;
-    tipo_alteracao: 'criacao' | 'atualizacao';
     tipo_display: string;
-    campo_alterado: string;
     campo_display: string;
-    valor_anterior: number | null;
-    valor_novo: number | null;
-    diferenca: number | null;
+    valor_anterior: string;
+    valor_novo: string;
     mensagem: string;
-    descricao: string | null;
-    icon_color: string;
-    badge_color: string;
     usuario: {
         id: number;
         name: string;
@@ -94,435 +90,402 @@ interface HistoricoLimite {
     created_at_diff: string;
 }
 
-interface ContratoShowProps {
-    contrato: Contrato;
-    stats: Stats;
-    requisicoes: Requisicao[];
-    conferencias: Conferencia[];
-    valores_mensais: ValorMensal[];
+interface ContratosShowProps {
+    contrato: ContratoData;
+    stats: ContratoStats;
+    valores_mensais: any[];
+    requisicoes: any[];
+    conferencias: any[];
     historico_limites: HistoricoLimite[];
 }
 
-const breadcrumbs = (contratoId: number): BreadcrumbItem[] => [
+// Constants
+const BREADCRUMBS: BreadcrumbItem[] = [
     {
         title: 'Contratos',
-        href: '/contratos',
+        href: contratos.index(),
     },
     {
-        title: 'Detalhes',
-        href: `/contratos/${contratoId}`,
+        title: 'Detalhes do Contrato',
+        href: '#',
     },
 ];
 
-const formatCurrency = (value: number): string => {
+const MESSAGES = {
+    back: 'Voltar',
+    edit: 'Editar',
+    toggleStatus: 'Alternar Status',
+    contractInfo: 'Informações do Contrato',
+    supplier: 'Fornecedor',
+    generalContract: 'Contrato Geral',
+    biddingProcess: 'Processo Licitatório',
+    validity: 'Vigência',
+    description: 'Descrição',
+    items: 'Itens do Contrato',
+    usageStats: 'Estatísticas de Uso',
+    requests: 'Requisições',
+    conferences: 'Conferências',
+    monthlyValues: 'Valores Mensais',
+    history: 'Histórico de Alterações',
+    total: 'Total',
+    remaining: 'Restantes',
+    used: 'Utilizados',
+    monthlyLimit: 'Limite Mensal',
+    usedThisMonth: 'Usado no Mês',
+    remainingThisMonth: 'Restante no Mês',
+    noItems: 'Nenhuma informação disponível',
+    noHistory: 'Nenhuma alteração registrada',
+    createdBy: 'Criado em',
+    cannotEdit: 'Este contrato não pode ser editado',
+};
+
+// Utility Functions
+const formatCurrency = (value: number | null | undefined) => {
+    if (!value || value === 0) return 'R$ 0,00';
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL',
     }).format(value);
 };
 
-const calculateProgress = (total: number, limite: number | null): number => {
-    if (limite === null) return 0;
-    return Math.min((total / limite) * 100, 100);
+const calculatePercentage = (used: number, total: number | null) => {
+    if (!total || total === 0) return 0;
+    return Math.min((used / total) * 100, 100);
 };
 
-export default function ContratoShow({ contrato, stats, requisicoes, conferencias, valores_mensais, historico_limites }: ContratoShowProps) {
-    const handleDelete = () => {
-        if (confirm('Tem certeza que deseja excluir este contrato?')) {
-            router.delete(`/contratos/${contrato.id}`);
-        }
-    };
+const getProgressColor = (percentage: number) => {
+    if (percentage >= 90) return 'bg-red-500';
+    if (percentage >= 70) return 'bg-yellow-500';
+    return 'bg-green-500';
+};
+
+const getStatusIcon = (status: string) => {
+    switch (status) {
+        case 'ativo':
+            return <CheckCircle className="h-4 w-4" />;
+        case 'inativo':
+            return <ToggleLeft className="h-4 w-4" />;
+        case 'expirado':
+            return <Warning className="h-4 w-4" />;
+        default:
+            return <CheckCircle className="h-4 w-4" />;
+    }
+};
+
+// Components
+interface StatCardProps {
+    title: string;
+    value: string;
+    subtitle: string;
+    icon: React.ComponentType<{ className?: string }>;
+    progress?: number;
+    progressColor?: string;
+}
+
+function StatCard({ title, value, subtitle, icon: Icon, progress, progressColor }: StatCardProps) {
+    return (
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{title}</CardTitle>
+                <Icon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+                <div className="text-2xl font-bold">{value}</div>
+                <p className="text-xs text-muted-foreground">{subtitle}</p>
+                {progress !== undefined && (
+                    <div className="mt-2">
+                        <Progress value={progress} className="h-2" />
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
+interface ContratoItemRowProps {
+    item: ContratoItem;
+}
+
+function ContratoItemRow({ item }: ContratoItemRowProps) {
+    return (
+        <TableRow>
+            <TableCell>
+                <div className="flex items-center space-x-2">
+                    <Badge variant="outline">{item.item.codigo}</Badge>
+                    <div>
+                        <p className="font-medium">{item.item.descricao}</p>
+                        <p className="text-sm text-gray-500">Un: {item.unidade_medida}</p>
+                    </div>
+                </div>
+            </TableCell>
+            <TableCell className="text-right">{item.quantidade}</TableCell>
+            <TableCell className="text-right">{formatCurrency(item.valor_unitario)}</TableCell>
+            <TableCell className="text-right font-medium">{formatCurrency(item.valor_total)}</TableCell>
+            <TableCell>{item.marca || '-'}</TableCell>
+            <TableCell className="max-w-xs">
+                {item.especificacao ? (
+                    <p className="text-sm truncate" title={item.especificacao}>
+                        {item.especificacao}
+                    </p>
+                ) : (
+                    '-'
+                )}
+            </TableCell>
+        </TableRow>
+    );
+}
+
+interface HistoricoRowProps {
+    item: HistoricoLimite;
+}
+
+function HistoricoRow({ item }: HistoricoRowProps) {
+    return (
+        <TableRow>
+            <TableCell>
+                <div className="flex items-center space-x-2">
+                    <Badge variant="outline">{item.tipo_display}</Badge>
+                    <span className="text-sm">{item.campo_display}</span>
+                </div>
+            </TableCell>
+            <TableCell>
+                <div className="text-sm">
+                    {item.valor_anterior && <span className="line-through text-gray-500">{item.valor_anterior}</span>}
+                    {item.valor_anterior && item.valor_novo && ' → '}
+                    <span className="font-medium">{item.valor_novo}</span>
+                </div>
+            </TableCell>
+            <TableCell>
+                <div className="text-sm">{item.usuario ? item.usuario.name : 'Sistema'}</div>
+            </TableCell>
+            <TableCell>
+                <div className="text-sm">
+                    <div>{item.created_at}</div>
+                    <div className="text-gray-500">{item.created_at_diff}</div>
+                </div>
+            </TableCell>
+            <TableCell>{item.mensagem && <p className="text-sm text-gray-600">{item.mensagem}</p>}</TableCell>
+        </TableRow>
+    );
+}
+
+// Main Component
+export default function ContratosShow({ contrato, stats, historico_limites }: ContratosShowProps) {
+    const { requisicoesProgress, conferenciasProgress, valoresProgress } = useMemo(
+        () => ({
+            requisicoesProgress: calculatePercentage(stats.requisicoes.total, stats.requisicoes.limite),
+            conferenciasProgress: calculatePercentage(stats.conferencias.total, stats.conferencias.limite),
+            valoresProgress: calculatePercentage(stats.valores.usado_mes_atual, stats.valores.limite_mensal),
+        }),
+        [stats]
+    );
 
     const handleToggleStatus = () => {
-        router.post(`/contratos/${contrato.id}/toggle-status`);
+        if (contrato.status === 'expirado') return;
+        router.post(contratos.toggleStatus(contrato.id));
     };
 
-    const requisitionalProgress = calculateProgress(stats.requisicoes.total, stats.requisicoes.limite);
-    const conferenciasProgress = calculateProgress(stats.conferencias.total, stats.conferencias.limite);
-    const valoresProgress = calculateProgress(stats.valores.usado_mes_atual, stats.valores.limite_mensal);
-
-    const requisicoesAtingido = stats.requisicoes.limite !== null && stats.requisicoes.total >= stats.requisicoes.limite;
-    const conferenciasAtingido = stats.conferencias.limite !== null && stats.conferencias.total >= stats.conferencias.limite;
-    const valoresExcedidos = stats.valores.limite_mensal !== null && stats.valores.usado_mes_atual > stats.valores.limite_mensal;
+    const handleEdit = () => {
+        router.get(contratos.edit(contrato.id));
+    };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs(contrato.id)}>
+        <AppLayout breadcrumbs={BREADCRUMBS}>
             <Head title={`Contrato ${contrato.numero_contrato}`} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Contrato {contrato.numero_contrato}</h1>
-                        <p className="text-gray-600 dark:text-gray-400">Detalhes e estatísticas do contrato</p>
+                    <div className="flex items-center space-x-4">
+                        <Button variant="outline" size="sm" asChild>
+                            <Link href={contratos.index()}>
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                {MESSAGES.back}
+                            </Link>
+                        </Button>
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Contrato {contrato.numero_contrato}</h1>
+                            <div className="flex items-center space-x-2 mt-1">
+                                {getStatusIcon(contrato.status)}
+                                <Badge className={contrato.status_color}>{contrato.status_display}</Badge>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex gap-2">
-                        {contrato.status !== 'expirado' && (
-                            <Button variant="outline" onClick={handleToggleStatus}>
-                                <Power className="mr-2 h-4 w-4" />
-                                {contrato.status === 'ativo' ? 'Desativar' : 'Ativar'}
-                            </Button>
-                        )}
-                        <Link href={`/contratos/${contrato.id}/edit`}>
-                            <Button variant="outline">
-                                <Edit className="mr-2 h-4 w-4" />
-                                Editar
-                            </Button>
-                        </Link>
-                        <Button variant="destructive" onClick={handleDelete}>
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Excluir
+                    <div className="flex items-center space-x-2">
+                        <Button variant="outline" onClick={handleEdit}>
+                            <Edit2 className="mr-2 h-4 w-4" />
+                            {MESSAGES.edit}
+                        </Button>
+                        <Button variant="outline" onClick={handleToggleStatus} disabled={contrato.status === 'expirado'}>
+                            {contrato.status === 'ativo' ? <ToggleRight className="mr-2 h-4 w-4" /> : <ToggleLeft className="mr-2 h-4 w-4" />}
+                            {MESSAGES.toggleStatus}
                         </Button>
                     </div>
                 </div>
 
-                {/* Alerts */}
-                {requisicoesAtingido && (
-                    <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertTitle>Limite de Requisições Atingido</AlertTitle>
-                        <AlertDescription>
-                            O limite de {stats.requisicoes.limite} requisições foi atingido. Não é possível criar novas requisições para este
-                            contrato.
-                        </AlertDescription>
-                    </Alert>
-                )}
-
-                {conferenciasAtingido && (
-                    <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertTitle>Limite de Conferências Atingido</AlertTitle>
-                        <AlertDescription>
-                            O limite de {stats.conferencias.limite} conferências foi atingido. Não é possível criar novas conferências para este
-                            contrato.
-                        </AlertDescription>
-                    </Alert>
-                )}
-
-                {valoresExcedidos && (
-                    <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertTitle>Limite de Valor Mensal Excedido</AlertTitle>
-                        <AlertDescription>
-                            O limite mensal de {formatCurrency(stats.valores.limite_mensal || 0)} foi excedido em {stats.valores.mes_atual}. Valor
-                            utilizado: {formatCurrency(stats.valores.usado_mes_atual)}. As requisições foram adicionadas mas estão marcadas como
-                            excedentes.
-                        </AlertDescription>
-                    </Alert>
-                )}
-
-                {/* Info Cards */}
-                <div className="grid gap-6 md:grid-cols-2">
-                    <Card>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Contract Information */}
+                    <Card className="lg:col-span-2">
                         <CardHeader>
-                            <CardTitle>Informações do Contrato</CardTitle>
+                            <CardTitle>{MESSAGES.contractInfo}</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-3">
-                            <div>
-                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Número</p>
-                                <p className="text-lg font-semibold">{contrato.numero_contrato}</p>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">{MESSAGES.supplier}</p>
+                                    <p className="font-medium">
+                                        {contrato.fornecedor ? (
+                                            <>
+                                                {contrato.fornecedor.razao_social}
+                                                <p className="text-sm text-gray-500">{contrato.fornecedor.cnpj_formatado}</p>
+                                            </>
+                                        ) : (
+                                            MESSAGES.generalContract
+                                        )}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">{MESSAGES.validity}</p>
+                                    <p className="font-medium">
+                                        {contrato.data_inicio} até {contrato.data_fim}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Fornecedor</p>
-                                <p className="text-lg">{contrato.fornecedor ? contrato.fornecedor.razao_social : 'Contrato Geral'}</p>
-                                {contrato.fornecedor && <p className="text-sm text-gray-500">{contrato.fornecedor.cnpj_formatado}</p>}
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Vigência</p>
-                                <p className="text-lg">
-                                    {contrato.data_inicio} a {contrato.data_fim}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Status</p>
-                                <Badge
-                                    className={
-                                        contrato.status === 'ativo'
-                                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                            : contrato.status === 'inativo'
-                                              ? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-                                              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                    }
-                                >
-                                    {contrato.status_display}
-                                </Badge>
-                            </div>
+
+                            {contrato.processo_licitatorio && (
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">{MESSAGES.biddingProcess}</p>
+                                    <p className="font-medium">{contrato.processo_licitatorio.numero_processo}</p>
+                                    <p className="text-sm text-gray-600">{contrato.processo_licitatorio.objeto}</p>
+                                    <Badge variant="outline" className="mt-1">
+                                        {contrato.processo_licitatorio.modalidade_display}
+                                    </Badge>
+                                </div>
+                            )}
+
                             {contrato.descricao && (
                                 <div>
-                                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Descrição</p>
-                                    <p className="text-sm">{contrato.descricao}</p>
+                                    <p className="text-sm font-medium text-gray-500">{MESSAGES.description}</p>
+                                    <p className="text-gray-700">{contrato.descricao}</p>
                                 </div>
+                            )}
+
+                            <div className="text-sm text-gray-500">
+                                {MESSAGES.createdBy}: {contrato.created_at}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Usage Statistics */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>{MESSAGES.usageStats}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <StatCard
+                                title={MESSAGES.requests}
+                                value={`${stats.requisicoes.total}`}
+                                subtitle={`de ${stats.requisicoes.limite || MESSAGES.total}`}
+                                icon={Package}
+                                progress={requisicoesProgress}
+                                progressColor={getProgressColor(requisicoesProgress)}
+                            />
+
+                            <StatCard
+                                title={MESSAGES.conferences}
+                                value={`${stats.conferencias.total}`}
+                                subtitle={`de ${stats.conferencias.limite || MESSAGES.total}`}
+                                icon={Users}
+                                progress={conferenciasProgress}
+                                progressColor={getProgressColor(conferenciasProgress)}
+                            />
+
+                            {stats.valores.limite_mensal && (
+                                <StatCard
+                                    title={MESSAGES.monthlyValues}
+                                    value={formatCurrency(stats.valores.usado_mes_atual)}
+                                    subtitle={`${MESSAGES.usedThisMonth}: ${stats.valores.mes_atual}`}
+                                    icon={DollarSign}
+                                    progress={valoresProgress}
+                                    progressColor={getProgressColor(valoresProgress)}
+                                />
                             )}
                         </CardContent>
                     </Card>
-
-                    <div className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center justify-between">
-                                    <span>Requisições</span>
-                                    <TrendingUp className="h-5 w-5 text-blue-500" />
-                                </CardTitle>
-                                <CardDescription>Uso do limite de requisições</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-3">
-                                <div className="flex justify-between text-sm">
-                                    <span>Utilizadas: {stats.requisicoes.total}</span>
-                                    <span>Limite: {stats.requisicoes.limite !== null ? stats.requisicoes.limite : 'Ilimitado'}</span>
-                                </div>
-                                {stats.requisicoes.limite !== null && (
-                                    <>
-                                        <Progress value={requisitionalProgress} className="h-2" />
-                                        <p className="text-xs text-gray-500">
-                                            {stats.requisicoes.restantes !== null
-                                                ? `${stats.requisicoes.restantes} requisições restantes`
-                                                : 'Limite atingido'}
-                                        </p>
-                                    </>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center justify-between">
-                                    <span>Conferências</span>
-                                    <FileText className="h-5 w-5 text-purple-500" />
-                                </CardTitle>
-                                <CardDescription>Uso do limite de conferências</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-3">
-                                <div className="flex justify-between text-sm">
-                                    <span>Utilizadas: {stats.conferencias.total}</span>
-                                    <span>Limite: {stats.conferencias.limite !== null ? stats.conferencias.limite : 'Ilimitado'}</span>
-                                </div>
-                                {stats.conferencias.limite !== null && (
-                                    <>
-                                        <Progress value={conferenciasProgress} className="h-2" />
-                                        <p className="text-xs text-gray-500">
-                                            {stats.conferencias.restantes !== null
-                                                ? `${stats.conferencias.restantes} conferências restantes`
-                                                : 'Limite atingido'}
-                                        </p>
-                                    </>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        {stats.valores.limite_mensal !== null && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center justify-between">
-                                        <span>Valores Mensais</span>
-                                        <TrendingUp className="h-5 w-5 text-green-500" />
-                                    </CardTitle>
-                                    <CardDescription>Uso do limite de valor mensal ({stats.valores.mes_atual})</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                    <div className="flex justify-between text-sm">
-                                        <span>Utilizado: {formatCurrency(stats.valores.usado_mes_atual)}</span>
-                                        <span>Limite: {formatCurrency(stats.valores.limite_mensal)}</span>
-                                    </div>
-                                    <Progress value={valoresProgress} className="h-2" />
-                                    <p className="text-xs text-gray-500">
-                                        {stats.valores.restante_mes_atual !== null
-                                            ? `Restante: ${formatCurrency(stats.valores.restante_mes_atual)}`
-                                            : 'Limite excedido'}
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        )}
-                    </div>
                 </div>
 
-                {/* Limit Changes Timeline */}
-                {historico_limites.length > 0 && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Clock className="h-5 w-5 text-blue-500" />
-                                Histórico de Alterações de Limites
-                            </CardTitle>
-                            <CardDescription>Linha do tempo de todas as alterações nos limites do contrato</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="relative space-y-4">
-                                {/* Timeline line */}
-                                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
-
-                                {historico_limites.map((historico, _index) => (
-                                    <div key={historico.id} className="relative flex gap-4 pb-4">
-                                        {/* Timeline dot */}
-                                        <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600">
-                                            {historico.tipo_alteracao === 'criacao' ? (
-                                                <Plus className={`h-4 w-4 ${historico.icon_color}`} />
-                                            ) : historico.diferenca && historico.diferenca > 0 ? (
-                                                <ArrowUp className={`h-4 w-4 ${historico.icon_color}`} />
-                                            ) : historico.diferenca && historico.diferenca < 0 ? (
-                                                <ArrowDown className={`h-4 w-4 ${historico.icon_color}`} />
-                                            ) : (
-                                                <Clock className={`h-4 w-4 ${historico.icon_color}`} />
-                                            )}
-                                        </div>
-
-                                        {/* Content */}
-                                        <div className="flex-1 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                                            <div className="flex items-start justify-between gap-4 mb-2">
-                                                <div className="flex items-center gap-2">
-                                                    <Badge className={historico.badge_color}>{historico.campo_display}</Badge>
-                                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                        {historico.tipo_display}
-                                                    </span>
-                                                </div>
-                                                <div className="text-right">
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">{historico.created_at}</p>
-                                                    <p className="text-xs text-gray-400 dark:text-gray-500">{historico.created_at_diff}</p>
-                                                </div>
-                                            </div>
-
-                                            <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">{historico.mensagem}</p>
-
-                                            {historico.descricao && (
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{historico.descricao}</p>
-                                            )}
-
-                                            {historico.usuario && (
-                                                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                                                    <span className="font-medium">Por:</span>
-                                                    <span>{historico.usuario.name}</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
+                {/* Contract Items */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{MESSAGES.items}</CardTitle>
+                        <CardDescription>
+                            {contrato.total_itens} itens no contrato • Valor total: {formatCurrency(contrato.valor_total)}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {contrato.items.length > 0 ? (
+                            <div className="rounded-md border">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Item</TableHead>
+                                            <TableHead className="text-right">Quantidade</TableHead>
+                                            <TableHead className="text-right">Valor Unitário</TableHead>
+                                            <TableHead className="text-right">Valor Total</TableHead>
+                                            <TableHead>Marca</TableHead>
+                                            <TableHead>Especificação</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {contrato.items.map((item) => (
+                                            <ContratoItemRow key={item.id} item={item} />
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             </div>
-                        </CardContent>
-                    </Card>
-                )}
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                <Package className="mx-auto h-12 w-12 text-gray-400" />
+                                <p className="mt-2">{MESSAGES.noItems}</p>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
 
-                {/* Monthly Values History */}
-                {valores_mensais.length > 0 && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Histórico de Valores Mensais</CardTitle>
-                            <CardDescription>Acompanhamento detalhado do uso mensal do contrato</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Período</TableHead>
-                                        <TableHead>Requisições</TableHead>
-                                        <TableHead className="text-right">Valor Utilizado</TableHead>
-                                        <TableHead className="text-right">Limite</TableHead>
-                                        <TableHead className="text-right">Restante</TableHead>
-                                        <TableHead className="text-right">Excedente</TableHead>
-                                        <TableHead>Status</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {valores_mensais.map((valor) => (
-                                        <TableRow key={valor.periodo_display} className={valor.excedeu ? 'bg-red-50 dark:bg-red-950' : ''}>
-                                            <TableCell className="font-medium">{valor.periodo_display}</TableCell>
-                                            <TableCell>{valor.quantidade_requisicoes}</TableCell>
-                                            <TableCell className="text-right">{formatCurrency(valor.total)}</TableCell>
-                                            <TableCell className="text-right">
-                                                {valor.limite !== null ? formatCurrency(valor.limite) : 'Ilimitado'}
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                {valor.restante !== null ? formatCurrency(valor.restante) : '-'}
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                {valor.excedeu ? (
-                                                    <span className="text-red-600 font-semibold">{formatCurrency(valor.valor_total_excedente)}</span>
-                                                ) : (
-                                                    '-'
-                                                )}
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge
-                                                    className={
-                                                        valor.excedeu
-                                                            ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                                            : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                                    }
-                                                >
-                                                    {valor.excedeu ? 'Excedido' : 'Normal'}
-                                                </Badge>
-                                            </TableCell>
+                {/* History */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>{MESSAGES.history}</CardTitle>
+                        <CardDescription>Alterações nos limites e configurações do contrato</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {historico_limites.length > 0 ? (
+                            <div className="rounded-md border">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Alteração</TableHead>
+                                            <TableHead>Valores</TableHead>
+                                            <TableHead>Usuário</TableHead>
+                                            <TableHead>Data</TableHead>
+                                            <TableHead>Observações</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Recent Requisitions */}
-                {requisicoes.length > 0 && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Requisições Recentes</CardTitle>
-                            <CardDescription>Últimas requisições vinculadas a este contrato</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Número</TableHead>
-                                        <TableHead>Data Recebimento</TableHead>
-                                        <TableHead className="text-right">Valor</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {requisicoes.map((req) => (
-                                        <TableRow key={req.id}>
-                                            <TableCell>
-                                                <Link href={`/requisicoes/${req.id}`} className="text-blue-600 hover:underline">
-                                                    {req.numero_completo}
-                                                </Link>
-                                            </TableCell>
-                                            <TableCell>{req.data_recebimento}</TableCell>
-                                            <TableCell className="text-right">{formatCurrency(req.valor_final)}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Recent Conferences */}
-                {conferencias.length > 0 && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Conferências Recentes</CardTitle>
-                            <CardDescription>Últimas conferências vinculadas a este contrato</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Período</TableHead>
-                                        <TableHead className="text-right">Total</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {conferencias.map((conf) => (
-                                        <TableRow key={conf.id}>
-                                            <TableCell>
-                                                <Link href={`/conferencias/${conf.id}`} className="text-blue-600 hover:underline">
-                                                    {conf.periodo_display}
-                                                </Link>
-                                            </TableCell>
-                                            <TableCell className="text-right">{formatCurrency(conf.total_geral)}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                )}
+                                    </TableHeader>
+                                    <TableBody>
+                                        {historico_limites.map((item) => (
+                                            <HistoricoRow key={item.id} item={item} />
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                <FileText className="mx-auto h-12 w-12 text-gray-400" />
+                                <p className="mt-2">{MESSAGES.noHistory}</p>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
             </div>
         </AppLayout>
     );

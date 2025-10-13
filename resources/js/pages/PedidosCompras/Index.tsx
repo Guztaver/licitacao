@@ -1,5 +1,5 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { Calendar, CheckCircle, Clock, DollarSign, Edit2, FileDown, Plus, Search, ToggleLeft, ToggleRight, Users, Warning } from 'lucide-react';
+import { ArrowRight, CheckCircle, Clock, Edit2, Eye, FileText, Plus, Search, Trash2, User, XCircle } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -8,8 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { contratos } from '@/routes';
-import type { BreadcrumbItem, Contrato, Fornecedor } from '@/types';
+import { pedidosCompras } from '@/routes';
+import type { BreadcrumbItem, PedidoCompra, Secretaria } from '@/types';
 
 // Types
 interface PaginationLink {
@@ -26,43 +26,60 @@ interface PaginationMeta {
     current_page: number;
 }
 
-interface ContratosIndexProps {
-    contratos: {
-        data: Contrato[];
+interface PedidosComprasIndexProps {
+    pedidos: {
+        data: PedidoCompra[];
         links: PaginationLink[];
         meta: PaginationMeta;
     };
-    fornecedores: Fornecedor[];
+    secretarias: Secretaria[];
     filters: {
         search?: string;
         status?: string;
-        fornecedor_id?: string;
+        secretaria_id?: string;
+        prioridade?: string;
     };
+    is_gestor_compras: boolean;
 }
 
 // Constants
 const BREADCRUMBS: BreadcrumbItem[] = [
     {
-        title: 'Contratos',
-        href: contratos.index(),
+        title: 'Pedidos de Compra',
+        href: pedidosCompras.index(),
     },
 ];
 
 const STATUS_OPTIONS = [
     { value: '', label: 'Todos os status' },
-    { value: 'ativo', label: 'Ativos' },
-    { value: 'inativo', label: 'Inativos' },
-    { value: 'expirado', label: 'Expirados' },
+    { value: 'rascunho', label: 'Rascunho' },
+    { value: 'pendente_aprovacao', label: 'Pendente de Aprovação' },
+    { value: 'aprovado', label: 'Aprovado' },
+    { value: 'rejeitado', label: 'Rejeitado' },
+    { value: 'cancelado', label: 'Cancelado' },
+    { value: 'em_execucao', label: 'Em Execução' },
+    { value: 'concluido', label: 'Concluído' },
+];
+
+const PRIORIDADE_OPTIONS = [
+    { value: '', label: 'Todas as prioridades' },
+    { value: 'baixa', label: 'Baixa' },
+    { value: 'normal', label: 'Normal' },
+    { value: 'alta', label: 'Alta' },
+    { value: 'urgente', label: 'Urgente' },
 ];
 
 const MESSAGES = {
-    noResults: 'Nenhum contrato encontrado com os filtros aplicados',
-    noData: 'Nenhum contrato cadastrado',
-    searchPlaceholder: 'Buscar por número do contrato ou fornecedor...',
-    allFornecedores: 'Todos os fornecedores',
+    noResults: 'Nenhum pedido encontrado com os filtros aplicados',
+    noData: 'Nenhum pedido cadastrado',
+    searchPlaceholder: 'Buscar por número, título ou secretaria...',
+    allSecretarias: 'Todas as secretarias',
     noValue: '-',
-    confirmDelete: 'Tem certeza que deseja excluir este contrato?',
-    cannotDelete: 'Este contrato não pode ser excluído pois possui requisições ou conferências vinculadas.',
+    confirmDelete: 'Tem certeza que deseja excluir este pedido?',
+    cannotDelete: 'Este pedido não pode ser excluído.',
+    approveSuccess: 'Pedido aprovado com sucesso!',
+    rejectSuccess: 'Pedido rejeitado com sucesso!',
+    cancelSuccess: 'Pedido cancelado com sucesso!',
 };
 
 // Utility Functions
@@ -83,14 +100,15 @@ const formatPaginationLabel = (label: string) => {
 
 const getStatusIcon = (status: string) => {
     switch (status) {
-        case 'ativo':
+        case 'aprovado':
             return <CheckCircle className="h-4 w-4" />;
-        case 'inativo':
-            return <ToggleLeft className="h-4 w-4" />;
-        case 'expirado':
-            return <Warning className="h-4 w-4" />;
-        default:
+        case 'rejeitado':
+        case 'cancelado':
+            return <XCircle className="h-4 w-4" />;
+        case 'pendente_aprovacao':
             return <Clock className="h-4 w-4" />;
+        default:
+            return <FileText className="h-4 w-4" />;
     }
 };
 
@@ -103,20 +121,20 @@ function EmptyState({ isFiltered }: EmptyStateProps) {
     return (
         <div className="rounded-lg bg-gray-50 p-8 dark:bg-gray-900/20">
             <div className="flex flex-col items-center space-y-4 text-center">
-                <FileDown className="h-12 w-12 text-gray-400" />
+                <FileText className="h-12 w-12 text-gray-400" />
                 <div>
                     <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{isFiltered ? MESSAGES.noResults : MESSAGES.noData}</h3>
                     <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                         {isFiltered
                             ? 'Tente ajustar os filtros para encontrar o que procura.'
-                            : 'Clique em "Novo Contrato" para começar a cadastrar contratos no sistema.'}
+                            : 'Clique em "Novo Pedido" para começar a criar pedidos de compra.'}
                     </p>
                 </div>
                 {!isFiltered && (
                     <Button asChild>
-                        <Link href={contratos.create()}>
+                        <Link href={pedidosCompras.create()}>
                             <Plus className="mr-2 h-4 w-4" />
-                            Novo Contrato
+                            Novo Pedido
                         </Link>
                     </Button>
                 )}
@@ -125,88 +143,131 @@ function EmptyState({ isFiltered }: EmptyStateProps) {
     );
 }
 
-interface ContratoRowProps {
-    contrato: Contrato & {
+interface PedidoRowProps {
+    pedido: PedidoCompra & {
+        secretaria?: { id: number; nome: string; sigla: string } | null;
         fornecedor?: { id: number; razao_social: string } | null;
+        usuario_solicitante?: { id: number; name: string } | null;
+        usuario_autorizador?: { id: number; name: string } | null;
         status_display?: string;
         status_color?: string;
+        prioridade_display?: string;
+        prioridade_color?: string;
+        pode_editar?: boolean;
+        pode_aprovar?: boolean;
+        pode_rejeitar?: boolean;
+        pode_cancelar?: boolean;
+        total_items?: number;
     };
-    onToggleStatus: (id: number) => void;
+    isGestorCompras: boolean;
+    onApprove: (id: number) => void;
+    onReject: (id: number) => void;
+    onCancel: (id: number) => void;
     onDelete: (id: number) => void;
 }
 
-function ContratoRow({ contrato, onToggleStatus, onDelete }: ContratoRowProps) {
-    const handleToggleStatus = () => {
-        onToggleStatus(contrato.id);
+function PedidoRow({ pedido, isGestorCompras, onApprove, onReject, onCancel, onDelete }: PedidoRowProps) {
+    const handleApprove = () => {
+        if (confirm('Deseja aprovar este pedido?')) {
+            onApprove(pedido.id);
+        }
+    };
+
+    const handleReject = () => {
+        const motivo = prompt('Qual o motivo da rejeição?');
+        if (motivo) {
+            router.post(pedidosCompras.rejeitar(pedido.id), { motivo });
+        }
+    };
+
+    const handleCancel = () => {
+        const motivo = prompt('Qual o motivo do cancelamento?');
+        if (motivo) {
+            router.post(pedidosCompras.cancelar(pedido.id), { motivo });
+        }
     };
 
     const handleDelete = () => {
         if (confirm(MESSAGES.confirmDelete)) {
-            onDelete(contrato.id);
+            onDelete(pedido.id);
         }
     };
 
     return (
         <TableRow>
-            <TableCell className="font-medium">{contrato.numero_contrato}</TableCell>
+            <TableCell className="font-medium">{pedido.numero_pedido}</TableCell>
             <TableCell>
-                {contrato.fornecedor ? (
-                    <div>
-                        <p className="font-medium">{contrato.fornecedor.razao_social}</p>
-                    </div>
-                ) : (
-                    <span className="text-gray-500">Contrato geral</span>
-                )}
-            </TableCell>
-            <TableCell>
-                <div className="flex items-center space-x-2">
-                    {getStatusIcon(contrato.status)}
-                    <Badge className={contrato.status_color}>{contrato.status_display || contrato.status}</Badge>
-                </div>
-            </TableCell>
-            <TableCell>
-                <div className="text-sm">
-                    <p>{contrato.data_inicio}</p>
-                    <p className="text-gray-500">{contrato.data_fim}</p>
-                </div>
-            </TableCell>
-            <TableCell className="text-right">
-                <div className="text-sm">
-                    <p>{formatCurrency(contrato.valor_total)}</p>
-                    {contrato.limite_valor_mensal && <p className="text-gray-500">Mensal: {formatCurrency(contrato.limite_valor_mensal)}</p>}
-                </div>
-            </TableCell>
-            <TableCell className="text-right">
-                <div className="text-sm">
-                    <p>Req: {contrato.limite_requisicoes || '-'}</p>
-                    <p>Conf: {contrato.limite_conferencias || '-'}</p>
+                <div>
+                    <p className="font-medium">{pedido.titulo}</p>
+                    <p className="text-sm text-gray-500">{pedido.secretaria?.nome || MESSAGES.noValue}</p>
                 </div>
             </TableCell>
             <TableCell>
                 <div className="flex items-center space-x-2">
-                    <Link href={contratos.show(contrato.id)}>
+                    {getStatusIcon(pedido.status)}
+                    <Badge className={pedido.status_color}>{pedido.status_display || pedido.status}</Badge>
+                </div>
+            </TableCell>
+            <TableCell>
+                <Badge className={pedido.prioridade_color}>{pedido.prioridade_display || pedido.prioridade}</Badge>
+            </TableCell>
+            <TableCell>
+                <div className="text-sm">
+                    <p>{formatCurrency(pedido.valor_total_estimado)}</p>
+                    <p className="text-gray-500">{pedido.total_items} item(s)</p>
+                </div>
+            </TableCell>
+            <TableCell>
+                <div className="text-sm">
+                    <p>{pedido.data_solicitacao}</p>
+                    {pedido.data_necessidade && <p className="text-gray-500">Necessidade: {pedido.data_necessidade}</p>}
+                </div>
+            </TableCell>
+            <TableCell>
+                <div className="text-sm">
+                    <p className="font-medium">{pedido.usuario_solicitante?.name || MESSAGES.noValue}</p>
+                    {pedido.usuario_autorizador && <p className="text-gray-500">Por: {pedido.usuario_autorizador.name}</p>}
+                </div>
+            </TableCell>
+            <TableCell>
+                <div className="flex items-center space-x-2">
+                    <Link href={pedidosCompras.show(pedido.id)}>
                         <Button variant="outline" size="sm">
-                            Ver
+                            <Eye className="h-4 w-4" />
                         </Button>
                     </Link>
-                    <Link href={contratos.edit(contrato.id)}>
-                        <Button variant="ghost" size="sm">
-                            <Edit2 className="h-4 w-4" />
+
+                    {pedido.pode_editar && (
+                        <Link href={pedidosCompras.edit(pedido.id)}>
+                            <Button variant="ghost" size="sm">
+                                <Edit2 className="h-4 w-4" />
+                            </Button>
+                        </Link>
+                    )}
+
+                    {isGestorCompras && pedido.pode_aprovar && (
+                        <Button variant="ghost" size="sm" onClick={handleApprove} className="text-green-600 hover:text-green-700">
+                            <CheckCircle className="h-4 w-4" />
                         </Button>
-                    </Link>
-                    <Button variant="ghost" size="sm" onClick={handleToggleStatus} disabled={contrato.status === 'expirado'}>
-                        {contrato.status === 'ativo' ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={handleDelete} className="text-red-600 hover:text-red-700">
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                        </svg>
-                    </Button>
+                    )}
+
+                    {isGestorCompras && pedido.pode_rejeitar && (
+                        <Button variant="ghost" size="sm" onClick={handleReject} className="text-red-600 hover:text-red-700">
+                            <XCircle className="h-4 w-4" />
+                        </Button>
+                    )}
+
+                    {pedido.pode_cancelar && (
+                        <Button variant="ghost" size="sm" onClick={handleCancel} className="text-orange-600 hover:text-orange-700">
+                            <Clock className="h-4 w-4" />
+                        </Button>
+                    )}
+
+                    {pedido.pode_editar && (
+                        <Button variant="ghost" size="sm" onClick={handleDelete} className="text-red-600 hover:text-red-700">
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    )}
                 </div>
             </TableCell>
         </TableRow>
@@ -214,39 +275,40 @@ function ContratoRow({ contrato, onToggleStatus, onDelete }: ContratoRowProps) {
 }
 
 // Main Component
-export default function ContratosIndex({ contratos: contratosPaginated, fornecedores, filters }: ContratosIndexProps) {
+export default function PedidosComprasIndex({ pedidos: pedidosPaginados, secretarias, filters, is_gestor_compras }: PedidosComprasIndexProps) {
     // Safe data extraction
-    const safeContratos = contratosPaginated || {
+    const safePedidos = pedidosPaginados || {
         data: [],
         links: [],
         meta: { total: 0, from: 0, to: 0, last_page: 1, current_page: 1 },
     };
-    const safeData = safeContratos.data || [];
-    const safeLinks = safeContratos.links || [];
-    const safeMeta = safeContratos.meta || {
+    const safeData = safePedidos.data || [];
+    const safeLinks = safePedidos.links || [];
+    const safeMeta = safePedidos.meta || {
         total: 0,
         from: 0,
         to: 0,
         last_page: 1,
         current_page: 1,
     };
-    const safeFornecedores = fornecedores || [];
+    const safeSecretarias = secretarias || [];
 
     const { data, setData, get, processing } = useForm({
         search: filters?.search || '',
         status: filters?.status || '',
-        fornecedor_id: filters?.fornecedor_id || '',
+        secretaria_id: filters?.secretaria_id || '',
+        prioridade: filters?.prioridade || '',
     });
 
     // Memoized values
-    const isFiltered = useMemo(() => Boolean(data.search || data.status || data.fornecedor_id), [data]);
+    const isFiltered = useMemo(() => Boolean(data.search || data.status || data.secretaria_id || data.prioridade), [data]);
     const hasResults = useMemo(() => safeData.length > 0, [safeData.length]);
 
     // Event handlers
     const handleSearch: FormEventHandler = useMemo(
         () => (e) => {
             e.preventDefault();
-            get(contratos.index(), {
+            get(pedidosCompras.index(), {
                 preserveState: true,
                 replace: true,
             });
@@ -259,9 +321,10 @@ export default function ContratosIndex({ contratos: contratosPaginated, forneced
             setData({
                 search: '',
                 status: '',
-                fornecedor_id: '',
+                secretaria_id: '',
+                prioridade: '',
             });
-            get(contratos.index(), {
+            get(pedidosCompras.index(), {
                 preserveState: true,
                 replace: true,
             });
@@ -269,16 +332,30 @@ export default function ContratosIndex({ contratos: contratosPaginated, forneced
         [setData, get]
     );
 
-    const handleToggleStatus = useMemo(
+    const handleDelete = useMemo(
         () => (id: number) => {
-            router.post(contratos.toggleStatus(id));
+            router.delete(pedidosCompras.destroy(id));
         },
         []
     );
 
-    const handleDelete = useMemo(
+    const handleApprove = useMemo(
         () => (id: number) => {
-            router.delete(contratos.destroy(id));
+            router.post(pedidosCompras.aprovar(id));
+        },
+        []
+    );
+
+    const handleReject = useMemo(
+        () => (id: number) => {
+            router.post(pedidosCompras.rejeitar(id));
+        },
+        []
+    );
+
+    const handleCancel = useMemo(
+        () => (id: number) => {
+            router.post(pedidosCompras.cancelar(id));
         },
         []
     );
@@ -292,20 +369,28 @@ export default function ContratosIndex({ contratos: contratosPaginated, forneced
 
     return (
         <AppLayout breadcrumbs={BREADCRUMBS}>
-            <Head title="Contratos" />
+            <Head title="Pedidos de Compra" />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Contratos</h1>
-                        <p className="text-gray-600 dark:text-gray-400">Gerencie os contratos e convênios</p>
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Pedidos de Compra</h1>
+                        <p className="text-gray-600 dark:text-gray-400">Gerencie os pedidos de compra e aprovações</p>
                     </div>
                     <div className="flex items-center space-x-2">
+                        {is_gestor_compras && (
+                            <Button variant="outline" asChild>
+                                <Link href={pedidosCompras.pendentesAprovacao()}>
+                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                    Pedidos Pendentes
+                                </Link>
+                            </Button>
+                        )}
                         <Button asChild>
-                            <Link href={contratos.create()}>
+                            <Link href={pedidosCompras.create()}>
                                 <Plus className="mr-2 h-4 w-4" />
-                                Novo Contrato
+                                Novo Pedido
                             </Link>
                         </Button>
                     </div>
@@ -345,14 +430,27 @@ export default function ContratosIndex({ contratos: contratosPaginated, forneced
                             </div>
                             <div className="min-w-[200px]">
                                 <select
-                                    value={data.fornecedor_id}
-                                    onChange={(e) => setData('fornecedor_id', e.target.value)}
+                                    value={data.secretaria_id}
+                                    onChange={(e) => setData('secretaria_id', e.target.value)}
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                                 >
-                                    <option value="">{MESSAGES.allFornecedores}</option>
-                                    {safeFornecedores.map((fornecedor) => (
-                                        <option key={fornecedor.id} value={fornecedor.id}>
-                                            {fornecedor.razao_social}
+                                    <option value="">{MESSAGES.allSecretarias}</option>
+                                    {safeSecretarias.map((secretaria) => (
+                                        <option key={secretaria.id} value={secretaria.id}>
+                                            {secretaria.sigla} - {secretaria.nome}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="min-w-[200px]">
+                                <select
+                                    value={data.prioridade}
+                                    onChange={(e) => setData('prioridade', e.target.value)}
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    {PRIORIDADE_OPTIONS.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
                                         </option>
                                     ))}
                                 </select>
@@ -373,9 +471,9 @@ export default function ContratosIndex({ contratos: contratosPaginated, forneced
                 {/* Table */}
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-lg">Lista de Contratos</CardTitle>
+                        <CardTitle className="text-lg">Lista de Pedidos</CardTitle>
                         <CardDescription>
-                            Mostrando {safeData.length} de {safeMeta.total || 0} contratos
+                            Mostrando {safeData.length} de {safeMeta.total || 0} pedidos
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -384,21 +482,25 @@ export default function ContratosIndex({ contratos: contratosPaginated, forneced
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead>Número do Contrato</TableHead>
-                                            <TableHead>Fornecedor</TableHead>
+                                            <TableHead>Número</TableHead>
+                                            <TableHead>Título / Secretaria</TableHead>
                                             <TableHead>Status</TableHead>
-                                            <TableHead>Vigência</TableHead>
-                                            <TableHead className="text-right">Valores</TableHead>
-                                            <TableHead className="text-right">Limites</TableHead>
+                                            <TableHead>Prioridade</TableHead>
+                                            <TableHead>Valor Total</TableHead>
+                                            <TableHead>Datas</TableHead>
+                                            <TableHead>Responsáveis</TableHead>
                                             <TableHead>Ações</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {safeData.map((contrato) => (
-                                            <ContratoRow
-                                                key={contrato.id}
-                                                contrato={contrato}
-                                                onToggleStatus={handleToggleStatus}
+                                        {safeData.map((pedido) => (
+                                            <PedidoRow
+                                                key={pedido.id}
+                                                pedido={pedido}
+                                                isGestorCompras={is_gestor_compras}
+                                                onApprove={handleApprove}
+                                                onReject={handleReject}
+                                                onCancel={handleCancel}
                                                 onDelete={handleDelete}
                                             />
                                         ))}

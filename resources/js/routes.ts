@@ -56,6 +56,21 @@ export const contratos = {
     checkLimits: () => '/contratos/check-limits',
 };
 
+export const pedidosCompras = {
+    index: () => '/pedidos-compras',
+    create: () => '/pedidos-compras/create',
+    store: () => '/pedidos-compras',
+    show: (id: number) => `/pedidos-compras/${id}`,
+    edit: (id: number) => `/pedidos-compras/${id}/edit`,
+    update: (id: number) => `/pedidos-compras/${id}`,
+    destroy: (id: number) => `/pedidos-compras/${id}`,
+    enviarParaAprovacao: (id: number) => `/pedidos-compras/${id}/enviar-aprovacao`,
+    aprovar: (id: number) => `/pedidos-compras/${id}/aprovar`,
+    rejeitar: (id: number) => `/pedidos-compras/${id}/rejeitar`,
+    cancelar: (id: number) => `/pedidos-compras/${id}/cancelar`,
+    pendentesAprovacao: () => '/pedidos-compras-pendentes-aprovacao',
+};
+
 export const emitentes = {
     index: () => '/emitentes',
     create: () => '/emitentes/create',
@@ -139,6 +154,7 @@ export const quickActions = {
     newFornecedor: () => fornecedores.create(),
     newConferencia: () => conferencias.create(),
     newContrato: () => contratos.create(),
+    newPedidoCompra: () => pedidosCompras.create(),
     newEmitente: () => emitentes.create(),
     newDestinatario: () => destinatarios.create(),
 };
