@@ -26,6 +26,7 @@ class Contrato extends Model
         "descricao",
         "status",
         "usuario_criacao_id",
+        "valor_total",
     ];
 
     protected $casts = [
@@ -87,6 +88,16 @@ class Contrato extends Model
     public function historicoLimites(): HasMany
     {
         return $this->hasMany(ContratoHistoricoLimite::class);
+    }
+
+    /**
+     * Get the items for the contrato.
+     *
+     * @return HasMany<ContratoItem, Contrato>
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(ContratoItem::class);
     }
 
     /**
@@ -555,5 +566,30 @@ class Contrato extends Model
     public static function findContratoVigenteHoje(?int $fornecedorId): ?self
     {
         return self::findContratoVigente($fornecedorId, now());
+    }
+
+    /**
+     * Get the total value of all items in the contract.
+     */
+    public function getValorTotalItemsAttribute(): float
+    {
+        return (float) $this->items()->sum("valor_total");
+    }
+
+    /**
+     * Get the total quantity of items in the contract.
+     */
+    public function getTotalItensAttribute(): int
+    {
+        return $this->items()->count();
+    }
+
+    /**
+     * Recalculate and update contract total value.
+     */
+    public function recalcularValorTotal(): void
+    {
+        $valorTotal = $this->getValorTotalItemsAttribute();
+        $this->update(["valor_total" => $valorTotal]);
     }
 }
