@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoriaMaterialController;
 use App\Http\Controllers\ConferenciaController;
 use App\Http\Controllers\ContratoController;
 use App\Http\Controllers\DashboardController;
@@ -168,6 +169,40 @@ Route::middleware(["auth", "verified"])->group(function () {
             ItemController::class,
             "downloadTemplate",
         ])->name("items.template");
+        Route::get("items/{item}/audit-logs", [
+            ItemController::class,
+            "auditLogs",
+        ])->name("items.audit-logs");
+        Route::post("items/{item}/freeze", [
+            ItemController::class,
+            "freeze",
+        ])->name("items.freeze");
+
+        // Categoria Materiais routes
+        Route::resource(
+            "categorias-materiais",
+            CategoriaMaterialController::class,
+        );
+        Route::post("categorias-materiais/{categoriaMaterial}/toggle-status", [
+            CategoriaMaterialController::class,
+            "toggleStatus",
+        ])->name("categorias-materiais.toggle-status");
+        Route::get("categorias-materiais-search", [
+            CategoriaMaterialController::class,
+            "search",
+        ])->name("categorias-materiais.search");
+        Route::post("categorias-materiais/check-limits", [
+            CategoriaMaterialController::class,
+            "checkLimits",
+        ])->name("categorias-materiais.check-limits");
+        Route::post("categorias-materiais/gerar-alertas", [
+            CategoriaMaterialController::class,
+            "gerarAlertas",
+        ])->name("categorias-materiais.gerar-alertas");
+        Route::get("categorias-materiais/usage-report", [
+            CategoriaMaterialController::class,
+            "usageReport",
+        ])->name("categorias-materiais.usage-report");
 
         // Relatórios routes - full reports with export
         Route::get("relatorios/requisicoes/export", [

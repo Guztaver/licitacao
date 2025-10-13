@@ -104,6 +104,8 @@ export const items = {
     import: () => '/items-import',
     export: () => '/items-export',
     template: () => '/items-template',
+    auditLogs: (id: number) => `/items/${id}/audit-logs`,
+    freeze: (id: number) => `/items/${id}/freeze`,
 };
 
 export const relatorios = {

@@ -229,3 +229,7 @@ This ensures TypeScript bindings are up-to-date and type-safe.
 - **Local**: Use SQLite database (`DB_CONNECTION=sqlite`)
 - **Production**: Configure MySQL/PostgreSQL with proper credentials
 - **Docker**: Use provided docker-compose.yml for consistent environments
+
+### Finally
+- Do **NOT** generate markdown files at end of responses. This makes the code base hard to read.
+- Try to search for the user content before implementing, this could result in less code generation and more context aware responses.

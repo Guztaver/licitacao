@@ -110,8 +110,43 @@ export interface Item {
     descricao: string;
     unidade_medida: string;
     preco_medio: number;
+    first_used_at: string | null;
+    last_used_at: string | null;
+    is_frozen: boolean;
+    frozen_description: string | null;
+    frozen_by_user_id: number | null;
+    frozen_at: string | null;
     created_at: string;
     updated_at: string;
+    // Computed attributes
+    preco_medio_formatado?: string;
+    display_text?: string;
+    pode_editar?: boolean;
+    pode_editar_descricao?: boolean;
+    foi_utilizado?: boolean;
+    // Relationships
+    audit_logs?: ItemAuditLog[];
+}
+
+export interface ItemAuditLog {
+    id: number;
+    item_id: number;
+    user_id: number | null;
+    action: string;
+    action_display: string;
+    field_changed: string | null;
+    field_display: string | null;
+    old_value: string | null;
+    new_value: string | null;
+    context_type: string | null;
+    context_id: number | null;
+    user_ip: string | null;
+    created_at: string;
+    // Relationships
+    user?: {
+        id: number;
+        name: string;
+    } | null;
 }
 
 export interface ProcessoLicitatorio {

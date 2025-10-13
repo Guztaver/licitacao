@@ -5,7 +5,7 @@
 - [x] 1. O Módulo de Compras, Licitações e Contratos deverá permitir acompanhar todo o processo licitatório.
 - [x] 2. Cadastrar o contrato, com número do contrato, número do processo licitatório, dados do fornecedor, itens, quantidades, valor e marca;
 - [x] 3. Permitir a geração de pedido de compras possa ser feito pelo próprio sistema em cada secretaria e posterior autorização pelo chefe de compras;
-- [ ] 4. O Módulo de Compras não deverá permitir a alteração da descrição do material após sua utilização;
+- [x] 4. O Módulo de Compras não deverá permitir a alteração da descrição do material após sua utilização;
 - [ ] 5. Ter controle através de alerta e relatório no sistema quando o limite de dispensa de licitações for excedido de acordo com o tipo de material / serviço.
 - [ ] 6. Controlar a vigência dos contratos;
 - [ ] 7. Permitir a realização de apostilamentos dentro do Sistema.

@@ -19,12 +19,18 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'user.type' => CheckUserType::class,
+            'cors' => \Illuminate\Http\Middleware\HandleCors::class,
         ]);
 
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+        ]);
+
+        // Add CORS middleware to global stack to handle all requests
+        $middleware->global([
+            'cors',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

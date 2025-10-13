@@ -814,71 +814,54 @@ fornecedor.form = fornecedorForm
 /**
 * @see \App\Http\Controllers\ConferenciaController::storePedidoManual
 * @see app/Http/Controllers/ConferenciaController.php:629
-* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais'
+* @route '/conferencias/pedidos-manuais'
 */
-export const storePedidoManual = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: storePedidoManual.url(args, options),
+export const storePedidoManual = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storePedidoManual.url(options),
     method: 'post',
 })
 
 storePedidoManual.definition = {
     methods: ["post"],
-    url: '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais',
+    url: '/conferencias/pedidos-manuais',
 } satisfies RouteDefinition<["post"]>
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::storePedidoManual
 * @see app/Http/Controllers/ConferenciaController.php:629
-* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais'
+* @route '/conferencias/pedidos-manuais'
 */
-storePedidoManual.url = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions) => {
-    if (Array.isArray(args)) {
-        args = {
-            fornecedor: args[0],
-            periodo: args[1],
-        }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-        fornecedor: args.fornecedor,
-        periodo: args.periodo,
-    }
-
-    return storePedidoManual.definition.url
-            .replace('{fornecedor}', parsedArgs.fornecedor.toString())
-            .replace('{periodo}', parsedArgs.periodo.toString())
-            .replace(/\/+$/, '') + queryParams(options)
+storePedidoManual.url = (options?: RouteQueryOptions) => {
+    return storePedidoManual.definition.url + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::storePedidoManual
 * @see app/Http/Controllers/ConferenciaController.php:629
-* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais'
+* @route '/conferencias/pedidos-manuais'
 */
-storePedidoManual.post = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: storePedidoManual.url(args, options),
+storePedidoManual.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storePedidoManual.url(options),
     method: 'post',
 })
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::storePedidoManual
 * @see app/Http/Controllers/ConferenciaController.php:629
-* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais'
+* @route '/conferencias/pedidos-manuais'
 */
-const storePedidoManualForm = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storePedidoManual.url(args, options),
+const storePedidoManualForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storePedidoManual.url(options),
     method: 'post',
 })
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::storePedidoManual
 * @see app/Http/Controllers/ConferenciaController.php:629
-* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais'
+* @route '/conferencias/pedidos-manuais'
 */
-storePedidoManualForm.post = (args: { fornecedor: string | number, periodo: string | number } | [fornecedor: string | number, periodo: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storePedidoManual.url(args, options),
+storePedidoManualForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storePedidoManual.url(options),
     method: 'post',
 })
 
@@ -887,43 +870,40 @@ storePedidoManual.form = storePedidoManualForm
 /**
 * @see \App\Http\Controllers\ConferenciaController::destroyPedidoManual
 * @see app/Http/Controllers/ConferenciaController.php:667
-* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}'
+* @route '/conferencias/{conferencia}/pedidos-manuais/{pedido}'
 */
-export const destroyPedidoManual = (args: { fornecedor: string | number, periodo: string | number, pedido: string | number } | [fornecedor: string | number, periodo: string | number, pedido: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroyPedidoManual = (args: { conferencia: string | number, pedido: string | number } | [conferencia: string | number, pedido: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroyPedidoManual.url(args, options),
     method: 'delete',
 })
 
 destroyPedidoManual.definition = {
     methods: ["delete"],
-    url: '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}',
+    url: '/conferencias/{conferencia}/pedidos-manuais/{pedido}',
 } satisfies RouteDefinition<["delete"]>
 
 /**
 * @see \App\Http\Controllers\ConferenciaController::destroyPedidoManual
 * @see app/Http/Controllers/ConferenciaController.php:667
-* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}'
+* @route '/conferencias/{conferencia}/pedidos-manuais/{pedido}'
 */
-destroyPedidoManual.url = (args: { fornecedor: string | number, periodo: string | number, pedido: string | number } | [fornecedor: string | number, periodo: string | number, pedido: string | number ], options?: RouteQueryOptions) => {
+destroyPedidoManual.url = (args: { conferencia: string | number, pedido: string | number } | [conferencia: string | number, pedido: string | number ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
-            fornecedor: args[0],
-            periodo: args[1],
-            pedido: args[2],
+            conferencia: args[0],
+            pedido: args[1],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        fornecedor: args.fornecedor,
-        periodo: args.periodo,
+        conferencia: args.conferencia,
         pedido: args.pedido,
     }
 
     return destroyPedidoManual.definition.url
-            .replace('{fornecedor}', parsedArgs.fornecedor.toString())
-            .replace('{periodo}', parsedArgs.periodo.toString())
+            .replace('{conferencia}', parsedArgs.conferencia.toString())
             .replace('{pedido}', parsedArgs.pedido.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
@@ -931,9 +911,9 @@ destroyPedidoManual.url = (args: { fornecedor: string | number, periodo: string 
 /**
 * @see \App\Http\Controllers\ConferenciaController::destroyPedidoManual
 * @see app/Http/Controllers/ConferenciaController.php:667
-* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}'
+* @route '/conferencias/{conferencia}/pedidos-manuais/{pedido}'
 */
-destroyPedidoManual.delete = (args: { fornecedor: string | number, periodo: string | number, pedido: string | number } | [fornecedor: string | number, periodo: string | number, pedido: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroyPedidoManual.delete = (args: { conferencia: string | number, pedido: string | number } | [conferencia: string | number, pedido: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroyPedidoManual.url(args, options),
     method: 'delete',
 })
@@ -941,9 +921,9 @@ destroyPedidoManual.delete = (args: { fornecedor: string | number, periodo: stri
 /**
 * @see \App\Http\Controllers\ConferenciaController::destroyPedidoManual
 * @see app/Http/Controllers/ConferenciaController.php:667
-* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}'
+* @route '/conferencias/{conferencia}/pedidos-manuais/{pedido}'
 */
-const destroyPedidoManualForm = (args: { fornecedor: string | number, periodo: string | number, pedido: string | number } | [fornecedor: string | number, periodo: string | number, pedido: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const destroyPedidoManualForm = (args: { conferencia: string | number, pedido: string | number } | [conferencia: string | number, pedido: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroyPedidoManual.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -956,9 +936,9 @@ const destroyPedidoManualForm = (args: { fornecedor: string | number, periodo: s
 /**
 * @see \App\Http\Controllers\ConferenciaController::destroyPedidoManual
 * @see app/Http/Controllers/ConferenciaController.php:667
-* @route '/conferencias/fornecedor/{fornecedor}/{periodo}/pedidos-manuais/{pedido}'
+* @route '/conferencias/{conferencia}/pedidos-manuais/{pedido}'
 */
-destroyPedidoManualForm.delete = (args: { fornecedor: string | number, periodo: string | number, pedido: string | number } | [fornecedor: string | number, periodo: string | number, pedido: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+destroyPedidoManualForm.delete = (args: { conferencia: string | number, pedido: string | number } | [conferencia: string | number, pedido: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroyPedidoManual.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',

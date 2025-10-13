@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, FileText } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,13 +8,21 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { items } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
+import { ItemStatusBadge } from '@/components/ItemStatusBadge';
+import { ItemEditRestrictions } from '@/components/ItemEditRestrictions';
 
 interface Item {
     id: number;
-    code: string;
-    name: string;
-    unit_of_measurement: string;
-    medium_price: number;
+    codigo: string;
+    descricao: string;
+    unidade_medida: string;
+    preco_medio: number;
+    is_frozen: boolean;
+    frozen_description: string | null;
+    frozen_at: string | null;
+    pode_editar: boolean;
+    pode_editar_descricao: boolean;
+    foi_utilizado: boolean;
     created_at: string;
     updated_at: string;
 }
@@ -25,11 +33,11 @@ interface EditItemProps {
 
 const BREADCRUMBS = (item: Item): BreadcrumbItem[] => [
     {
-        title: 'Referências',
+        title: 'Itens',
         href: items.index(),
     },
     {
-        title: item.name,
+        title: item.descricao,
         href: items.show(item.id),
     },
     {
@@ -40,10 +48,10 @@ const BREADCRUMBS = (item: Item): BreadcrumbItem[] => [
 
 export default function EditItem({ item }: EditItemProps) {
     const { data, setData, put, processing, errors } = useForm({
-        code: item.code,
-        name: item.name,
-        unit_of_measurement: item.unit_of_measurement,
-        medium_price: item.medium_price.toString(),
+        codigo: item.codigo,
+        descricao: item.descricao,
+        unidade_medida: item.unidade_medida,
+        preco_medio: item.preco_medio.toString(),
     });
 
     const handleSubmit: FormEventHandler = (e) => {
