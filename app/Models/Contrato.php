@@ -12,27 +12,28 @@ class Contrato extends Model
 {
     use HasFactory;
 
-    protected $table = 'contratos';
+    protected $table = "contratos";
 
     protected $fillable = [
-        'fornecedor_id',
-        'numero_contrato',
-        'data_inicio',
-        'data_fim',
-        'limite_requisicoes',
-        'limite_conferencias',
-        'limite_valor_mensal',
-        'descricao',
-        'status',
-        'usuario_criacao_id',
+        "fornecedor_id",
+        "processo_licitatorio_id",
+        "numero_contrato",
+        "data_inicio",
+        "data_fim",
+        "limite_requisicoes",
+        "limite_conferencias",
+        "limite_valor_mensal",
+        "descricao",
+        "status",
+        "usuario_criacao_id",
     ];
 
     protected $casts = [
-        'data_inicio' => 'date',
-        'data_fim' => 'date',
-        'limite_requisicoes' => 'integer',
-        'limite_conferencias' => 'integer',
-        'limite_valor_mensal' => 'decimal:2',
+        "data_inicio" => "date",
+        "data_fim" => "date",
+        "limite_requisicoes" => "integer",
+        "limite_conferencias" => "integer",
+        "limite_valor_mensal" => "decimal:2",
     ];
 
     /**
@@ -46,13 +47,26 @@ class Contrato extends Model
     }
 
     /**
+     * Get the processo licitatorio that owns the contrato.
+     *
+     * @return BelongsTo<ProcessoLicitatorio, Contrato>
+     */
+    public function processoLicitatorio(): BelongsTo
+    {
+        return $this->belongsTo(
+            ProcessoLicitatorio::class,
+            "processo_licitatorio_id",
+        );
+    }
+
+    /**
      * Get the user who created the contrato.
      *
      * @return BelongsTo<User, Contrato>
      */
     public function usuarioCriacao(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'usuario_criacao_id');
+        return $this->belongsTo(User::class, "usuario_criacao_id");
     }
 
     /**
@@ -98,9 +112,9 @@ class Contrato extends Model
         // Register update event
         static::updating(function ($contrato) {
             $camposMonitorados = [
-                'limite_requisicoes',
-                'limite_conferencias',
-                'limite_valor_mensal',
+                "limite_requisicoes",
+                "limite_conferencias",
+                "limite_valor_mensal",
             ];
 
             $alteracoes = [];
@@ -112,14 +126,14 @@ class Contrato extends Model
                 // Check if value changed
                 if ($original != $novo) {
                     $alteracoes[$campo] = [
-                        'anterior' => $original,
-                        'novo' => $novo,
+                        "anterior" => $original,
+                        "novo" => $novo,
                     ];
                 }
             }
 
             // Register changes if any
-            if (! empty($alteracoes)) {
+            if (!empty($alteracoes)) {
                 // Store changes in static property
                 self::$pendingChanges[$contrato->id] = $alteracoes;
             }
@@ -132,7 +146,7 @@ class Contrato extends Model
                     $contrato,
                     self::$pendingChanges[$contrato->id],
                     auth()->id(),
-                    'Atualização dos limites do contrato',
+                    "Atualização dos limites do contrato",
                 );
                 unset(self::$pendingChanges[$contrato->id]);
             }
@@ -144,7 +158,7 @@ class Contrato extends Model
      */
     public function scopeAtivo(Builder $query): Builder
     {
-        return $query->where('status', 'ativo');
+        return $query->where("status", "ativo");
     }
 
     /**
@@ -155,8 +169,8 @@ class Contrato extends Model
         \DateTimeInterface $data,
     ): Builder {
         return $query
-            ->where('data_inicio', '<=', $data)
-            ->where('data_fim', '>=', $data);
+            ->where("data_inicio", "<=", $data)
+            ->where("data_fim", ">=", $data);
     }
 
     /**
@@ -164,7 +178,7 @@ class Contrato extends Model
      */
     public function scopeFornecedor(Builder $query, int $fornecedorId): Builder
     {
-        return $query->where('fornecedor_id', $fornecedorId);
+        return $query->where("fornecedor_id", $fornecedorId);
     }
 
     /**
@@ -174,7 +188,7 @@ class Contrato extends Model
     {
         $hoje = now()->startOfDay();
 
-        return $this->status === 'ativo' &&
+        return $this->status === "ativo" &&
             $this->data_inicio <= $hoje &&
             $this->data_fim >= $hoje;
     }
@@ -192,7 +206,7 @@ class Contrato extends Model
      */
     public function podeEditar(): bool
     {
-        return in_array($this->status, ['ativo', 'inativo']);
+        return in_array($this->status, ["ativo", "inativo"]);
     }
 
     /**
@@ -204,7 +218,7 @@ class Contrato extends Model
         $temRequisicoes = $this->getRequisicoes()->count() > 0;
         $temConferencias = $this->getConferencias()->count() > 0;
 
-        return ! $temRequisicoes && ! $temConferencias;
+        return !$temRequisicoes && !$temConferencias;
     }
 
     /**
@@ -212,17 +226,17 @@ class Contrato extends Model
      */
     public function getRequisicoes()
     {
-        if (! $this->fornecedor_id) {
+        if (!$this->fornecedor_id) {
             return collect([]);
         }
 
         return Requisicao::query()
-            ->where('fornecedor_id', $this->fornecedor_id)
-            ->whereBetween('data_recebimento', [
+            ->where("fornecedor_id", $this->fornecedor_id)
+            ->whereBetween("data_recebimento", [
                 $this->data_inicio,
                 $this->data_fim,
             ])
-            ->where('status', '!=', 'excluida')
+            ->where("status", "!=", "excluida")
             ->get();
     }
 
@@ -231,28 +245,28 @@ class Contrato extends Model
      */
     public function getConferencias()
     {
-        if (! $this->fornecedor_id) {
+        if (!$this->fornecedor_id) {
             return collect([]);
         }
 
         return Conferencia::query()
-            ->where('fornecedor_id', $this->fornecedor_id)
+            ->where("fornecedor_id", $this->fornecedor_id)
             ->where(function ($query) {
                 $query
-                    ->whereBetween('periodo_inicio', [
+                    ->whereBetween("periodo_inicio", [
                         $this->data_inicio,
                         $this->data_fim,
                     ])
-                    ->orWhereBetween('periodo_fim', [
+                    ->orWhereBetween("periodo_fim", [
                         $this->data_inicio,
                         $this->data_fim,
                     ])
                     ->orWhere(function ($q) {
                         $q->where(
-                            'periodo_inicio',
-                            '<=',
+                            "periodo_inicio",
+                            "<=",
                             $this->data_inicio,
-                        )->where('periodo_fim', '>=', $this->data_fim);
+                        )->where("periodo_fim", ">=", $this->data_fim);
                     });
             })
             ->get();
@@ -334,9 +348,9 @@ class Contrato extends Model
     public function getValorUsadoNoMes(int $ano, int $mes): float
     {
         return (float) $this->valoresMensais()
-            ->where('ano', $ano)
-            ->where('mes', $mes)
-            ->sum('valor');
+            ->where("ano", $ano)
+            ->where("mes", $mes)
+            ->sum("valor");
     }
 
     /**
@@ -402,8 +416,8 @@ class Contrato extends Model
 
         // Check if already registered
         $existente = ContratoValorMensal::query()
-            ->where('contrato_id', $this->id)
-            ->where('requisicao_id', $requisicao->id)
+            ->where("contrato_id", $this->id)
+            ->where("requisicao_id", $requisicao->id)
             ->first();
 
         if ($existente) {
@@ -416,14 +430,14 @@ class Contrato extends Model
             : null;
 
         return ContratoValorMensal::create([
-            'contrato_id' => $this->id,
-            'requisicao_id' => $requisicao->id,
-            'usuario_id' => $usuario->id,
-            'ano' => $ano,
-            'mes' => $mes,
-            'valor' => $valor,
-            'excedeu_limite' => $excedeuLimite,
-            'valor_excedente' => $valorExcedente,
+            "contrato_id" => $this->id,
+            "requisicao_id" => $requisicao->id,
+            "usuario_id" => $usuario->id,
+            "ano" => $ano,
+            "mes" => $mes,
+            "valor" => $valor,
+            "excedeu_limite" => $excedeuLimite,
+            "valor_excedente" => $valorExcedente,
         ]);
     }
 
@@ -435,33 +449,33 @@ class Contrato extends Model
         $summary = [];
 
         $valores = $this->valoresMensais()
-            ->orderBy('ano', 'desc')
-            ->orderBy('mes', 'desc')
+            ->orderBy("ano", "desc")
+            ->orderBy("mes", "desc")
             ->get()
             ->groupBy(function ($item) {
-                return $item->ano.
-                    '-'.
-                    str_pad($item->mes, 2, '0', STR_PAD_LEFT);
+                return $item->ano .
+                    "-" .
+                    str_pad($item->mes, 2, "0", STR_PAD_LEFT);
             });
 
         foreach ($valores as $periodo => $items) {
-            [$ano, $mes] = explode('-', $periodo);
-            $total = $items->sum('valor');
-            $excedentes = $items->where('excedeu_limite', true);
+            [$ano, $mes] = explode("-", $periodo);
+            $total = $items->sum("valor");
+            $excedentes = $items->where("excedeu_limite", true);
 
             $summary[] = [
-                'ano' => (int) $ano,
-                'mes' => (int) $mes,
-                'periodo_display' => sprintf('%02d/%d', (int) $mes, (int) $ano),
-                'total' => $total,
-                'limite' => $this->limite_valor_mensal,
-                'restante' => $this->getValorRestanteNoMes(
+                "ano" => (int) $ano,
+                "mes" => (int) $mes,
+                "periodo_display" => sprintf("%02d/%d", (int) $mes, (int) $ano),
+                "total" => $total,
+                "limite" => $this->limite_valor_mensal,
+                "restante" => $this->getValorRestanteNoMes(
                     (int) $ano,
                     (int) $mes,
                 ),
-                'excedeu' => $excedentes->count() > 0,
-                'quantidade_requisicoes' => $items->count(),
-                'valor_total_excedente' => $excedentes->sum('valor_excedente'),
+                "excedeu" => $excedentes->count() > 0,
+                "quantidade_requisicoes" => $items->count(),
+                "valor_total_excedente" => $excedentes->sum("valor_excedente"),
             ];
         }
 
@@ -474,9 +488,9 @@ class Contrato extends Model
     public function getStatusDisplayAttribute(): string
     {
         $statusMap = [
-            'ativo' => 'Ativo',
-            'inativo' => 'Inativo',
-            'expirado' => 'Expirado',
+            "ativo" => "Ativo",
+            "inativo" => "Inativo",
+            "expirado" => "Expirado",
         ];
 
         return $statusMap[$this->status] ?? $this->status;
@@ -488,12 +502,12 @@ class Contrato extends Model
     public function getStatusColorAttribute(): string
     {
         $colorMap = [
-            'ativo' => 'bg-green-100 text-green-800',
-            'inativo' => 'bg-gray-100 text-gray-800',
-            'expirado' => 'bg-red-100 text-red-800',
+            "ativo" => "bg-green-100 text-green-800",
+            "inativo" => "bg-gray-100 text-gray-800",
+            "expirado" => "bg-red-100 text-red-800",
         ];
 
-        return $colorMap[$this->status] ?? 'bg-gray-100 text-gray-800';
+        return $colorMap[$this->status] ?? "bg-gray-100 text-gray-800";
     }
 
     /**
@@ -501,10 +515,10 @@ class Contrato extends Model
      */
     public function getVigenciaDisplayAttribute(): string
     {
-        $inicio = $this->data_inicio ? $this->data_inicio->format('d/m/Y') : '';
-        $fim = $this->data_fim ? $this->data_fim->format('d/m/Y') : '';
+        $inicio = $this->data_inicio ? $this->data_inicio->format("d/m/Y") : "";
+        $fim = $this->data_fim ? $this->data_fim->format("d/m/Y") : "";
 
-        return $inicio.' a '.$fim;
+        return $inicio . " a " . $fim;
     }
 
     /**
@@ -512,8 +526,8 @@ class Contrato extends Model
      */
     public function atualizarStatus(): void
     {
-        if ($this->isExpirado() && $this->status === 'ativo') {
-            $this->update(['status' => 'expirado']);
+        if ($this->isExpirado() && $this->status === "ativo") {
+            $this->update(["status" => "expirado"]);
         }
     }
 
@@ -524,7 +538,7 @@ class Contrato extends Model
         ?int $fornecedorId,
         \DateTimeInterface $data,
     ): ?self {
-        if (! $fornecedorId) {
+        if (!$fornecedorId) {
             return null;
         }
 
