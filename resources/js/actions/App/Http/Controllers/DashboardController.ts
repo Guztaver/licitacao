@@ -80,6 +80,87 @@ indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 index.form = indexForm
 
-const DashboardController = { index }
+/**
+* @see \App\Http\Controllers\DashboardController::getStats
+* @see app/Http/Controllers/DashboardController.php:0
+* @route '/api/dashboard/stats'
+*/
+export const getStats = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: getStats.url(options),
+    method: 'get',
+})
+
+getStats.definition = {
+    methods: ["get","head"],
+    url: '/api/dashboard/stats',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\DashboardController::getStats
+* @see app/Http/Controllers/DashboardController.php:0
+* @route '/api/dashboard/stats'
+*/
+getStats.url = (options?: RouteQueryOptions) => {
+    return getStats.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\DashboardController::getStats
+* @see app/Http/Controllers/DashboardController.php:0
+* @route '/api/dashboard/stats'
+*/
+getStats.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: getStats.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DashboardController::getStats
+* @see app/Http/Controllers/DashboardController.php:0
+* @route '/api/dashboard/stats'
+*/
+getStats.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: getStats.url(options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\DashboardController::getStats
+* @see app/Http/Controllers/DashboardController.php:0
+* @route '/api/dashboard/stats'
+*/
+const getStatsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getStats.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DashboardController::getStats
+* @see app/Http/Controllers/DashboardController.php:0
+* @route '/api/dashboard/stats'
+*/
+getStatsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getStats.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DashboardController::getStats
+* @see app/Http/Controllers/DashboardController.php:0
+* @route '/api/dashboard/stats'
+*/
+getStatsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getStats.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+getStats.form = getStatsForm
+
+const DashboardController = { index, getStats }
 
 export default DashboardController

@@ -633,76 +633,76 @@ destroyForm.delete = (args: { processoLicitatorio: number | { id: number } } | [
 destroy.form = destroyForm
 
 /**
-* @see \App\Http\Controllers\ProcessoLicitatorioController::statistics
-* @see app/Http/Controllers/ProcessoLicitatorioController.php:408
-* @route '/processos-licitatorios-statistics'
+* @see \App\Http\Controllers\ProcessoLicitatorioController::apiIndex
+* @see app/Http/Controllers/ProcessoLicitatorioController.php:0
+* @route '/api/processos-licitatorios'
 */
-export const statistics = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: statistics.url(options),
+export const apiIndex = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: apiIndex.url(options),
     method: 'get',
 })
 
-statistics.definition = {
+apiIndex.definition = {
     methods: ["get","head"],
-    url: '/processos-licitatorios-statistics',
+    url: '/api/processos-licitatorios',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\ProcessoLicitatorioController::statistics
-* @see app/Http/Controllers/ProcessoLicitatorioController.php:408
-* @route '/processos-licitatorios-statistics'
+* @see \App\Http\Controllers\ProcessoLicitatorioController::apiIndex
+* @see app/Http/Controllers/ProcessoLicitatorioController.php:0
+* @route '/api/processos-licitatorios'
 */
-statistics.url = (options?: RouteQueryOptions) => {
-    return statistics.definition.url + queryParams(options)
+apiIndex.url = (options?: RouteQueryOptions) => {
+    return apiIndex.definition.url + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\ProcessoLicitatorioController::statistics
-* @see app/Http/Controllers/ProcessoLicitatorioController.php:408
-* @route '/processos-licitatorios-statistics'
+* @see \App\Http\Controllers\ProcessoLicitatorioController::apiIndex
+* @see app/Http/Controllers/ProcessoLicitatorioController.php:0
+* @route '/api/processos-licitatorios'
 */
-statistics.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: statistics.url(options),
+apiIndex.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: apiIndex.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\ProcessoLicitatorioController::statistics
-* @see app/Http/Controllers/ProcessoLicitatorioController.php:408
-* @route '/processos-licitatorios-statistics'
+* @see \App\Http\Controllers\ProcessoLicitatorioController::apiIndex
+* @see app/Http/Controllers/ProcessoLicitatorioController.php:0
+* @route '/api/processos-licitatorios'
 */
-statistics.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: statistics.url(options),
+apiIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: apiIndex.url(options),
     method: 'head',
 })
 
 /**
-* @see \App\Http\Controllers\ProcessoLicitatorioController::statistics
-* @see app/Http/Controllers/ProcessoLicitatorioController.php:408
-* @route '/processos-licitatorios-statistics'
+* @see \App\Http\Controllers\ProcessoLicitatorioController::apiIndex
+* @see app/Http/Controllers/ProcessoLicitatorioController.php:0
+* @route '/api/processos-licitatorios'
 */
-const statisticsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: statistics.url(options),
+const apiIndexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: apiIndex.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\ProcessoLicitatorioController::statistics
-* @see app/Http/Controllers/ProcessoLicitatorioController.php:408
-* @route '/processos-licitatorios-statistics'
+* @see \App\Http\Controllers\ProcessoLicitatorioController::apiIndex
+* @see app/Http/Controllers/ProcessoLicitatorioController.php:0
+* @route '/api/processos-licitatorios'
 */
-statisticsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: statistics.url(options),
+apiIndexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: apiIndex.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\ProcessoLicitatorioController::statistics
-* @see app/Http/Controllers/ProcessoLicitatorioController.php:408
-* @route '/processos-licitatorios-statistics'
+* @see \App\Http\Controllers\ProcessoLicitatorioController::apiIndex
+* @see app/Http/Controllers/ProcessoLicitatorioController.php:0
+* @route '/api/processos-licitatorios'
 */
-statisticsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: statistics.url({
+apiIndexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: apiIndex.url({
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -711,88 +711,8 @@ statisticsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> 
     method: 'get',
 })
 
-statistics.form = statisticsForm
+apiIndex.form = apiIndexForm
 
-/**
-* @see \App\Http\Controllers\ProcessoLicitatorioController::changeStatus
-* @see app/Http/Controllers/ProcessoLicitatorioController.php:443
-* @route '/processos-licitatorios/{processoLicitatorio}/change-status'
-*/
-export const changeStatus = (args: { processoLicitatorio: number | { id: number } } | [processoLicitatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: changeStatus.url(args, options),
-    method: 'post',
-})
-
-changeStatus.definition = {
-    methods: ["post"],
-    url: '/processos-licitatorios/{processoLicitatorio}/change-status',
-} satisfies RouteDefinition<["post"]>
-
-/**
-* @see \App\Http\Controllers\ProcessoLicitatorioController::changeStatus
-* @see app/Http/Controllers/ProcessoLicitatorioController.php:443
-* @route '/processos-licitatorios/{processoLicitatorio}/change-status'
-*/
-changeStatus.url = (args: { processoLicitatorio: number | { id: number } } | [processoLicitatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { processoLicitatorio: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-        args = { processoLicitatorio: args.id }
-    }
-
-    if (Array.isArray(args)) {
-        args = {
-            processoLicitatorio: args[0],
-        }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-        processoLicitatorio: typeof args.processoLicitatorio === 'object'
-        ? args.processoLicitatorio.id
-        : args.processoLicitatorio,
-    }
-
-    return changeStatus.definition.url
-            .replace('{processoLicitatorio}', parsedArgs.processoLicitatorio.toString())
-            .replace(/\/+$/, '') + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\ProcessoLicitatorioController::changeStatus
-* @see app/Http/Controllers/ProcessoLicitatorioController.php:443
-* @route '/processos-licitatorios/{processoLicitatorio}/change-status'
-*/
-changeStatus.post = (args: { processoLicitatorio: number | { id: number } } | [processoLicitatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: changeStatus.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ProcessoLicitatorioController::changeStatus
-* @see app/Http/Controllers/ProcessoLicitatorioController.php:443
-* @route '/processos-licitatorios/{processoLicitatorio}/change-status'
-*/
-const changeStatusForm = (args: { processoLicitatorio: number | { id: number } } | [processoLicitatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: changeStatus.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ProcessoLicitatorioController::changeStatus
-* @see app/Http/Controllers/ProcessoLicitatorioController.php:443
-* @route '/processos-licitatorios/{processoLicitatorio}/change-status'
-*/
-changeStatusForm.post = (args: { processoLicitatorio: number | { id: number } } | [processoLicitatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: changeStatus.url(args, options),
-    method: 'post',
-})
-
-changeStatus.form = changeStatusForm
-
-const ProcessoLicitatorioController = { index, create, store, show, edit, update, destroy, statistics, changeStatus }
+const ProcessoLicitatorioController = { index, create, store, show, edit, update, destroy, apiIndex }
 
 export default ProcessoLicitatorioController

@@ -1,250 +1,278 @@
 <?php
 
-use App\Http\Controllers\CategoriaMaterialController;
-use App\Http\Controllers\ConferenciaController;
-use App\Http\Controllers\ContratoController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DestinatarioController;
-use App\Http\Controllers\EmitenteController;
-use App\Http\Controllers\FornecedorController;
-use App\Http\Controllers\ItemController;
-use App\Http\Controllers\PedidoCompraController;
-use App\Http\Controllers\ProcessoLicitatorioController;
-use App\Http\Controllers\RelatorioController;
-use App\Http\Controllers\RequisicaoController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\FornecedorController;
+use App\Http\Controllers\ProcessoLicitatorioController;
+use App\Http\Controllers\ContratoController;
+use App\Http\Controllers\CategoriaMaterialController;
+use App\Http\Controllers\DispensaLicitacaoController;
+use App\Http\Controllers\LimiteDispensaAlertaController;
+use App\Http\Controllers\RelatorioController;
+use App\Http\Controllers\DashboardController;
 
+// Rota principal
 Route::get("/", function () {
-    return Inertia::render("welcome");
-})->name("home");
-
-Route::middleware(["auth", "verified"])->group(function () {
-    // Dashboard - Available to all authenticated users
-    Route::get("dashboard", [DashboardController::class, "index"])->name(
-        "dashboard",
-    );
-
-    // Routes for Operacional users (full access)
-    Route::middleware(["user.type:operacional"])->group(function () {
-        // Fornecedores routes
-        Route::resource(
-            "fornecedores",
-            FornecedorController::class,
-        )->parameters(["fornecedores" => "fornecedor"]);
-        Route::get("fornecedores-export", [
-            FornecedorController::class,
-            "export",
-        ])->name("fornecedores.export");
-        Route::get("fornecedores-search", [
-            FornecedorController::class,
-            "search",
-        ])->name("fornecedores.search");
-
-        // Requisições routes
-        Route::resource("requisicoes", RequisicaoController::class)->parameters(
-            ["requisicoes" => "requisicao"],
-        );
-        Route::get("requisicoes-excluidas", [
-            RequisicaoController::class,
-            "excluidas",
-        ])->name("requisicoes.excluidas");
-        Route::get("requisicoes-export", [
-            RequisicaoController::class,
-            "export",
-        ])->name("requisicoes.export");
-        Route::get("requisicoes/{requisicao}/anexo", [
-            RequisicaoController::class,
-            "anexo",
-        ])->name("requisicoes.anexo");
-        Route::post("requisicoes/{requisicao}/concretizar", [
-            RequisicaoController::class,
-            "concretizar",
-        ])->name("requisicoes.concretizar");
-        Route::post("requisicoes/{requisicao}/cancelar", [
-            RequisicaoController::class,
-            "cancelar",
-        ])->name("requisicoes.cancelar");
-
-        // Conferências routes
-        Route::resource("conferencias", ConferenciaController::class);
-        Route::get("conferencias-export", [
-            ConferenciaController::class,
-            "export",
-        ])->name("conferencias.export");
-        Route::get("conferencias/fornecedor/{fornecedor}/{periodo}", [
-            ConferenciaController::class,
-            "fornecedor",
-        ])->name("conferencias.fornecedor");
-        Route::post("conferencias/pedidos-manuais", [
-            ConferenciaController::class,
-            "storePedidoManual",
-        ])->name("conferencias.pedidos-manuais.store");
-        Route::delete("conferencias/{conferencia}/pedidos-manuais/{pedido}", [
-            ConferenciaController::class,
-            "destroyPedidoManual",
-        ])->name("conferencias.pedidos-manuais.destroy");
-        Route::post(
-            "conferencias/fornecedor/{fornecedor}/{periodo}/finalizar",
-            [ConferenciaController::class, "finalizarConferencia"],
-        )->name("conferencias.finalizar");
-
-        // Processos Licitatórios routes
-        Route::resource(
-            "processos-licitatorios",
-            ProcessoLicitatorioController::class,
-        )->parameters([
-            "processos-licitatorios" => "processoLicitatorio",
-        ]);
-        Route::get("processos-licitatorios-statistics", [
-            ProcessoLicitatorioController::class,
-            "statistics",
-        ])->name("processos-licitatorios.statistics");
-        Route::post(
-            "processos-licitatorios/{processoLicitatorio}/change-status",
-            [ProcessoLicitatorioController::class, "changeStatus"],
-        )->name("processos-licitatorios.change-status");
-
-        // Contratos routes
-        Route::resource("contratos", ContratoController::class);
-        Route::post("contratos/{contrato}/toggle-status", [
-            ContratoController::class,
-            "toggleStatus",
-        ])->name("contratos.toggle-status");
-        Route::get("contratos/check-limits", [
-            ContratoController::class,
-            "checkLimits",
-        ])->name("contratos.check-limits");
-        Route::get("contratos/{contrato}/historico-limites", [
-            ContratoController::class,
-            "historicoLimites",
-        ])->name("contratos.historico-limites");
-
-        // Pedidos de Compras routes
-        Route::resource("pedidos-compras", PedidoCompraController::class);
-        Route::post("pedidos-compras/{pedidoCompra}/enviar-aprovacao", [
-            PedidoCompraController::class,
-            "enviarParaAprovacao",
-        ])->name("pedidos-compras.enviar-aprovacao");
-        Route::post("pedidos-compras/{pedidoCompra}/aprovar", [
-            PedidoCompraController::class,
-            "aprovar",
-        ])->name("pedidos-compras.aprovar");
-        Route::post("pedidos-compras/{pedidoCompra}/rejeitar", [
-            PedidoCompraController::class,
-            "rejeitar",
-        ])->name("pedidos-compras.rejeitar");
-        Route::post("pedidos-compras/{pedidoCompra}/cancelar", [
-            PedidoCompraController::class,
-            "cancelar",
-        ])->name("pedidos-compras.cancelar");
-        Route::get("pedidos-compras-pendentes-aprovacao", [
-            PedidoCompraController::class,
-            "pendentesAprovacao",
-        ])->name("pedidos-compras.pendentes-aprovacao");
-
-        // Emitentes routes
-        Route::resource("emitentes", EmitenteController::class);
-        Route::get("emitentes-export", [
-            EmitenteController::class,
-            "export",
-        ])->name("emitentes.export");
-
-        // Destinatários routes
-        Route::resource("destinatarios", DestinatarioController::class);
-        Route::get("destinatarios-export", [
-            DestinatarioController::class,
-            "export",
-        ])->name("destinatarios.export");
-
-        // Items routes
-        Route::resource("items", ItemController::class);
-        Route::post("items-import", [ItemController::class, "import"])->name(
-            "items.import",
-        );
-        Route::get("items-export", [ItemController::class, "export"])->name(
-            "items.export",
-        );
-        Route::get("items-template", [
-            ItemController::class,
-            "downloadTemplate",
-        ])->name("items.template");
-        Route::get("items/{item}/audit-logs", [
-            ItemController::class,
-            "auditLogs",
-        ])->name("items.audit-logs");
-        Route::post("items/{item}/freeze", [
-            ItemController::class,
-            "freeze",
-        ])->name("items.freeze");
-
-        // Categoria Materiais routes
-        Route::resource(
-            "categorias-materiais",
-            CategoriaMaterialController::class,
-        );
-        Route::post("categorias-materiais/{categoriaMaterial}/toggle-status", [
-            CategoriaMaterialController::class,
-            "toggleStatus",
-        ])->name("categorias-materiais.toggle-status");
-        Route::get("categorias-materiais-search", [
-            CategoriaMaterialController::class,
-            "search",
-        ])->name("categorias-materiais.search");
-        Route::post("categorias-materiais/check-limits", [
-            CategoriaMaterialController::class,
-            "checkLimits",
-        ])->name("categorias-materiais.check-limits");
-        Route::post("categorias-materiais/gerar-alertas", [
-            CategoriaMaterialController::class,
-            "gerarAlertas",
-        ])->name("categorias-materiais.gerar-alertas");
-        Route::get("categorias-materiais/usage-report", [
-            CategoriaMaterialController::class,
-            "usageReport",
-        ])->name("categorias-materiais.usage-report");
-
-        // Relatórios routes - full reports with export
-        Route::get("relatorios/requisicoes/export", [
-            RelatorioController::class,
-            "exportRequisicoes",
-        ])->name("relatorios.requisicoes.export");
-        Route::get("relatorios/fornecedores/export", [
-            RelatorioController::class,
-            "exportFornecedores",
-        ])->name("relatorios.fornecedores.export");
-        Route::get("relatorios/conferencias/export", [
-            RelatorioController::class,
-            "exportConferencias",
-        ])->name("relatorios.conferencias.export");
-    });
-
-    // Routes available to both Gestor and Operacional users (read-only reports)
-    Route::middleware(["user.type:gestor,operacional"])->group(function () {
-        // PDF generation - available to both user types
-        Route::get("requisicoes/{requisicao}/pdf", [
-            RequisicaoController::class,
-            "pdf",
-        ])->name("requisicoes.pdf");
-
-        // Relatórios routes - read-only access
-        Route::get("relatorios", [RelatorioController::class, "index"])->name(
-            "relatorios.index",
-        );
-        Route::get("relatorios/requisicoes", [
-            RelatorioController::class,
-            "requisicoes",
-        ])->name("relatorios.requisicoes");
-        Route::get("relatorios/fornecedores", [
-            RelatorioController::class,
-            "fornecedores",
-        ])->name("relatorios.fornecedores");
-        Route::get("relatorios/conferencias", [
-            RelatorioController::class,
-            "conferencias",
-        ])->name("relatorios.conferencias");
-    });
+    return view("welcome");
 });
 
-require __DIR__ . "/settings.php";
+// Dashboard
+Route::middleware(["auth", "verified"])->group(function () {
+    Route::get("/dashboard", [DashboardController::class, "index"])->name(
+        "dashboard",
+    );
+    Route::get("/api/dashboard/stats", [
+        DashboardController::class,
+        "getStats",
+    ])->name("dashboard.stats");
+
+    // Relatórios
+    Route::prefix("relatorios")
+        ->name("relatorios.")
+        ->group(function () {
+            Route::get("/", [RelatorioController::class, "index"])->name(
+                "index",
+            );
+            Route::get("/api/dashboard-data", [
+                RelatorioController::class,
+                "getDashboardData",
+            ])->name("dashboard.data");
+            Route::get("/api/materiais", [
+                RelatorioController::class,
+                "getDadosMateriais",
+            ])->name("dados.materiais");
+            Route::get("/api/contratos", [
+                RelatorioController::class,
+                "getDadosContratos",
+            ])->name("dados.contratos");
+            Route::post("/gerar", [RelatorioController::class, "gerar"])->name(
+                "gerar",
+            );
+            Route::get("/api/listar", [
+                RelatorioController::class,
+                "listar",
+            ])->name("listar");
+            Route::get("/download/{relatorio}", [
+                RelatorioController::class,
+                "download",
+            ])->name("download");
+            Route::delete("/{relatorio}", [
+                RelatorioController::class,
+                "excluir",
+            ])->name("excluir");
+        });
+
+    // Rotas do perfil
+    Route::get("/profile", [ProfileController::class, "edit"])->name(
+        "profile.edit",
+    );
+    Route::patch("/profile", [ProfileController::class, "update"])->name(
+        "profile.update",
+    );
+    Route::delete("/profile", [ProfileController::class, "destroy"])->name(
+        "profile.destroy",
+    );
+});
+
+// Fornecedores
+Route::resource("fornecedores", FornecedorController::class)->middleware([
+    "auth",
+    "verified",
+]);
+
+// Processos Licitatórios
+Route::resource("processos-licitatorios", ProcessoLicitatorioController::class)
+    ->middleware(["auth", "verified"])
+    ->parameters([
+        "processos-licitatorios" => "processoLicitatorio",
+    ]);
+
+// Contratos
+Route::resource("contratos", ContratoController::class)->middleware([
+    "auth",
+    "verified",
+]);
+
+// Categorias de Materiais
+Route::resource("categorias", CategoriaMaterialController::class)->middleware([
+    "auth",
+    "verified",
+]);
+
+// Dispensas de Licitação
+Route::prefix("dispensas")
+    ->name("dispensas.")
+    ->middleware(["auth", "verified"])
+    ->group(function () {
+        Route::get("/", [DispensaLicitacaoController::class, "index"])->name(
+            "index",
+        );
+        Route::post("/", [DispensaLicitacaoController::class, "store"])->name(
+            "store",
+        );
+        Route::get("/create", [
+            DispensaLicitacaoController::class,
+            "create",
+        ])->name("create");
+        Route::get("/{dispensa}", [
+            DispensaLicitacaoController::class,
+            "show",
+        ])->name("show");
+        Route::put("/{dispensa}", [
+            DispensaLicitacaoController::class,
+            "update",
+        ])->name("update");
+        Route::delete("/{dispensa}", [
+            DispensaLicitacaoController::class,
+            "destroy",
+        ])->name("destroy");
+        Route::post("/{dispensa}/cancelar", [
+            DispensaLicitacaoController::class,
+            "cancelar",
+        ])->name("cancelar");
+        Route::post("/validar", [
+            DispensaLicitacaoController::class,
+            "validar",
+        ])->name("validar");
+    });
+
+// Alertas de Limites
+Route::prefix("alertas")
+    ->name("alertas.")
+    ->middleware(["auth", "verified"])
+    ->group(function () {
+        Route::get("/", [LimiteDispensaAlertaController::class, "index"])->name(
+            "index",
+        );
+        Route::get("/{alerta}", [
+            LimiteDispensaAlertaController::class,
+            "show",
+        ])->name("show");
+        Route::patch("/{alerta}/marcar-lida", [
+            LimiteDispensaAlertaController::class,
+            "marcarComoLida",
+        ])->name("marcar-lida");
+        Route::patch("/{alerta}/marcar-nao-lida", [
+            LimiteDispensaAlertaController::class,
+            "marcarComoNaoLida",
+        ])->name("marcar-nao-lida");
+        Route::patch("/marcar-todas-lidas", [
+            LimiteDispensaAlertaController::class,
+            "marcarTodasComoLidas",
+        ])->name("marcar-todas-lidas");
+        Route::get("/nao-lidas-count", [
+            LimiteDispensaAlertaController::class,
+            "contarNaoLidas",
+        ])->name("nao-lidas-count");
+    });
+
+// API routes para AJAX
+Route::middleware(["auth", "verified"])
+    ->prefix("api")
+    ->group(function () {
+        Route::get("/fornecedores", [
+            FornecedorController::class,
+            "apiIndex",
+        ])->name("api.fornecedores");
+        Route::get("/processos-licitatorios", [
+            ProcessoLicitatorioController::class,
+            "apiIndex",
+        ])->name("api.processos-licitatorios");
+        Route::get("/categoria-materiais", [
+            CategoriaMaterialController::class,
+            "index",
+        ])->name("api.categoria-materiais");
+        Route::get("/categoria-materiais/{id}/com-uso", [
+            CategoriaMaterialController::class,
+            "showWithUsage",
+        ])->name("api.categoria-materiais.com-uso");
+        Route::get("/dispensa-licitacoes", [
+            DispensaLicitacaoController::class,
+            "index",
+        ])->name("api.dispensa-licitacoes");
+        Route::get("/limite-alertas", [
+            LimiteDispensaAlertaController::class,
+            "index",
+        ])->name("api.limite-alertas");
+        Route::get("/limites-dashboard", [
+            CategoriaMaterialController::class,
+            "getDashboardData",
+        ])->name("api.limites-dashboard");
+        Route::get("/limite-alertas/check-new", [
+            LimiteDispensaAlertaController::class,
+            "checkNewAlerts",
+        ])->name("api.limite-alertas.check-new");
+    });
+
+// Autenticação
+Route::middleware("guest")->group(function () {
+    Route::get("register", [RegisteredUserController::class, "create"])->name(
+        "register",
+    );
+    Route::post("register", [RegisteredUserController::class, "store"]);
+
+    Route::get("login", [
+        AuthenticatedSessionController::class,
+        "create",
+    ])->name("login");
+    Route::post("login", [AuthenticatedSessionController::class, "store"]);
+
+    Route::get("forgot-password", [
+        PasswordResetLinkController::class,
+        "create",
+    ])->name("password.request");
+    Route::post("forgot-password", [
+        PasswordResetLinkController::class,
+        "store",
+    ])->name("password.email");
+
+    Route::get("reset-password/{token}", [
+        NewPasswordController::class,
+        "create",
+    ])->name("password.reset");
+    Route::post("reset-password", [
+        NewPasswordController::class,
+        "store",
+    ])->name("password.store");
+});
+
+Route::middleware("auth")->group(function () {
+    Route::get("verify-email", [
+        EmailVerificationNotificationController::class,
+        "notification",
+    ])->name("verification.notice");
+    Route::post("email/verification-notification", [
+        EmailVerificationNotificationController::class,
+        "store",
+    ])
+        ->middleware("throttle:6,1")
+        ->name("verification.send");
+
+    Route::get("confirm-password", [
+        AuthenticatedSessionController::class,
+        "confirmPassword",
+    ])->name("password.confirm");
+    Route::post("confirm-password", [
+        AuthenticatedSessionController::class,
+        "storeConfirmedPassword",
+    ]);
+
+    Route::post("logout", [
+        AuthenticatedSessionController::class,
+        "destroy",
+    ])->name("logout");
+    Route::get("verify-email/{id}/{hash}", [
+        VerifyEmailController::class,
+        "__invoke",
+    ])
+        ->middleware("signed")
+        ->name("verification.verify");
+});
+
 require __DIR__ . "/auth.php";

@@ -1,250 +1,7 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
-/**
-* @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:379
-* @route '/relatorios/requisicoes/export'
-*/
-export const exportRequisicoes = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: exportRequisicoes.url(options),
-    method: 'get',
-})
-
-exportRequisicoes.definition = {
-    methods: ["get","head"],
-    url: '/relatorios/requisicoes/export',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:379
-* @route '/relatorios/requisicoes/export'
-*/
-exportRequisicoes.url = (options?: RouteQueryOptions) => {
-    return exportRequisicoes.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:379
-* @route '/relatorios/requisicoes/export'
-*/
-exportRequisicoes.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: exportRequisicoes.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:379
-* @route '/relatorios/requisicoes/export'
-*/
-exportRequisicoes.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: exportRequisicoes.url(options),
-    method: 'head',
-})
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:379
-* @route '/relatorios/requisicoes/export'
-*/
-const exportRequisicoesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportRequisicoes.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:379
-* @route '/relatorios/requisicoes/export'
-*/
-exportRequisicoesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportRequisicoes.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportRequisicoes
-* @see app/Http/Controllers/RelatorioController.php:379
-* @route '/relatorios/requisicoes/export'
-*/
-exportRequisicoesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportRequisicoes.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-exportRequisicoes.form = exportRequisicoesForm
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:659
-* @route '/relatorios/fornecedores/export'
-*/
-export const exportFornecedores = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: exportFornecedores.url(options),
-    method: 'get',
-})
-
-exportFornecedores.definition = {
-    methods: ["get","head"],
-    url: '/relatorios/fornecedores/export',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:659
-* @route '/relatorios/fornecedores/export'
-*/
-exportFornecedores.url = (options?: RouteQueryOptions) => {
-    return exportFornecedores.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:659
-* @route '/relatorios/fornecedores/export'
-*/
-exportFornecedores.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: exportFornecedores.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:659
-* @route '/relatorios/fornecedores/export'
-*/
-exportFornecedores.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: exportFornecedores.url(options),
-    method: 'head',
-})
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:659
-* @route '/relatorios/fornecedores/export'
-*/
-const exportFornecedoresForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportFornecedores.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:659
-* @route '/relatorios/fornecedores/export'
-*/
-exportFornecedoresForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportFornecedores.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportFornecedores
-* @see app/Http/Controllers/RelatorioController.php:659
-* @route '/relatorios/fornecedores/export'
-*/
-exportFornecedoresForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportFornecedores.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-exportFornecedores.form = exportFornecedoresForm
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:908
-* @route '/relatorios/conferencias/export'
-*/
-export const exportConferencias = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: exportConferencias.url(options),
-    method: 'get',
-})
-
-exportConferencias.definition = {
-    methods: ["get","head"],
-    url: '/relatorios/conferencias/export',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:908
-* @route '/relatorios/conferencias/export'
-*/
-exportConferencias.url = (options?: RouteQueryOptions) => {
-    return exportConferencias.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:908
-* @route '/relatorios/conferencias/export'
-*/
-exportConferencias.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: exportConferencias.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:908
-* @route '/relatorios/conferencias/export'
-*/
-exportConferencias.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: exportConferencias.url(options),
-    method: 'head',
-})
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:908
-* @route '/relatorios/conferencias/export'
-*/
-const exportConferenciasForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportConferencias.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:908
-* @route '/relatorios/conferencias/export'
-*/
-exportConferenciasForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportConferencias.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\RelatorioController::exportConferencias
-* @see app/Http/Controllers/RelatorioController.php:908
-* @route '/relatorios/conferencias/export'
-*/
-exportConferenciasForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportConferencias.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-exportConferencias.form = exportConferenciasForm
-
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\RelatorioController::index
-* @see app/Http/Controllers/RelatorioController.php:22
+* @see app/Http/Controllers/RelatorioController.php:28
 * @route '/relatorios'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -259,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::index
-* @see app/Http/Controllers/RelatorioController.php:22
+* @see app/Http/Controllers/RelatorioController.php:28
 * @route '/relatorios'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -268,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\RelatorioController::index
-* @see app/Http/Controllers/RelatorioController.php:22
+* @see app/Http/Controllers/RelatorioController.php:28
 * @route '/relatorios'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -278,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\RelatorioController::index
-* @see app/Http/Controllers/RelatorioController.php:22
+* @see app/Http/Controllers/RelatorioController.php:28
 * @route '/relatorios'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -288,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\RelatorioController::index
-* @see app/Http/Controllers/RelatorioController.php:22
+* @see app/Http/Controllers/RelatorioController.php:28
 * @route '/relatorios'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -298,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\RelatorioController::index
-* @see app/Http/Controllers/RelatorioController.php:22
+* @see app/Http/Controllers/RelatorioController.php:28
 * @route '/relatorios'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -308,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\RelatorioController::index
-* @see app/Http/Controllers/RelatorioController.php:22
+* @see app/Http/Controllers/RelatorioController.php:28
 * @route '/relatorios'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -324,76 +81,76 @@ indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 index.form = indexForm
 
 /**
-* @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:72
-* @route '/relatorios/requisicoes'
+* @see \App\Http\Controllers\RelatorioController::getDashboardData
+* @see app/Http/Controllers/RelatorioController.php:36
+* @route '/relatorios/api/dashboard-data'
 */
-export const requisicoes = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: requisicoes.url(options),
+export const getDashboardData = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: getDashboardData.url(options),
     method: 'get',
 })
 
-requisicoes.definition = {
+getDashboardData.definition = {
     methods: ["get","head"],
-    url: '/relatorios/requisicoes',
+    url: '/relatorios/api/dashboard-data',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:72
-* @route '/relatorios/requisicoes'
+* @see \App\Http\Controllers\RelatorioController::getDashboardData
+* @see app/Http/Controllers/RelatorioController.php:36
+* @route '/relatorios/api/dashboard-data'
 */
-requisicoes.url = (options?: RouteQueryOptions) => {
-    return requisicoes.definition.url + queryParams(options)
+getDashboardData.url = (options?: RouteQueryOptions) => {
+    return getDashboardData.definition.url + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:72
-* @route '/relatorios/requisicoes'
+* @see \App\Http\Controllers\RelatorioController::getDashboardData
+* @see app/Http/Controllers/RelatorioController.php:36
+* @route '/relatorios/api/dashboard-data'
 */
-requisicoes.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: requisicoes.url(options),
+getDashboardData.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: getDashboardData.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:72
-* @route '/relatorios/requisicoes'
+* @see \App\Http\Controllers\RelatorioController::getDashboardData
+* @see app/Http/Controllers/RelatorioController.php:36
+* @route '/relatorios/api/dashboard-data'
 */
-requisicoes.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: requisicoes.url(options),
+getDashboardData.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: getDashboardData.url(options),
     method: 'head',
 })
 
 /**
-* @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:72
-* @route '/relatorios/requisicoes'
+* @see \App\Http\Controllers\RelatorioController::getDashboardData
+* @see app/Http/Controllers/RelatorioController.php:36
+* @route '/relatorios/api/dashboard-data'
 */
-const requisicoesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: requisicoes.url(options),
+const getDashboardDataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getDashboardData.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:72
-* @route '/relatorios/requisicoes'
+* @see \App\Http\Controllers\RelatorioController::getDashboardData
+* @see app/Http/Controllers/RelatorioController.php:36
+* @route '/relatorios/api/dashboard-data'
 */
-requisicoesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: requisicoes.url(options),
+getDashboardDataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getDashboardData.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\RelatorioController::requisicoes
-* @see app/Http/Controllers/RelatorioController.php:72
-* @route '/relatorios/requisicoes'
+* @see \App\Http\Controllers\RelatorioController::getDashboardData
+* @see app/Http/Controllers/RelatorioController.php:36
+* @route '/relatorios/api/dashboard-data'
 */
-requisicoesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: requisicoes.url({
+getDashboardDataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getDashboardData.url({
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -402,79 +159,79 @@ requisicoesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'>
     method: 'get',
 })
 
-requisicoes.form = requisicoesForm
+getDashboardData.form = getDashboardDataForm
 
 /**
-* @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:193
-* @route '/relatorios/fornecedores'
+* @see \App\Http\Controllers\RelatorioController::getDadosMateriais
+* @see app/Http/Controllers/RelatorioController.php:214
+* @route '/relatorios/api/materiais'
 */
-export const fornecedores = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: fornecedores.url(options),
+export const getDadosMateriais = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: getDadosMateriais.url(options),
     method: 'get',
 })
 
-fornecedores.definition = {
+getDadosMateriais.definition = {
     methods: ["get","head"],
-    url: '/relatorios/fornecedores',
+    url: '/relatorios/api/materiais',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:193
-* @route '/relatorios/fornecedores'
+* @see \App\Http\Controllers\RelatorioController::getDadosMateriais
+* @see app/Http/Controllers/RelatorioController.php:214
+* @route '/relatorios/api/materiais'
 */
-fornecedores.url = (options?: RouteQueryOptions) => {
-    return fornecedores.definition.url + queryParams(options)
+getDadosMateriais.url = (options?: RouteQueryOptions) => {
+    return getDadosMateriais.definition.url + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:193
-* @route '/relatorios/fornecedores'
+* @see \App\Http\Controllers\RelatorioController::getDadosMateriais
+* @see app/Http/Controllers/RelatorioController.php:214
+* @route '/relatorios/api/materiais'
 */
-fornecedores.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: fornecedores.url(options),
+getDadosMateriais.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: getDadosMateriais.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:193
-* @route '/relatorios/fornecedores'
+* @see \App\Http\Controllers\RelatorioController::getDadosMateriais
+* @see app/Http/Controllers/RelatorioController.php:214
+* @route '/relatorios/api/materiais'
 */
-fornecedores.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: fornecedores.url(options),
+getDadosMateriais.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: getDadosMateriais.url(options),
     method: 'head',
 })
 
 /**
-* @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:193
-* @route '/relatorios/fornecedores'
+* @see \App\Http\Controllers\RelatorioController::getDadosMateriais
+* @see app/Http/Controllers/RelatorioController.php:214
+* @route '/relatorios/api/materiais'
 */
-const fornecedoresForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: fornecedores.url(options),
+const getDadosMateriaisForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getDadosMateriais.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:193
-* @route '/relatorios/fornecedores'
+* @see \App\Http\Controllers\RelatorioController::getDadosMateriais
+* @see app/Http/Controllers/RelatorioController.php:214
+* @route '/relatorios/api/materiais'
 */
-fornecedoresForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: fornecedores.url(options),
+getDadosMateriaisForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getDadosMateriais.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\RelatorioController::fornecedores
-* @see app/Http/Controllers/RelatorioController.php:193
-* @route '/relatorios/fornecedores'
+* @see \App\Http\Controllers\RelatorioController::getDadosMateriais
+* @see app/Http/Controllers/RelatorioController.php:214
+* @route '/relatorios/api/materiais'
 */
-fornecedoresForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: fornecedores.url({
+getDadosMateriaisForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getDadosMateriais.url({
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -483,79 +240,79 @@ fornecedoresForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'
     method: 'get',
 })
 
-fornecedores.form = fornecedoresForm
+getDadosMateriais.form = getDadosMateriaisForm
 
 /**
-* @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:278
-* @route '/relatorios/conferencias'
+* @see \App\Http\Controllers\RelatorioController::getDadosContratos
+* @see app/Http/Controllers/RelatorioController.php:236
+* @route '/relatorios/api/contratos'
 */
-export const conferencias = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: conferencias.url(options),
+export const getDadosContratos = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: getDadosContratos.url(options),
     method: 'get',
 })
 
-conferencias.definition = {
+getDadosContratos.definition = {
     methods: ["get","head"],
-    url: '/relatorios/conferencias',
+    url: '/relatorios/api/contratos',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:278
-* @route '/relatorios/conferencias'
+* @see \App\Http\Controllers\RelatorioController::getDadosContratos
+* @see app/Http/Controllers/RelatorioController.php:236
+* @route '/relatorios/api/contratos'
 */
-conferencias.url = (options?: RouteQueryOptions) => {
-    return conferencias.definition.url + queryParams(options)
+getDadosContratos.url = (options?: RouteQueryOptions) => {
+    return getDadosContratos.definition.url + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:278
-* @route '/relatorios/conferencias'
+* @see \App\Http\Controllers\RelatorioController::getDadosContratos
+* @see app/Http/Controllers/RelatorioController.php:236
+* @route '/relatorios/api/contratos'
 */
-conferencias.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: conferencias.url(options),
+getDadosContratos.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: getDadosContratos.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:278
-* @route '/relatorios/conferencias'
+* @see \App\Http\Controllers\RelatorioController::getDadosContratos
+* @see app/Http/Controllers/RelatorioController.php:236
+* @route '/relatorios/api/contratos'
 */
-conferencias.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: conferencias.url(options),
+getDadosContratos.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: getDadosContratos.url(options),
     method: 'head',
 })
 
 /**
-* @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:278
-* @route '/relatorios/conferencias'
+* @see \App\Http\Controllers\RelatorioController::getDadosContratos
+* @see app/Http/Controllers/RelatorioController.php:236
+* @route '/relatorios/api/contratos'
 */
-const conferenciasForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: conferencias.url(options),
+const getDadosContratosForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getDadosContratos.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:278
-* @route '/relatorios/conferencias'
+* @see \App\Http\Controllers\RelatorioController::getDadosContratos
+* @see app/Http/Controllers/RelatorioController.php:236
+* @route '/relatorios/api/contratos'
 */
-conferenciasForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: conferencias.url(options),
+getDadosContratosForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getDadosContratos.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\RelatorioController::conferencias
-* @see app/Http/Controllers/RelatorioController.php:278
-* @route '/relatorios/conferencias'
+* @see \App\Http\Controllers\RelatorioController::getDadosContratos
+* @see app/Http/Controllers/RelatorioController.php:236
+* @route '/relatorios/api/contratos'
 */
-conferenciasForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: conferencias.url({
+getDadosContratosForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getDadosContratos.url({
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -564,8 +321,340 @@ conferenciasForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'
     method: 'get',
 })
 
-conferencias.form = conferenciasForm
+getDadosContratos.form = getDadosContratosForm
 
-const RelatorioController = { exportRequisicoes, exportFornecedores, exportConferencias, index, requisicoes, fornecedores, conferencias }
+/**
+* @see \App\Http\Controllers\RelatorioController::gerar
+* @see app/Http/Controllers/RelatorioController.php:105
+* @route '/relatorios/gerar'
+*/
+export const gerar = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: gerar.url(options),
+    method: 'post',
+})
+
+gerar.definition = {
+    methods: ["post"],
+    url: '/relatorios/gerar',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\RelatorioController::gerar
+* @see app/Http/Controllers/RelatorioController.php:105
+* @route '/relatorios/gerar'
+*/
+gerar.url = (options?: RouteQueryOptions) => {
+    return gerar.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\RelatorioController::gerar
+* @see app/Http/Controllers/RelatorioController.php:105
+* @route '/relatorios/gerar'
+*/
+gerar.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: gerar.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::gerar
+* @see app/Http/Controllers/RelatorioController.php:105
+* @route '/relatorios/gerar'
+*/
+const gerarForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: gerar.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::gerar
+* @see app/Http/Controllers/RelatorioController.php:105
+* @route '/relatorios/gerar'
+*/
+gerarForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: gerar.url(options),
+    method: 'post',
+})
+
+gerar.form = gerarForm
+
+/**
+* @see \App\Http\Controllers\RelatorioController::listar
+* @see app/Http/Controllers/RelatorioController.php:149
+* @route '/relatorios/api/listar'
+*/
+export const listar = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: listar.url(options),
+    method: 'get',
+})
+
+listar.definition = {
+    methods: ["get","head"],
+    url: '/relatorios/api/listar',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\RelatorioController::listar
+* @see app/Http/Controllers/RelatorioController.php:149
+* @route '/relatorios/api/listar'
+*/
+listar.url = (options?: RouteQueryOptions) => {
+    return listar.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\RelatorioController::listar
+* @see app/Http/Controllers/RelatorioController.php:149
+* @route '/relatorios/api/listar'
+*/
+listar.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: listar.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::listar
+* @see app/Http/Controllers/RelatorioController.php:149
+* @route '/relatorios/api/listar'
+*/
+listar.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: listar.url(options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::listar
+* @see app/Http/Controllers/RelatorioController.php:149
+* @route '/relatorios/api/listar'
+*/
+const listarForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: listar.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::listar
+* @see app/Http/Controllers/RelatorioController.php:149
+* @route '/relatorios/api/listar'
+*/
+listarForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: listar.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::listar
+* @see app/Http/Controllers/RelatorioController.php:149
+* @route '/relatorios/api/listar'
+*/
+listarForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: listar.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+listar.form = listarForm
+
+/**
+* @see \App\Http\Controllers\RelatorioController::download
+* @see app/Http/Controllers/RelatorioController.php:161
+* @route '/relatorios/download/{relatorio}'
+*/
+export const download = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: download.url(args, options),
+    method: 'get',
+})
+
+download.definition = {
+    methods: ["get","head"],
+    url: '/relatorios/download/{relatorio}',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\RelatorioController::download
+* @see app/Http/Controllers/RelatorioController.php:161
+* @route '/relatorios/download/{relatorio}'
+*/
+download.url = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { relatorio: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { relatorio: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            relatorio: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        relatorio: typeof args.relatorio === 'object'
+        ? args.relatorio.id
+        : args.relatorio,
+    }
+
+    return download.definition.url
+            .replace('{relatorio}', parsedArgs.relatorio.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\RelatorioController::download
+* @see app/Http/Controllers/RelatorioController.php:161
+* @route '/relatorios/download/{relatorio}'
+*/
+download.get = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: download.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::download
+* @see app/Http/Controllers/RelatorioController.php:161
+* @route '/relatorios/download/{relatorio}'
+*/
+download.head = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: download.url(args, options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::download
+* @see app/Http/Controllers/RelatorioController.php:161
+* @route '/relatorios/download/{relatorio}'
+*/
+const downloadForm = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: download.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::download
+* @see app/Http/Controllers/RelatorioController.php:161
+* @route '/relatorios/download/{relatorio}'
+*/
+downloadForm.get = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: download.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::download
+* @see app/Http/Controllers/RelatorioController.php:161
+* @route '/relatorios/download/{relatorio}'
+*/
+downloadForm.head = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: download.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+download.form = downloadForm
+
+/**
+* @see \App\Http\Controllers\RelatorioController::excluir
+* @see app/Http/Controllers/RelatorioController.php:182
+* @route '/relatorios/{relatorio}'
+*/
+export const excluir = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+    url: excluir.url(args, options),
+    method: 'delete',
+})
+
+excluir.definition = {
+    methods: ["delete"],
+    url: '/relatorios/{relatorio}',
+} satisfies RouteDefinition<["delete"]>
+
+/**
+* @see \App\Http\Controllers\RelatorioController::excluir
+* @see app/Http/Controllers/RelatorioController.php:182
+* @route '/relatorios/{relatorio}'
+*/
+excluir.url = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { relatorio: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { relatorio: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            relatorio: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        relatorio: typeof args.relatorio === 'object'
+        ? args.relatorio.id
+        : args.relatorio,
+    }
+
+    return excluir.definition.url
+            .replace('{relatorio}', parsedArgs.relatorio.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\RelatorioController::excluir
+* @see app/Http/Controllers/RelatorioController.php:182
+* @route '/relatorios/{relatorio}'
+*/
+excluir.delete = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+    url: excluir.url(args, options),
+    method: 'delete',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::excluir
+* @see app/Http/Controllers/RelatorioController.php:182
+* @route '/relatorios/{relatorio}'
+*/
+const excluirForm = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: excluir.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\RelatorioController::excluir
+* @see app/Http/Controllers/RelatorioController.php:182
+* @route '/relatorios/{relatorio}'
+*/
+excluirForm.delete = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: excluir.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+excluir.form = excluirForm
+
+const RelatorioController = { index, getDashboardData, getDadosMateriais, getDadosContratos, gerar, listar, download, excluir }
 
 export default RelatorioController

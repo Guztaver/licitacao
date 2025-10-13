@@ -60,7 +60,7 @@ RUN mkdir -p database && \
 RUN php artisan wayfinder:generate --with-form
 
 # Stage 2: Frontend Build
-FROM node:22-alpine AS frontend-builder
+FROM oven/bun:1-alpine AS frontend-builder
 
 # Set production environment
 ENV NODE_ENV=production
@@ -71,7 +71,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all Node dependencies including dev dependencies for build
-RUN npm ci --include=dev
+RUN bun install --frozen-lockfile
 
 # Copy frontend source files
 COPY resources/ ./resources/
@@ -85,7 +85,7 @@ COPY --from=php-wayfinder /var/www/html/resources/js/actions ./resources/js/acti
 COPY --from=php-wayfinder /var/www/html/resources/js/routes.ts ./resources/js/routes.ts
 
 # Build frontend assets for production
-RUN npm run build
+RUN bun run build
 
 # Stage 3: Production PHP Application
 FROM php:8.4-fpm-alpine

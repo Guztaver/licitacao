@@ -34,15 +34,16 @@ composer run lint:check              # Check code style with Laravel Pint
 ### Frontend (React/TypeScript)
 ```bash
 # Development
-npm run dev                          # Start Vite dev server
-npm run build                        # Production build
-npm run build:ssr                    # Build with SSR
+bun run dev                           # Start Vite dev server
+bun run build                         # Production build
+bun run build:ssr                     # Build with SSR
+bun run hot                           # Development with hot reload
 
 # Code quality
-npm run lint                         # Biome linting with auto-fix
-npm run format                       # Biome formatting
-npm run types                        # TypeScript type checking
-npm run check                        # Run all Biome checks
+bun run lint                          # Biome linting with auto-fix
+bun run format                        # Biome formatting
+bun run types                         # TypeScript type checking
+bun run check                         # Run all Biome checks
 ```
 
 ### Full Stack Development

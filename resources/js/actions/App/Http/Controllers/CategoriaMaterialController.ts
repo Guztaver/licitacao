@@ -2,74 +2,74 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::index
 * @see app/Http/Controllers/CategoriaMaterialController.php:18
-* @route '/categorias-materiais'
+* @route '/categorias'
 */
-export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(options),
+const indexc33b2cdf68d55993591904d2ec298d4b = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: indexc33b2cdf68d55993591904d2ec298d4b.url(options),
     method: 'get',
 })
 
-index.definition = {
+indexc33b2cdf68d55993591904d2ec298d4b.definition = {
     methods: ["get","head"],
-    url: '/categorias-materiais',
+    url: '/categorias',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::index
 * @see app/Http/Controllers/CategoriaMaterialController.php:18
-* @route '/categorias-materiais'
+* @route '/categorias'
 */
-index.url = (options?: RouteQueryOptions) => {
-    return index.definition.url + queryParams(options)
+indexc33b2cdf68d55993591904d2ec298d4b.url = (options?: RouteQueryOptions) => {
+    return indexc33b2cdf68d55993591904d2ec298d4b.definition.url + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::index
 * @see app/Http/Controllers/CategoriaMaterialController.php:18
-* @route '/categorias-materiais'
+* @route '/categorias'
 */
-index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(options),
+indexc33b2cdf68d55993591904d2ec298d4b.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: indexc33b2cdf68d55993591904d2ec298d4b.url(options),
     method: 'get',
 })
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::index
 * @see app/Http/Controllers/CategoriaMaterialController.php:18
-* @route '/categorias-materiais'
+* @route '/categorias'
 */
-index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: index.url(options),
+indexc33b2cdf68d55993591904d2ec298d4b.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: indexc33b2cdf68d55993591904d2ec298d4b.url(options),
     method: 'head',
 })
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::index
 * @see app/Http/Controllers/CategoriaMaterialController.php:18
-* @route '/categorias-materiais'
+* @route '/categorias'
 */
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
+const indexc33b2cdf68d55993591904d2ec298d4bForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: indexc33b2cdf68d55993591904d2ec298d4b.url(options),
     method: 'get',
 })
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::index
 * @see app/Http/Controllers/CategoriaMaterialController.php:18
-* @route '/categorias-materiais'
+* @route '/categorias'
 */
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
+indexc33b2cdf68d55993591904d2ec298d4bForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: indexc33b2cdf68d55993591904d2ec298d4b.url(options),
     method: 'get',
 })
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::index
 * @see app/Http/Controllers/CategoriaMaterialController.php:18
-* @route '/categorias-materiais'
+* @route '/categorias'
 */
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
+indexc33b2cdf68d55993591904d2ec298d4bForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: indexc33b2cdf68d55993591904d2ec298d4b.url({
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -78,12 +78,97 @@ indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     method: 'get',
 })
 
-index.form = indexForm
+indexc33b2cdf68d55993591904d2ec298d4b.form = indexc33b2cdf68d55993591904d2ec298d4bForm
+/**
+* @see \App\Http\Controllers\CategoriaMaterialController::index
+* @see app/Http/Controllers/CategoriaMaterialController.php:18
+* @route '/api/categoria-materiais'
+*/
+const indexf8a9902e3952eb206b3f37135a913a85 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: indexf8a9902e3952eb206b3f37135a913a85.url(options),
+    method: 'get',
+})
+
+indexf8a9902e3952eb206b3f37135a913a85.definition = {
+    methods: ["get","head"],
+    url: '/api/categoria-materiais',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\CategoriaMaterialController::index
+* @see app/Http/Controllers/CategoriaMaterialController.php:18
+* @route '/api/categoria-materiais'
+*/
+indexf8a9902e3952eb206b3f37135a913a85.url = (options?: RouteQueryOptions) => {
+    return indexf8a9902e3952eb206b3f37135a913a85.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\CategoriaMaterialController::index
+* @see app/Http/Controllers/CategoriaMaterialController.php:18
+* @route '/api/categoria-materiais'
+*/
+indexf8a9902e3952eb206b3f37135a913a85.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: indexf8a9902e3952eb206b3f37135a913a85.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\CategoriaMaterialController::index
+* @see app/Http/Controllers/CategoriaMaterialController.php:18
+* @route '/api/categoria-materiais'
+*/
+indexf8a9902e3952eb206b3f37135a913a85.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: indexf8a9902e3952eb206b3f37135a913a85.url(options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\CategoriaMaterialController::index
+* @see app/Http/Controllers/CategoriaMaterialController.php:18
+* @route '/api/categoria-materiais'
+*/
+const indexf8a9902e3952eb206b3f37135a913a85Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: indexf8a9902e3952eb206b3f37135a913a85.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\CategoriaMaterialController::index
+* @see app/Http/Controllers/CategoriaMaterialController.php:18
+* @route '/api/categoria-materiais'
+*/
+indexf8a9902e3952eb206b3f37135a913a85Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: indexf8a9902e3952eb206b3f37135a913a85.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\CategoriaMaterialController::index
+* @see app/Http/Controllers/CategoriaMaterialController.php:18
+* @route '/api/categoria-materiais'
+*/
+indexf8a9902e3952eb206b3f37135a913a85Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: indexf8a9902e3952eb206b3f37135a913a85.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+indexf8a9902e3952eb206b3f37135a913a85.form = indexf8a9902e3952eb206b3f37135a913a85Form
+
+export const index = {
+    '/categorias': indexc33b2cdf68d55993591904d2ec298d4b,
+    '/api/categoria-materiais': indexf8a9902e3952eb206b3f37135a913a85,
+}
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::create
 * @see app/Http/Controllers/CategoriaMaterialController.php:83
-* @route '/categorias-materiais/create'
+* @route '/categorias/create'
 */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: create.url(options),
@@ -92,13 +177,13 @@ export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => (
 
 create.definition = {
     methods: ["get","head"],
-    url: '/categorias-materiais/create',
+    url: '/categorias/create',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::create
 * @see app/Http/Controllers/CategoriaMaterialController.php:83
-* @route '/categorias-materiais/create'
+* @route '/categorias/create'
 */
 create.url = (options?: RouteQueryOptions) => {
     return create.definition.url + queryParams(options)
@@ -107,7 +192,7 @@ create.url = (options?: RouteQueryOptions) => {
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::create
 * @see app/Http/Controllers/CategoriaMaterialController.php:83
-* @route '/categorias-materiais/create'
+* @route '/categorias/create'
 */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: create.url(options),
@@ -117,7 +202,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::create
 * @see app/Http/Controllers/CategoriaMaterialController.php:83
-* @route '/categorias-materiais/create'
+* @route '/categorias/create'
 */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: create.url(options),
@@ -127,7 +212,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::create
 * @see app/Http/Controllers/CategoriaMaterialController.php:83
-* @route '/categorias-materiais/create'
+* @route '/categorias/create'
 */
 const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: create.url(options),
@@ -137,7 +222,7 @@ const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::create
 * @see app/Http/Controllers/CategoriaMaterialController.php:83
-* @route '/categorias-materiais/create'
+* @route '/categorias/create'
 */
 createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: create.url(options),
@@ -147,7 +232,7 @@ createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::create
 * @see app/Http/Controllers/CategoriaMaterialController.php:83
-* @route '/categorias-materiais/create'
+* @route '/categorias/create'
 */
 createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: create.url({
@@ -164,7 +249,7 @@ create.form = createForm
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::store
 * @see app/Http/Controllers/CategoriaMaterialController.php:101
-* @route '/categorias-materiais'
+* @route '/categorias'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
@@ -173,13 +258,13 @@ export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => (
 
 store.definition = {
     methods: ["post"],
-    url: '/categorias-materiais',
+    url: '/categorias',
 } satisfies RouteDefinition<["post"]>
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::store
 * @see app/Http/Controllers/CategoriaMaterialController.php:101
-* @route '/categorias-materiais'
+* @route '/categorias'
 */
 store.url = (options?: RouteQueryOptions) => {
     return store.definition.url + queryParams(options)
@@ -188,7 +273,7 @@ store.url = (options?: RouteQueryOptions) => {
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::store
 * @see app/Http/Controllers/CategoriaMaterialController.php:101
-* @route '/categorias-materiais'
+* @route '/categorias'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
@@ -198,7 +283,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::store
 * @see app/Http/Controllers/CategoriaMaterialController.php:101
-* @route '/categorias-materiais'
+* @route '/categorias'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: store.url(options),
@@ -208,7 +293,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::store
 * @see app/Http/Controllers/CategoriaMaterialController.php:101
-* @route '/categorias-materiais'
+* @route '/categorias'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: store.url(options),
@@ -220,51 +305,51 @@ store.form = storeForm
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::show
 * @see app/Http/Controllers/CategoriaMaterialController.php:130
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-export const show = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const show = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
 
 show.definition = {
     methods: ["get","head"],
-    url: '/categorias-materiais/{categorias_materiai}',
+    url: '/categorias/{categoria}',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::show
 * @see app/Http/Controllers/CategoriaMaterialController.php:130
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-show.url = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions) => {
+show.url = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
-        args = { categorias_materiai: args }
+        args = { categoria: args }
     }
 
     if (Array.isArray(args)) {
         args = {
-            categorias_materiai: args[0],
+            categoria: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        categorias_materiai: args.categorias_materiai,
+        categoria: args.categoria,
     }
 
     return show.definition.url
-            .replace('{categorias_materiai}', parsedArgs.categorias_materiai.toString())
+            .replace('{categoria}', parsedArgs.categoria.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::show
 * @see app/Http/Controllers/CategoriaMaterialController.php:130
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-show.get = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+show.get = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -272,9 +357,9 @@ show.get = (args: { categorias_materiai: string | number } | [categorias_materia
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::show
 * @see app/Http/Controllers/CategoriaMaterialController.php:130
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-show.head = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+show.head = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
 })
@@ -282,9 +367,9 @@ show.head = (args: { categorias_materiai: string | number } | [categorias_materi
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::show
 * @see app/Http/Controllers/CategoriaMaterialController.php:130
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-const showForm = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const showForm = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
@@ -292,9 +377,9 @@ const showForm = (args: { categorias_materiai: string | number } | [categorias_m
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::show
 * @see app/Http/Controllers/CategoriaMaterialController.php:130
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-showForm.get = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.get = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
@@ -302,9 +387,9 @@ showForm.get = (args: { categorias_materiai: string | number } | [categorias_mat
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::show
 * @see app/Http/Controllers/CategoriaMaterialController.php:130
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-showForm.head = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.head = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
@@ -319,51 +404,51 @@ show.form = showForm
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::edit
 * @see app/Http/Controllers/CategoriaMaterialController.php:246
-* @route '/categorias-materiais/{categorias_materiai}/edit'
+* @route '/categorias/{categoria}/edit'
 */
-export const edit = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const edit = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
 
 edit.definition = {
     methods: ["get","head"],
-    url: '/categorias-materiais/{categorias_materiai}/edit',
+    url: '/categorias/{categoria}/edit',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::edit
 * @see app/Http/Controllers/CategoriaMaterialController.php:246
-* @route '/categorias-materiais/{categorias_materiai}/edit'
+* @route '/categorias/{categoria}/edit'
 */
-edit.url = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions) => {
+edit.url = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
-        args = { categorias_materiai: args }
+        args = { categoria: args }
     }
 
     if (Array.isArray(args)) {
         args = {
-            categorias_materiai: args[0],
+            categoria: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        categorias_materiai: args.categorias_materiai,
+        categoria: args.categoria,
     }
 
     return edit.definition.url
-            .replace('{categorias_materiai}', parsedArgs.categorias_materiai.toString())
+            .replace('{categoria}', parsedArgs.categoria.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::edit
 * @see app/Http/Controllers/CategoriaMaterialController.php:246
-* @route '/categorias-materiais/{categorias_materiai}/edit'
+* @route '/categorias/{categoria}/edit'
 */
-edit.get = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+edit.get = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
@@ -371,9 +456,9 @@ edit.get = (args: { categorias_materiai: string | number } | [categorias_materia
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::edit
 * @see app/Http/Controllers/CategoriaMaterialController.php:246
-* @route '/categorias-materiais/{categorias_materiai}/edit'
+* @route '/categorias/{categoria}/edit'
 */
-edit.head = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+edit.head = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: edit.url(args, options),
     method: 'head',
 })
@@ -381,9 +466,9 @@ edit.head = (args: { categorias_materiai: string | number } | [categorias_materi
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::edit
 * @see app/Http/Controllers/CategoriaMaterialController.php:246
-* @route '/categorias-materiais/{categorias_materiai}/edit'
+* @route '/categorias/{categoria}/edit'
 */
-const editForm = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const editForm = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
 })
@@ -391,9 +476,9 @@ const editForm = (args: { categorias_materiai: string | number } | [categorias_m
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::edit
 * @see app/Http/Controllers/CategoriaMaterialController.php:246
-* @route '/categorias-materiais/{categorias_materiai}/edit'
+* @route '/categorias/{categoria}/edit'
 */
-editForm.get = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+editForm.get = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
 })
@@ -401,9 +486,9 @@ editForm.get = (args: { categorias_materiai: string | number } | [categorias_mat
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::edit
 * @see app/Http/Controllers/CategoriaMaterialController.php:246
-* @route '/categorias-materiais/{categorias_materiai}/edit'
+* @route '/categorias/{categoria}/edit'
 */
-editForm.head = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+editForm.head = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: edit.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
@@ -418,51 +503,51 @@ edit.form = editForm
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::update
 * @see app/Http/Controllers/CategoriaMaterialController.php:265
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-export const update = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+export const update = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
 
 update.definition = {
     methods: ["put","patch"],
-    url: '/categorias-materiais/{categorias_materiai}',
+    url: '/categorias/{categoria}',
 } satisfies RouteDefinition<["put","patch"]>
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::update
 * @see app/Http/Controllers/CategoriaMaterialController.php:265
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-update.url = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions) => {
+update.url = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
-        args = { categorias_materiai: args }
+        args = { categoria: args }
     }
 
     if (Array.isArray(args)) {
         args = {
-            categorias_materiai: args[0],
+            categoria: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        categorias_materiai: args.categorias_materiai,
+        categoria: args.categoria,
     }
 
     return update.definition.url
-            .replace('{categorias_materiai}', parsedArgs.categorias_materiai.toString())
+            .replace('{categoria}', parsedArgs.categoria.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::update
 * @see app/Http/Controllers/CategoriaMaterialController.php:265
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-update.put = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+update.put = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -470,9 +555,9 @@ update.put = (args: { categorias_materiai: string | number } | [categorias_mater
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::update
 * @see app/Http/Controllers/CategoriaMaterialController.php:265
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-update.patch = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+update.patch = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
@@ -480,9 +565,9 @@ update.patch = (args: { categorias_materiai: string | number } | [categorias_mat
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::update
 * @see app/Http/Controllers/CategoriaMaterialController.php:265
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-const updateForm = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const updateForm = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -495,9 +580,9 @@ const updateForm = (args: { categorias_materiai: string | number } | [categorias
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::update
 * @see app/Http/Controllers/CategoriaMaterialController.php:265
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-updateForm.put = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.put = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -510,9 +595,9 @@ updateForm.put = (args: { categorias_materiai: string | number } | [categorias_m
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::update
 * @see app/Http/Controllers/CategoriaMaterialController.php:265
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-updateForm.patch = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.patch = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PATCH',
@@ -527,51 +612,51 @@ update.form = updateForm
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::destroy
 * @see app/Http/Controllers/CategoriaMaterialController.php:297
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-export const destroy = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
 
 destroy.definition = {
     methods: ["delete"],
-    url: '/categorias-materiais/{categorias_materiai}',
+    url: '/categorias/{categoria}',
 } satisfies RouteDefinition<["delete"]>
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::destroy
 * @see app/Http/Controllers/CategoriaMaterialController.php:297
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-destroy.url = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions) => {
+destroy.url = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
-        args = { categorias_materiai: args }
+        args = { categoria: args }
     }
 
     if (Array.isArray(args)) {
         args = {
-            categorias_materiai: args[0],
+            categoria: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        categorias_materiai: args.categorias_materiai,
+        categoria: args.categoria,
     }
 
     return destroy.definition.url
-            .replace('{categorias_materiai}', parsedArgs.categorias_materiai.toString())
+            .replace('{categoria}', parsedArgs.categoria.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::destroy
 * @see app/Http/Controllers/CategoriaMaterialController.php:297
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-destroy.delete = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -579,9 +664,9 @@ destroy.delete = (args: { categorias_materiai: string | number } | [categorias_m
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::destroy
 * @see app/Http/Controllers/CategoriaMaterialController.php:297
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-const destroyForm = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const destroyForm = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -594,9 +679,9 @@ const destroyForm = (args: { categorias_materiai: string | number } | [categoria
 /**
 * @see \App\Http\Controllers\CategoriaMaterialController::destroy
 * @see app/Http/Controllers/CategoriaMaterialController.php:297
-* @route '/categorias-materiais/{categorias_materiai}'
+* @route '/categorias/{categoria}'
 */
-destroyForm.delete = (args: { categorias_materiai: string | number } | [categorias_materiai: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+destroyForm.delete = (args: { categoria: string | number } | [categoria: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -609,156 +694,94 @@ destroyForm.delete = (args: { categorias_materiai: string | number } | [categori
 destroy.form = destroyForm
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::toggleStatus
-* @see app/Http/Controllers/CategoriaMaterialController.php:316
-* @route '/categorias-materiais/{categoriaMaterial}/toggle-status'
+* @see \App\Http\Controllers\CategoriaMaterialController::showWithUsage
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/categoria-materiais/{id}/com-uso'
 */
-export const toggleStatus = (args: { categoriaMaterial: string | number | { id: string | number } } | [categoriaMaterial: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: toggleStatus.url(args, options),
-    method: 'post',
+export const showWithUsage = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: showWithUsage.url(args, options),
+    method: 'get',
 })
 
-toggleStatus.definition = {
-    methods: ["post"],
-    url: '/categorias-materiais/{categoriaMaterial}/toggle-status',
-} satisfies RouteDefinition<["post"]>
+showWithUsage.definition = {
+    methods: ["get","head"],
+    url: '/api/categoria-materiais/{id}/com-uso',
+} satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::toggleStatus
-* @see app/Http/Controllers/CategoriaMaterialController.php:316
-* @route '/categorias-materiais/{categoriaMaterial}/toggle-status'
+* @see \App\Http\Controllers\CategoriaMaterialController::showWithUsage
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/categoria-materiais/{id}/com-uso'
 */
-toggleStatus.url = (args: { categoriaMaterial: string | number | { id: string | number } } | [categoriaMaterial: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+showWithUsage.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
-        args = { categoriaMaterial: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-        args = { categoriaMaterial: args.id }
+        args = { id: args }
     }
 
     if (Array.isArray(args)) {
         args = {
-            categoriaMaterial: args[0],
+            id: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        categoriaMaterial: typeof args.categoriaMaterial === 'object'
-        ? args.categoriaMaterial.id
-        : args.categoriaMaterial,
+        id: args.id,
     }
 
-    return toggleStatus.definition.url
-            .replace('{categoriaMaterial}', parsedArgs.categoriaMaterial.toString())
+    return showWithUsage.definition.url
+            .replace('{id}', parsedArgs.id.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::toggleStatus
-* @see app/Http/Controllers/CategoriaMaterialController.php:316
-* @route '/categorias-materiais/{categoriaMaterial}/toggle-status'
+* @see \App\Http\Controllers\CategoriaMaterialController::showWithUsage
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/categoria-materiais/{id}/com-uso'
 */
-toggleStatus.post = (args: { categoriaMaterial: string | number | { id: string | number } } | [categoriaMaterial: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: toggleStatus.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::toggleStatus
-* @see app/Http/Controllers/CategoriaMaterialController.php:316
-* @route '/categorias-materiais/{categoriaMaterial}/toggle-status'
-*/
-const toggleStatusForm = (args: { categoriaMaterial: string | number | { id: string | number } } | [categoriaMaterial: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: toggleStatus.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::toggleStatus
-* @see app/Http/Controllers/CategoriaMaterialController.php:316
-* @route '/categorias-materiais/{categoriaMaterial}/toggle-status'
-*/
-toggleStatusForm.post = (args: { categoriaMaterial: string | number | { id: string | number } } | [categoriaMaterial: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: toggleStatus.url(args, options),
-    method: 'post',
-})
-
-toggleStatus.form = toggleStatusForm
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::search
-* @see app/Http/Controllers/CategoriaMaterialController.php:330
-* @route '/categorias-materiais-search'
-*/
-export const search = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: search.url(options),
-    method: 'get',
-})
-
-search.definition = {
-    methods: ["get","head"],
-    url: '/categorias-materiais-search',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::search
-* @see app/Http/Controllers/CategoriaMaterialController.php:330
-* @route '/categorias-materiais-search'
-*/
-search.url = (options?: RouteQueryOptions) => {
-    return search.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::search
-* @see app/Http/Controllers/CategoriaMaterialController.php:330
-* @route '/categorias-materiais-search'
-*/
-search.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: search.url(options),
+showWithUsage.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: showWithUsage.url(args, options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::search
-* @see app/Http/Controllers/CategoriaMaterialController.php:330
-* @route '/categorias-materiais-search'
+* @see \App\Http\Controllers\CategoriaMaterialController::showWithUsage
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/categoria-materiais/{id}/com-uso'
 */
-search.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: search.url(options),
+showWithUsage.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: showWithUsage.url(args, options),
     method: 'head',
 })
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::search
-* @see app/Http/Controllers/CategoriaMaterialController.php:330
-* @route '/categorias-materiais-search'
+* @see \App\Http\Controllers\CategoriaMaterialController::showWithUsage
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/categoria-materiais/{id}/com-uso'
 */
-const searchForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: search.url(options),
+const showWithUsageForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showWithUsage.url(args, options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::search
-* @see app/Http/Controllers/CategoriaMaterialController.php:330
-* @route '/categorias-materiais-search'
+* @see \App\Http\Controllers\CategoriaMaterialController::showWithUsage
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/categoria-materiais/{id}/com-uso'
 */
-searchForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: search.url(options),
+showWithUsageForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showWithUsage.url(args, options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::search
-* @see app/Http/Controllers/CategoriaMaterialController.php:330
-* @route '/categorias-materiais-search'
+* @see \App\Http\Controllers\CategoriaMaterialController::showWithUsage
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/categoria-materiais/{id}/com-uso'
 */
-searchForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: search.url({
+showWithUsageForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showWithUsage.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -767,191 +790,79 @@ searchForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
     method: 'get',
 })
 
-search.form = searchForm
+showWithUsage.form = showWithUsageForm
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::checkLimits
-* @see app/Http/Controllers/CategoriaMaterialController.php:358
-* @route '/categorias-materiais/check-limits'
+* @see \App\Http\Controllers\CategoriaMaterialController::getDashboardData
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/limites-dashboard'
 */
-export const checkLimits = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: checkLimits.url(options),
-    method: 'post',
-})
-
-checkLimits.definition = {
-    methods: ["post"],
-    url: '/categorias-materiais/check-limits',
-} satisfies RouteDefinition<["post"]>
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::checkLimits
-* @see app/Http/Controllers/CategoriaMaterialController.php:358
-* @route '/categorias-materiais/check-limits'
-*/
-checkLimits.url = (options?: RouteQueryOptions) => {
-    return checkLimits.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::checkLimits
-* @see app/Http/Controllers/CategoriaMaterialController.php:358
-* @route '/categorias-materiais/check-limits'
-*/
-checkLimits.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: checkLimits.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::checkLimits
-* @see app/Http/Controllers/CategoriaMaterialController.php:358
-* @route '/categorias-materiais/check-limits'
-*/
-const checkLimitsForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: checkLimits.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::checkLimits
-* @see app/Http/Controllers/CategoriaMaterialController.php:358
-* @route '/categorias-materiais/check-limits'
-*/
-checkLimitsForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: checkLimits.url(options),
-    method: 'post',
-})
-
-checkLimits.form = checkLimitsForm
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::gerarAlertas
-* @see app/Http/Controllers/CategoriaMaterialController.php:403
-* @route '/categorias-materiais/gerar-alertas'
-*/
-export const gerarAlertas = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: gerarAlertas.url(options),
-    method: 'post',
-})
-
-gerarAlertas.definition = {
-    methods: ["post"],
-    url: '/categorias-materiais/gerar-alertas',
-} satisfies RouteDefinition<["post"]>
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::gerarAlertas
-* @see app/Http/Controllers/CategoriaMaterialController.php:403
-* @route '/categorias-materiais/gerar-alertas'
-*/
-gerarAlertas.url = (options?: RouteQueryOptions) => {
-    return gerarAlertas.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::gerarAlertas
-* @see app/Http/Controllers/CategoriaMaterialController.php:403
-* @route '/categorias-materiais/gerar-alertas'
-*/
-gerarAlertas.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: gerarAlertas.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::gerarAlertas
-* @see app/Http/Controllers/CategoriaMaterialController.php:403
-* @route '/categorias-materiais/gerar-alertas'
-*/
-const gerarAlertasForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: gerarAlertas.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::gerarAlertas
-* @see app/Http/Controllers/CategoriaMaterialController.php:403
-* @route '/categorias-materiais/gerar-alertas'
-*/
-gerarAlertasForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: gerarAlertas.url(options),
-    method: 'post',
-})
-
-gerarAlertas.form = gerarAlertasForm
-
-/**
-* @see \App\Http\Controllers\CategoriaMaterialController::usageReport
-* @see app/Http/Controllers/CategoriaMaterialController.php:418
-* @route '/categorias-materiais/usage-report'
-*/
-export const usageReport = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: usageReport.url(options),
+export const getDashboardData = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: getDashboardData.url(options),
     method: 'get',
 })
 
-usageReport.definition = {
+getDashboardData.definition = {
     methods: ["get","head"],
-    url: '/categorias-materiais/usage-report',
+    url: '/api/limites-dashboard',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::usageReport
-* @see app/Http/Controllers/CategoriaMaterialController.php:418
-* @route '/categorias-materiais/usage-report'
+* @see \App\Http\Controllers\CategoriaMaterialController::getDashboardData
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/limites-dashboard'
 */
-usageReport.url = (options?: RouteQueryOptions) => {
-    return usageReport.definition.url + queryParams(options)
+getDashboardData.url = (options?: RouteQueryOptions) => {
+    return getDashboardData.definition.url + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::usageReport
-* @see app/Http/Controllers/CategoriaMaterialController.php:418
-* @route '/categorias-materiais/usage-report'
+* @see \App\Http\Controllers\CategoriaMaterialController::getDashboardData
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/limites-dashboard'
 */
-usageReport.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: usageReport.url(options),
+getDashboardData.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: getDashboardData.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::usageReport
-* @see app/Http/Controllers/CategoriaMaterialController.php:418
-* @route '/categorias-materiais/usage-report'
+* @see \App\Http\Controllers\CategoriaMaterialController::getDashboardData
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/limites-dashboard'
 */
-usageReport.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: usageReport.url(options),
+getDashboardData.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: getDashboardData.url(options),
     method: 'head',
 })
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::usageReport
-* @see app/Http/Controllers/CategoriaMaterialController.php:418
-* @route '/categorias-materiais/usage-report'
+* @see \App\Http\Controllers\CategoriaMaterialController::getDashboardData
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/limites-dashboard'
 */
-const usageReportForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: usageReport.url(options),
+const getDashboardDataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getDashboardData.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::usageReport
-* @see app/Http/Controllers/CategoriaMaterialController.php:418
-* @route '/categorias-materiais/usage-report'
+* @see \App\Http\Controllers\CategoriaMaterialController::getDashboardData
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/limites-dashboard'
 */
-usageReportForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: usageReport.url(options),
+getDashboardDataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getDashboardData.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\CategoriaMaterialController::usageReport
-* @see app/Http/Controllers/CategoriaMaterialController.php:418
-* @route '/categorias-materiais/usage-report'
+* @see \App\Http\Controllers\CategoriaMaterialController::getDashboardData
+* @see app/Http/Controllers/CategoriaMaterialController.php:0
+* @route '/api/limites-dashboard'
 */
-usageReportForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: usageReport.url({
+getDashboardDataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getDashboardData.url({
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -960,8 +871,8 @@ usageReportForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'>
     method: 'get',
 })
 
-usageReport.form = usageReportForm
+getDashboardData.form = getDashboardDataForm
 
-const CategoriaMaterialController = { index, create, store, show, edit, update, destroy, toggleStatus, search, checkLimits, gerarAlertas, usageReport }
+const CategoriaMaterialController = { index, create, store, show, edit, update, destroy, showWithUsage, getDashboardData }
 
 export default CategoriaMaterialController

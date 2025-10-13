@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Calendar, CheckCircle, DollarSign, Edit2, FileText, Package, ToggleLeft, ToggleRight, Users, Warning } from 'lucide-react';
+import { ArrowLeft, Calendar, CheckCircle, DollarSign, Edit2, FileText, Package, ToggleLeft, ToggleRight, Users, AlertTriangle } from 'lucide-react';
 import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -166,7 +166,7 @@ const getStatusIcon = (status: string) => {
         case 'inativo':
             return <ToggleLeft className="h-4 w-4" />;
         case 'expirado':
-            return <Warning className="h-4 w-4" />;
+            return <AlertTriangle className="h-4 w-4" />;
         default:
             return <CheckCircle className="h-4 w-4" />;
     }

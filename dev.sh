@@ -92,8 +92,8 @@ print_success "Configuration cache cleared"
 # Check if node_modules exists
 if [ ! -d node_modules ]; then
     print_warning "node_modules not found"
-    print_info "Installing npm dependencies..."
-    npm install
+    print_info "Installing dependencies with Bun..."
+    bun install
     print_success "Dependencies installed"
 fi
 
@@ -146,7 +146,7 @@ if command -v concurrently &> /dev/null; then
         -n "laravel,vite" \
         -c "blue,green" \
         "php artisan serve --host=127.0.0.1 --port=8000" \
-        "npm run dev -- --host 127.0.0.1 --port 5173 --strictPort"
+        "bun run dev -- --host 127.0.0.1 --port 5173 --strictPort"
 else
     # Fallback: Start in background and foreground
     print_info "Starting Laravel server on http://127.0.0.1:8000"
@@ -156,7 +156,7 @@ else
     sleep 2
 
     print_info "Starting Vite dev server on http://127.0.0.1:5173"
-    npm run dev -- --host 127.0.0.1 --port 5173 --strictPort &
+    bun run dev -- --host 127.0.0.1 --port 5173 --strictPort &
     VITE_PID=$!
 
     # Wait for both processes

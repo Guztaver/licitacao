@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import type React from 'react';
+import { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import type { CategoriaMaterial, CreateCategoriaData, UpdateCategoriaData, CategoriaFilters } from '@/types/bidding';

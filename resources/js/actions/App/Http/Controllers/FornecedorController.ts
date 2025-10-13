@@ -220,57 +220,51 @@ store.form = storeForm
 /**
 * @see \App\Http\Controllers\FornecedorController::show
 * @see app/Http/Controllers/FornecedorController.php:123
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-export const show = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const show = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
 
 show.definition = {
     methods: ["get","head"],
-    url: '/fornecedores/{fornecedor}',
+    url: '/fornecedores/{fornecedore}',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Http\Controllers\FornecedorController::show
 * @see app/Http/Controllers/FornecedorController.php:123
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-show.url = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+show.url = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
-        args = { fornecedor: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-        args = { fornecedor: args.id }
+        args = { fornecedore: args }
     }
 
     if (Array.isArray(args)) {
         args = {
-            fornecedor: args[0],
+            fornecedore: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        fornecedor: typeof args.fornecedor === 'object'
-        ? args.fornecedor.id
-        : args.fornecedor,
+        fornecedore: args.fornecedore,
     }
 
     return show.definition.url
-            .replace('{fornecedor}', parsedArgs.fornecedor.toString())
+            .replace('{fornecedore}', parsedArgs.fornecedore.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\FornecedorController::show
 * @see app/Http/Controllers/FornecedorController.php:123
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-show.get = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+show.get = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -278,9 +272,9 @@ show.get = (args: { fornecedor: number | { id: number } } | [fornecedor: number 
 /**
 * @see \App\Http\Controllers\FornecedorController::show
 * @see app/Http/Controllers/FornecedorController.php:123
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-show.head = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+show.head = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
 })
@@ -288,9 +282,9 @@ show.head = (args: { fornecedor: number | { id: number } } | [fornecedor: number
 /**
 * @see \App\Http\Controllers\FornecedorController::show
 * @see app/Http/Controllers/FornecedorController.php:123
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-const showForm = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const showForm = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
@@ -298,9 +292,9 @@ const showForm = (args: { fornecedor: number | { id: number } } | [fornecedor: n
 /**
 * @see \App\Http\Controllers\FornecedorController::show
 * @see app/Http/Controllers/FornecedorController.php:123
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-showForm.get = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.get = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, options),
     method: 'get',
 })
@@ -308,9 +302,9 @@ showForm.get = (args: { fornecedor: number | { id: number } } | [fornecedor: num
 /**
 * @see \App\Http\Controllers\FornecedorController::show
 * @see app/Http/Controllers/FornecedorController.php:123
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-showForm.head = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+showForm.head = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: show.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
@@ -325,57 +319,51 @@ show.form = showForm
 /**
 * @see \App\Http\Controllers\FornecedorController::edit
 * @see app/Http/Controllers/FornecedorController.php:207
-* @route '/fornecedores/{fornecedor}/edit'
+* @route '/fornecedores/{fornecedore}/edit'
 */
-export const edit = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const edit = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
 
 edit.definition = {
     methods: ["get","head"],
-    url: '/fornecedores/{fornecedor}/edit',
+    url: '/fornecedores/{fornecedore}/edit',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Http\Controllers\FornecedorController::edit
 * @see app/Http/Controllers/FornecedorController.php:207
-* @route '/fornecedores/{fornecedor}/edit'
+* @route '/fornecedores/{fornecedore}/edit'
 */
-edit.url = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+edit.url = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
-        args = { fornecedor: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-        args = { fornecedor: args.id }
+        args = { fornecedore: args }
     }
 
     if (Array.isArray(args)) {
         args = {
-            fornecedor: args[0],
+            fornecedore: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        fornecedor: typeof args.fornecedor === 'object'
-        ? args.fornecedor.id
-        : args.fornecedor,
+        fornecedore: args.fornecedore,
     }
 
     return edit.definition.url
-            .replace('{fornecedor}', parsedArgs.fornecedor.toString())
+            .replace('{fornecedore}', parsedArgs.fornecedore.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\FornecedorController::edit
 * @see app/Http/Controllers/FornecedorController.php:207
-* @route '/fornecedores/{fornecedor}/edit'
+* @route '/fornecedores/{fornecedore}/edit'
 */
-edit.get = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+edit.get = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
@@ -383,9 +371,9 @@ edit.get = (args: { fornecedor: number | { id: number } } | [fornecedor: number 
 /**
 * @see \App\Http\Controllers\FornecedorController::edit
 * @see app/Http/Controllers/FornecedorController.php:207
-* @route '/fornecedores/{fornecedor}/edit'
+* @route '/fornecedores/{fornecedore}/edit'
 */
-edit.head = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+edit.head = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: edit.url(args, options),
     method: 'head',
 })
@@ -393,9 +381,9 @@ edit.head = (args: { fornecedor: number | { id: number } } | [fornecedor: number
 /**
 * @see \App\Http\Controllers\FornecedorController::edit
 * @see app/Http/Controllers/FornecedorController.php:207
-* @route '/fornecedores/{fornecedor}/edit'
+* @route '/fornecedores/{fornecedore}/edit'
 */
-const editForm = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const editForm = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
 })
@@ -403,9 +391,9 @@ const editForm = (args: { fornecedor: number | { id: number } } | [fornecedor: n
 /**
 * @see \App\Http\Controllers\FornecedorController::edit
 * @see app/Http/Controllers/FornecedorController.php:207
-* @route '/fornecedores/{fornecedor}/edit'
+* @route '/fornecedores/{fornecedore}/edit'
 */
-editForm.get = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+editForm.get = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
 })
@@ -413,9 +401,9 @@ editForm.get = (args: { fornecedor: number | { id: number } } | [fornecedor: num
 /**
 * @see \App\Http\Controllers\FornecedorController::edit
 * @see app/Http/Controllers/FornecedorController.php:207
-* @route '/fornecedores/{fornecedor}/edit'
+* @route '/fornecedores/{fornecedore}/edit'
 */
-editForm.head = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+editForm.head = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: edit.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
@@ -430,57 +418,51 @@ edit.form = editForm
 /**
 * @see \App\Http\Controllers\FornecedorController::update
 * @see app/Http/Controllers/FornecedorController.php:230
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-export const update = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+export const update = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
 
 update.definition = {
     methods: ["put","patch"],
-    url: '/fornecedores/{fornecedor}',
+    url: '/fornecedores/{fornecedore}',
 } satisfies RouteDefinition<["put","patch"]>
 
 /**
 * @see \App\Http\Controllers\FornecedorController::update
 * @see app/Http/Controllers/FornecedorController.php:230
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-update.url = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+update.url = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
-        args = { fornecedor: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-        args = { fornecedor: args.id }
+        args = { fornecedore: args }
     }
 
     if (Array.isArray(args)) {
         args = {
-            fornecedor: args[0],
+            fornecedore: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        fornecedor: typeof args.fornecedor === 'object'
-        ? args.fornecedor.id
-        : args.fornecedor,
+        fornecedore: args.fornecedore,
     }
 
     return update.definition.url
-            .replace('{fornecedor}', parsedArgs.fornecedor.toString())
+            .replace('{fornecedore}', parsedArgs.fornecedore.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\FornecedorController::update
 * @see app/Http/Controllers/FornecedorController.php:230
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-update.put = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+update.put = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -488,9 +470,9 @@ update.put = (args: { fornecedor: number | { id: number } } | [fornecedor: numbe
 /**
 * @see \App\Http\Controllers\FornecedorController::update
 * @see app/Http/Controllers/FornecedorController.php:230
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-update.patch = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+update.patch = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
@@ -498,9 +480,9 @@ update.patch = (args: { fornecedor: number | { id: number } } | [fornecedor: num
 /**
 * @see \App\Http\Controllers\FornecedorController::update
 * @see app/Http/Controllers/FornecedorController.php:230
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-const updateForm = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const updateForm = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -513,9 +495,9 @@ const updateForm = (args: { fornecedor: number | { id: number } } | [fornecedor:
 /**
 * @see \App\Http\Controllers\FornecedorController::update
 * @see app/Http/Controllers/FornecedorController.php:230
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-updateForm.put = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.put = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -528,9 +510,9 @@ updateForm.put = (args: { fornecedor: number | { id: number } } | [fornecedor: n
 /**
 * @see \App\Http\Controllers\FornecedorController::update
 * @see app/Http/Controllers/FornecedorController.php:230
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-updateForm.patch = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.patch = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PATCH',
@@ -545,57 +527,51 @@ update.form = updateForm
 /**
 * @see \App\Http\Controllers\FornecedorController::destroy
 * @see app/Http/Controllers/FornecedorController.php:255
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-export const destroy = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
 
 destroy.definition = {
     methods: ["delete"],
-    url: '/fornecedores/{fornecedor}',
+    url: '/fornecedores/{fornecedore}',
 } satisfies RouteDefinition<["delete"]>
 
 /**
 * @see \App\Http\Controllers\FornecedorController::destroy
 * @see app/Http/Controllers/FornecedorController.php:255
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-destroy.url = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+destroy.url = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
-        args = { fornecedor: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-        args = { fornecedor: args.id }
+        args = { fornecedore: args }
     }
 
     if (Array.isArray(args)) {
         args = {
-            fornecedor: args[0],
+            fornecedore: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        fornecedor: typeof args.fornecedor === 'object'
-        ? args.fornecedor.id
-        : args.fornecedor,
+        fornecedore: args.fornecedore,
     }
 
     return destroy.definition.url
-            .replace('{fornecedor}', parsedArgs.fornecedor.toString())
+            .replace('{fornecedore}', parsedArgs.fornecedore.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\FornecedorController::destroy
 * @see app/Http/Controllers/FornecedorController.php:255
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-destroy.delete = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -603,9 +579,9 @@ destroy.delete = (args: { fornecedor: number | { id: number } } | [fornecedor: n
 /**
 * @see \App\Http\Controllers\FornecedorController::destroy
 * @see app/Http/Controllers/FornecedorController.php:255
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-const destroyForm = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const destroyForm = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -618,9 +594,9 @@ const destroyForm = (args: { fornecedor: number | { id: number } } | [fornecedor
 /**
 * @see \App\Http\Controllers\FornecedorController::destroy
 * @see app/Http/Controllers/FornecedorController.php:255
-* @route '/fornecedores/{fornecedor}'
+* @route '/fornecedores/{fornecedore}'
 */
-destroyForm.delete = (args: { fornecedor: number | { id: number } } | [fornecedor: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+destroyForm.delete = (args: { fornecedore: string | number } | [fornecedore: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -633,76 +609,76 @@ destroyForm.delete = (args: { fornecedor: number | { id: number } } | [fornecedo
 destroy.form = destroyForm
 
 /**
-* @see \App\Http\Controllers\FornecedorController::exportMethod
-* @see app/Http/Controllers/FornecedorController.php:271
-* @route '/fornecedores-export'
+* @see \App\Http\Controllers\FornecedorController::apiIndex
+* @see app/Http/Controllers/FornecedorController.php:0
+* @route '/api/fornecedores'
 */
-export const exportMethod = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: exportMethod.url(options),
+export const apiIndex = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: apiIndex.url(options),
     method: 'get',
 })
 
-exportMethod.definition = {
+apiIndex.definition = {
     methods: ["get","head"],
-    url: '/fornecedores-export',
+    url: '/api/fornecedores',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\FornecedorController::exportMethod
-* @see app/Http/Controllers/FornecedorController.php:271
-* @route '/fornecedores-export'
+* @see \App\Http\Controllers\FornecedorController::apiIndex
+* @see app/Http/Controllers/FornecedorController.php:0
+* @route '/api/fornecedores'
 */
-exportMethod.url = (options?: RouteQueryOptions) => {
-    return exportMethod.definition.url + queryParams(options)
+apiIndex.url = (options?: RouteQueryOptions) => {
+    return apiIndex.definition.url + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\FornecedorController::exportMethod
-* @see app/Http/Controllers/FornecedorController.php:271
-* @route '/fornecedores-export'
+* @see \App\Http\Controllers\FornecedorController::apiIndex
+* @see app/Http/Controllers/FornecedorController.php:0
+* @route '/api/fornecedores'
 */
-exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: exportMethod.url(options),
+apiIndex.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: apiIndex.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\FornecedorController::exportMethod
-* @see app/Http/Controllers/FornecedorController.php:271
-* @route '/fornecedores-export'
+* @see \App\Http\Controllers\FornecedorController::apiIndex
+* @see app/Http/Controllers/FornecedorController.php:0
+* @route '/api/fornecedores'
 */
-exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: exportMethod.url(options),
+apiIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: apiIndex.url(options),
     method: 'head',
 })
 
 /**
-* @see \App\Http\Controllers\FornecedorController::exportMethod
-* @see app/Http/Controllers/FornecedorController.php:271
-* @route '/fornecedores-export'
+* @see \App\Http\Controllers\FornecedorController::apiIndex
+* @see app/Http/Controllers/FornecedorController.php:0
+* @route '/api/fornecedores'
 */
-const exportMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportMethod.url(options),
+const apiIndexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: apiIndex.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\FornecedorController::exportMethod
-* @see app/Http/Controllers/FornecedorController.php:271
-* @route '/fornecedores-export'
+* @see \App\Http\Controllers\FornecedorController::apiIndex
+* @see app/Http/Controllers/FornecedorController.php:0
+* @route '/api/fornecedores'
 */
-exportMethodForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportMethod.url(options),
+apiIndexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: apiIndex.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\FornecedorController::exportMethod
-* @see app/Http/Controllers/FornecedorController.php:271
-* @route '/fornecedores-export'
+* @see \App\Http\Controllers\FornecedorController::apiIndex
+* @see app/Http/Controllers/FornecedorController.php:0
+* @route '/api/fornecedores'
 */
-exportMethodForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportMethod.url({
+apiIndexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: apiIndex.url({
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -711,89 +687,8 @@ exportMethodForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'
     method: 'get',
 })
 
-exportMethod.form = exportMethodForm
+apiIndex.form = apiIndexForm
 
-/**
-* @see \App\Http\Controllers\FornecedorController::search
-* @see app/Http/Controllers/FornecedorController.php:344
-* @route '/fornecedores-search'
-*/
-export const search = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: search.url(options),
-    method: 'get',
-})
-
-search.definition = {
-    methods: ["get","head"],
-    url: '/fornecedores-search',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\FornecedorController::search
-* @see app/Http/Controllers/FornecedorController.php:344
-* @route '/fornecedores-search'
-*/
-search.url = (options?: RouteQueryOptions) => {
-    return search.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\FornecedorController::search
-* @see app/Http/Controllers/FornecedorController.php:344
-* @route '/fornecedores-search'
-*/
-search.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: search.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FornecedorController::search
-* @see app/Http/Controllers/FornecedorController.php:344
-* @route '/fornecedores-search'
-*/
-search.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: search.url(options),
-    method: 'head',
-})
-
-/**
-* @see \App\Http\Controllers\FornecedorController::search
-* @see app/Http/Controllers/FornecedorController.php:344
-* @route '/fornecedores-search'
-*/
-const searchForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: search.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FornecedorController::search
-* @see app/Http/Controllers/FornecedorController.php:344
-* @route '/fornecedores-search'
-*/
-searchForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: search.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FornecedorController::search
-* @see app/Http/Controllers/FornecedorController.php:344
-* @route '/fornecedores-search'
-*/
-searchForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: search.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-search.form = searchForm
-
-const FornecedorController = { index, create, store, show, edit, update, destroy, exportMethod, search, export: exportMethod }
+const FornecedorController = { index, create, store, show, edit, update, destroy, apiIndex }
 
 export default FornecedorController

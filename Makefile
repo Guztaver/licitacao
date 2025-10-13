@@ -76,7 +76,7 @@ install: ## Install dependencies locally
 	@echo "📦 Installing PHP dependencies..."
 	composer install
 	@echo "📦 Installing Node.js dependencies..."
-	npm install
+	bun install
 	@echo "🔗 Generating Wayfinder types..."
 	php artisan wayfinder:generate --with-form
 
@@ -96,12 +96,12 @@ lint: ## Run linting
 	@echo "🔍 Running PHP linting..."
 	./vendor/bin/pint
 	@echo "🔍 Running JavaScript/TypeScript linting..."
-	npm run lint
+	bun run lint
 
 format: ## Format code
 	@echo "✨ Formatting code..."
 	./vendor/bin/pint
-	npm run format
+	bun run format
 
 wayfinder: ## Generate Wayfinder TypeScript bindings
 	@echo "🔗 Generating Wayfinder TypeScript bindings..."
