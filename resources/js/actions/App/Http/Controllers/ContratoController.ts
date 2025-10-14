@@ -163,7 +163,7 @@ create.form = createForm
 
 /**
 * @see \App\Http\Controllers\ContratoController::store
-* @see app/Http/Controllers/ContratoController.php:125
+* @see app/Http/Controllers/ContratoController.php:131
 * @route '/contratos'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -178,7 +178,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\ContratoController::store
-* @see app/Http/Controllers/ContratoController.php:125
+* @see app/Http/Controllers/ContratoController.php:131
 * @route '/contratos'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -187,7 +187,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ContratoController::store
-* @see app/Http/Controllers/ContratoController.php:125
+* @see app/Http/Controllers/ContratoController.php:131
 * @route '/contratos'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -197,7 +197,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\ContratoController::store
-* @see app/Http/Controllers/ContratoController.php:125
+* @see app/Http/Controllers/ContratoController.php:131
 * @route '/contratos'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -207,7 +207,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\ContratoController::store
-* @see app/Http/Controllers/ContratoController.php:125
+* @see app/Http/Controllers/ContratoController.php:131
 * @route '/contratos'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -219,7 +219,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\ContratoController::show
-* @see app/Http/Controllers/ContratoController.php:198
+* @see app/Http/Controllers/ContratoController.php:207
 * @route '/contratos/{contrato}'
 */
 export const show = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -234,7 +234,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\ContratoController::show
-* @see app/Http/Controllers/ContratoController.php:198
+* @see app/Http/Controllers/ContratoController.php:207
 * @route '/contratos/{contrato}'
 */
 show.url = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -267,7 +267,7 @@ show.url = (args: { contrato: number | { id: number } } | [contrato: number | { 
 
 /**
 * @see \App\Http\Controllers\ContratoController::show
-* @see app/Http/Controllers/ContratoController.php:198
+* @see app/Http/Controllers/ContratoController.php:207
 * @route '/contratos/{contrato}'
 */
 show.get = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -277,7 +277,7 @@ show.get = (args: { contrato: number | { id: number } } | [contrato: number | { 
 
 /**
 * @see \App\Http\Controllers\ContratoController::show
-* @see app/Http/Controllers/ContratoController.php:198
+* @see app/Http/Controllers/ContratoController.php:207
 * @route '/contratos/{contrato}'
 */
 show.head = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -287,7 +287,7 @@ show.head = (args: { contrato: number | { id: number } } | [contrato: number | {
 
 /**
 * @see \App\Http\Controllers\ContratoController::show
-* @see app/Http/Controllers/ContratoController.php:198
+* @see app/Http/Controllers/ContratoController.php:207
 * @route '/contratos/{contrato}'
 */
 const showForm = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -297,7 +297,7 @@ const showForm = (args: { contrato: number | { id: number } } | [contrato: numbe
 
 /**
 * @see \App\Http\Controllers\ContratoController::show
-* @see app/Http/Controllers/ContratoController.php:198
+* @see app/Http/Controllers/ContratoController.php:207
 * @route '/contratos/{contrato}'
 */
 showForm.get = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -307,7 +307,7 @@ showForm.get = (args: { contrato: number | { id: number } } | [contrato: number 
 
 /**
 * @see \App\Http\Controllers\ContratoController::show
-* @see app/Http/Controllers/ContratoController.php:198
+* @see app/Http/Controllers/ContratoController.php:207
 * @route '/contratos/{contrato}'
 */
 showForm.head = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -324,7 +324,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\ContratoController::edit
-* @see app/Http/Controllers/ContratoController.php:360
+* @see app/Http/Controllers/ContratoController.php:378
 * @route '/contratos/{contrato}/edit'
 */
 export const edit = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -339,7 +339,7 @@ edit.definition = {
 
 /**
 * @see \App\Http\Controllers\ContratoController::edit
-* @see app/Http/Controllers/ContratoController.php:360
+* @see app/Http/Controllers/ContratoController.php:378
 * @route '/contratos/{contrato}/edit'
 */
 edit.url = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -372,7 +372,7 @@ edit.url = (args: { contrato: number | { id: number } } | [contrato: number | { 
 
 /**
 * @see \App\Http\Controllers\ContratoController::edit
-* @see app/Http/Controllers/ContratoController.php:360
+* @see app/Http/Controllers/ContratoController.php:378
 * @route '/contratos/{contrato}/edit'
 */
 edit.get = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -382,7 +382,7 @@ edit.get = (args: { contrato: number | { id: number } } | [contrato: number | { 
 
 /**
 * @see \App\Http\Controllers\ContratoController::edit
-* @see app/Http/Controllers/ContratoController.php:360
+* @see app/Http/Controllers/ContratoController.php:378
 * @route '/contratos/{contrato}/edit'
 */
 edit.head = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -392,7 +392,7 @@ edit.head = (args: { contrato: number | { id: number } } | [contrato: number | {
 
 /**
 * @see \App\Http\Controllers\ContratoController::edit
-* @see app/Http/Controllers/ContratoController.php:360
+* @see app/Http/Controllers/ContratoController.php:378
 * @route '/contratos/{contrato}/edit'
 */
 const editForm = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -402,7 +402,7 @@ const editForm = (args: { contrato: number | { id: number } } | [contrato: numbe
 
 /**
 * @see \App\Http\Controllers\ContratoController::edit
-* @see app/Http/Controllers/ContratoController.php:360
+* @see app/Http/Controllers/ContratoController.php:378
 * @route '/contratos/{contrato}/edit'
 */
 editForm.get = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -412,7 +412,7 @@ editForm.get = (args: { contrato: number | { id: number } } | [contrato: number 
 
 /**
 * @see \App\Http\Controllers\ContratoController::edit
-* @see app/Http/Controllers/ContratoController.php:360
+* @see app/Http/Controllers/ContratoController.php:378
 * @route '/contratos/{contrato}/edit'
 */
 editForm.head = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -429,7 +429,7 @@ edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\ContratoController::update
-* @see app/Http/Controllers/ContratoController.php:418
+* @see app/Http/Controllers/ContratoController.php:445
 * @route '/contratos/{contrato}'
 */
 export const update = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -444,7 +444,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\ContratoController::update
-* @see app/Http/Controllers/ContratoController.php:418
+* @see app/Http/Controllers/ContratoController.php:445
 * @route '/contratos/{contrato}'
 */
 update.url = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -477,7 +477,7 @@ update.url = (args: { contrato: number | { id: number } } | [contrato: number | 
 
 /**
 * @see \App\Http\Controllers\ContratoController::update
-* @see app/Http/Controllers/ContratoController.php:418
+* @see app/Http/Controllers/ContratoController.php:445
 * @route '/contratos/{contrato}'
 */
 update.put = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -487,7 +487,7 @@ update.put = (args: { contrato: number | { id: number } } | [contrato: number | 
 
 /**
 * @see \App\Http\Controllers\ContratoController::update
-* @see app/Http/Controllers/ContratoController.php:418
+* @see app/Http/Controllers/ContratoController.php:445
 * @route '/contratos/{contrato}'
 */
 update.patch = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -497,7 +497,7 @@ update.patch = (args: { contrato: number | { id: number } } | [contrato: number 
 
 /**
 * @see \App\Http\Controllers\ContratoController::update
-* @see app/Http/Controllers/ContratoController.php:418
+* @see app/Http/Controllers/ContratoController.php:445
 * @route '/contratos/{contrato}'
 */
 const updateForm = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -512,7 +512,7 @@ const updateForm = (args: { contrato: number | { id: number } } | [contrato: num
 
 /**
 * @see \App\Http\Controllers\ContratoController::update
-* @see app/Http/Controllers/ContratoController.php:418
+* @see app/Http/Controllers/ContratoController.php:445
 * @route '/contratos/{contrato}'
 */
 updateForm.put = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -527,7 +527,7 @@ updateForm.put = (args: { contrato: number | { id: number } } | [contrato: numbe
 
 /**
 * @see \App\Http\Controllers\ContratoController::update
-* @see app/Http/Controllers/ContratoController.php:418
+* @see app/Http/Controllers/ContratoController.php:445
 * @route '/contratos/{contrato}'
 */
 updateForm.patch = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -544,7 +544,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\ContratoController::destroy
-* @see app/Http/Controllers/ContratoController.php:534
+* @see app/Http/Controllers/ContratoController.php:564
 * @route '/contratos/{contrato}'
 */
 export const destroy = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -559,7 +559,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\ContratoController::destroy
-* @see app/Http/Controllers/ContratoController.php:534
+* @see app/Http/Controllers/ContratoController.php:564
 * @route '/contratos/{contrato}'
 */
 destroy.url = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -592,7 +592,7 @@ destroy.url = (args: { contrato: number | { id: number } } | [contrato: number |
 
 /**
 * @see \App\Http\Controllers\ContratoController::destroy
-* @see app/Http/Controllers/ContratoController.php:534
+* @see app/Http/Controllers/ContratoController.php:564
 * @route '/contratos/{contrato}'
 */
 destroy.delete = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -602,7 +602,7 @@ destroy.delete = (args: { contrato: number | { id: number } } | [contrato: numbe
 
 /**
 * @see \App\Http\Controllers\ContratoController::destroy
-* @see app/Http/Controllers/ContratoController.php:534
+* @see app/Http/Controllers/ContratoController.php:564
 * @route '/contratos/{contrato}'
 */
 const destroyForm = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -617,7 +617,7 @@ const destroyForm = (args: { contrato: number | { id: number } } | [contrato: nu
 
 /**
 * @see \App\Http\Controllers\ContratoController::destroy
-* @see app/Http/Controllers/ContratoController.php:534
+* @see app/Http/Controllers/ContratoController.php:564
 * @route '/contratos/{contrato}'
 */
 destroyForm.delete = (args: { contrato: number | { id: number } } | [contrato: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

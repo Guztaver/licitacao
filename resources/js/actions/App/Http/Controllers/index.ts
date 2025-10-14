@@ -11,8 +11,12 @@ import EmitenteController from './EmitenteController'
 import DestinatarioController from './DestinatarioController'
 import PedidoCompraController from './PedidoCompraController'
 import RequisicaoController from './RequisicaoController'
+import PurchaseRequestController from './PurchaseRequestController'
+import BiddingProcessController from './BiddingProcessController'
 import ConferenciaController from './ConferenciaController'
 import LimiteDispensaAlertaController from './LimiteDispensaAlertaController'
+import PesquisaPrecoController from './PesquisaPrecoController'
+import AveragePriceReportController from './AveragePriceReportController'
 import Auth from './Auth'
 
 const Controllers = {
@@ -29,8 +33,12 @@ const Controllers = {
     DestinatarioController: Object.assign(DestinatarioController, DestinatarioController),
     PedidoCompraController: Object.assign(PedidoCompraController, PedidoCompraController),
     RequisicaoController: Object.assign(RequisicaoController, RequisicaoController),
+    PurchaseRequestController: Object.assign(PurchaseRequestController, PurchaseRequestController),
+    BiddingProcessController: Object.assign(BiddingProcessController, BiddingProcessController),
     ConferenciaController: Object.assign(ConferenciaController, ConferenciaController),
     LimiteDispensaAlertaController: Object.assign(LimiteDispensaAlertaController, LimiteDispensaAlertaController),
+    PesquisaPrecoController: Object.assign(PesquisaPrecoController, PesquisaPrecoController),
+    AveragePriceReportController: Object.assign(AveragePriceReportController, AveragePriceReportController),
     Auth: Object.assign(Auth, Auth),
 }
 

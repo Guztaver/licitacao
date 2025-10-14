@@ -323,6 +323,16 @@ const QuickAccessCard = () => (
                 </Link>
             </div>
             <div className="border-t pt-3 text-sm">
+                <div className="font-medium">Pesquisa de Preços Médios</div>
+                <div className="text-gray-500">Análise de preços médios por item</div>
+                <Link href="/relatorios/average-price-research">
+                    <Button variant="outline" size="sm" className="mt-1">
+                        <BarChart3 className="mr-1 h-3 w-3" />
+                        Acessar
+                    </Button>
+                </Link>
+            </div>
+            <div className="border-t pt-3 text-sm">
                 <div className="font-medium">Fornecedores</div>
                 <div className="text-gray-500">Análise de desempenho de fornecedores</div>
                 <Link href="/relatorios/fornecedores">

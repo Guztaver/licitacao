@@ -16,8 +16,8 @@
 
 ## PESQUISA DE PREÇO
 
-- [ ] 1. Ter integração em tempo real com o banco de dados do PNCP para buscas de propostas de preços no mercado.
-- [ ] 2. Ter recurso de encaminhar os pedidos de compras para pesquisa de preço, licitação autorização de fornecimento.
-- [ ] 3. Emitir relatório de valores médios de processos de pesquisa de preço para licitação.
-- [ ] 4. Ter recurso de consolidar vários pedidos de compras para formação de licitação.
-- [ ] 5. Ter opção de na conclusão da pesquisa de preços possa ser encaminhado para o setor de contratos.
+- [x] 1. Ter integração em tempo real com o banco de dados do PNCP para buscas de propostas de preços no mercado.
+- [x] 2. Ter recurso de encaminhar os pedidos de compras para pesquisa de preço, licitação autorização de fornecimento.
+- [x] 3. Emitir relatório de valores médios de processos de pesquisa de preço para licitação.
+- [x] 4. Ter recurso de consolidar vários pedidos de compras para formação de licitação.
+- [x] 5. Ter opção de na conclusão da pesquisa de preços possa ser encaminhado para o setor de contratos.

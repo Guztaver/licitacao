@@ -465,7 +465,7 @@ listar.form = listarForm
 * @see app/Http/Controllers/RelatorioController.php:163
 * @route '/relatorios/download/{relatorio}'
 */
-export const download = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const download = (args: { relatorio: number | { id: number } } | [relatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: download.url(args, options),
     method: 'get',
 })
@@ -480,7 +480,7 @@ download.definition = {
 * @see app/Http/Controllers/RelatorioController.php:163
 * @route '/relatorios/download/{relatorio}'
 */
-download.url = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+download.url = (args: { relatorio: number | { id: number } } | [relatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { relatorio: args }
     }
@@ -513,7 +513,7 @@ download.url = (args: { relatorio: string | number | { id: string | number } } |
 * @see app/Http/Controllers/RelatorioController.php:163
 * @route '/relatorios/download/{relatorio}'
 */
-download.get = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+download.get = (args: { relatorio: number | { id: number } } | [relatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: download.url(args, options),
     method: 'get',
 })
@@ -523,7 +523,7 @@ download.get = (args: { relatorio: string | number | { id: string | number } } |
 * @see app/Http/Controllers/RelatorioController.php:163
 * @route '/relatorios/download/{relatorio}'
 */
-download.head = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+download.head = (args: { relatorio: number | { id: number } } | [relatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: download.url(args, options),
     method: 'head',
 })
@@ -533,7 +533,7 @@ download.head = (args: { relatorio: string | number | { id: string | number } } 
 * @see app/Http/Controllers/RelatorioController.php:163
 * @route '/relatorios/download/{relatorio}'
 */
-const downloadForm = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const downloadForm = (args: { relatorio: number | { id: number } } | [relatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: download.url(args, options),
     method: 'get',
 })
@@ -543,7 +543,7 @@ const downloadForm = (args: { relatorio: string | number | { id: string | number
 * @see app/Http/Controllers/RelatorioController.php:163
 * @route '/relatorios/download/{relatorio}'
 */
-downloadForm.get = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+downloadForm.get = (args: { relatorio: number | { id: number } } | [relatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: download.url(args, options),
     method: 'get',
 })
@@ -553,7 +553,7 @@ downloadForm.get = (args: { relatorio: string | number | { id: string | number }
 * @see app/Http/Controllers/RelatorioController.php:163
 * @route '/relatorios/download/{relatorio}'
 */
-downloadForm.head = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+downloadForm.head = (args: { relatorio: number | { id: number } } | [relatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: download.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
@@ -570,7 +570,7 @@ download.form = downloadForm
 * @see app/Http/Controllers/RelatorioController.php:184
 * @route '/relatorios/{relatorio}'
 */
-export const excluir = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const excluir = (args: { relatorio: number | { id: number } } | [relatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: excluir.url(args, options),
     method: 'delete',
 })
@@ -585,7 +585,7 @@ excluir.definition = {
 * @see app/Http/Controllers/RelatorioController.php:184
 * @route '/relatorios/{relatorio}'
 */
-excluir.url = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+excluir.url = (args: { relatorio: number | { id: number } } | [relatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { relatorio: args }
     }
@@ -618,7 +618,7 @@ excluir.url = (args: { relatorio: string | number | { id: string | number } } | 
 * @see app/Http/Controllers/RelatorioController.php:184
 * @route '/relatorios/{relatorio}'
 */
-excluir.delete = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+excluir.delete = (args: { relatorio: number | { id: number } } | [relatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: excluir.url(args, options),
     method: 'delete',
 })
@@ -628,7 +628,7 @@ excluir.delete = (args: { relatorio: string | number | { id: string | number } }
 * @see app/Http/Controllers/RelatorioController.php:184
 * @route '/relatorios/{relatorio}'
 */
-const excluirForm = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const excluirForm = (args: { relatorio: number | { id: number } } | [relatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: excluir.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -643,7 +643,7 @@ const excluirForm = (args: { relatorio: string | number | { id: string | number 
 * @see app/Http/Controllers/RelatorioController.php:184
 * @route '/relatorios/{relatorio}'
 */
-excluirForm.delete = (args: { relatorio: string | number | { id: string | number } } | [relatorio: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+excluirForm.delete = (args: { relatorio: number | { id: number } } | [relatorio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: excluir.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
