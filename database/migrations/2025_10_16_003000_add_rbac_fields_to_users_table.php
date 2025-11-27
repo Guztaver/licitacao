@@ -35,7 +35,7 @@ return new class extends Migration
 
             $table->timestamp('last_login_at')->nullable();
             $table->timestamp('password_changed_at')->nullable();
-            $table->timestamp('email_verified_at')->nullable();
+
             $table->timestamp('suspended_at')->nullable();
             $table->timestamp('locked_at')->nullable();
             $table->timestamp('expires_at')->nullable();
@@ -78,7 +78,7 @@ return new class extends Migration
             $table->boolean('is_system')->default(false);
             $table->boolean('must_change_password')->default(false);
             $table->timestamp('last_activity_at')->nullable();
-            $table->string('remember_token')->nullable();
+
 
             // Indexes
             $table->index(['status', 'expires_at']);
@@ -103,7 +103,7 @@ return new class extends Migration
                 'status',
                 'last_login_at',
                 'password_changed_at',
-                'email_verified_at',
+
                 'suspended_at',
                 'locked_at',
                 'expires_at',
