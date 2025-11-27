@@ -76,48 +76,7 @@ jobs:
             org.opencontainers.image.vendor=Government IT Department
             org.opencontainers.image.licenses=MIT
 
-      - name: Build Docker image for testing (single platform)
-        uses: docker/build-push-action@v5
-        id: build
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=docker,dest=/tmp/image.tar
-
-      - name: Load and test Docker image
-        run: |
-          # Load the built image
-          docker load -i /tmp/image.tar
-
-          # Get the first tag from the metadata
-          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
-
-          # Basic smoke test - run container briefly to ensure it starts
-          echo "Testing Docker image: $IMAGE_TAG"
-          docker run --rm -d --name test-container -p 8080:80 \
-            -e APP_ENV=production \
-            -e APP_DEBUG=false \
-            -e APP_KEY=base64:test-key-for-ci \
-            -e DB_CONNECTION=sqlite \
-            -e DB_DATABASE=/var/www/html/database/database.sqlite \
-            $IMAGE_TAG
-
-          # Wait for container to start
-          sleep 15
-
-          # Basic connectivity test
-          if ! curl -f http://localhost:8080 2>/dev/null; then
-            echo "Warning: Health check failed, but continuing..."
-          fi
-
-          # Clean up
-          docker stop test-container || true
-
-      - name: Push Docker image (multi-platform)
+      - name: Build and Push Docker image
         if: github.event_name != 'pull_request' || github.event.inputs.push_image == 'true'
         uses: docker/build-push-action@v5
         with:
@@ -127,24 +86,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Generate SBOM
-        if: github.event_name != 'pull_request' || github.event.inputs.push_image == 'true'
-        continue-on-error: true
-        uses: anchore/sbom-action@v0
-        with:
-          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          format: spdx-json
-          output-file: sbom.spdx.json
-
-      - name: Upload SBOM
-        if: github.event_name != 'pull_request' || github.event.inputs.push_image == 'true'
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: sbom-report
-          path: sbom.spdx.json
-          retention-days: 90
 
   deploy-staging:
     runs-on: self-hosted

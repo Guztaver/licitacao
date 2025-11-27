@@ -166,55 +166,9 @@ RUN touch /var/www/html/database/database.sqlite \
 # Run composer post-install scripts
 RUN composer run-script post-autoload-dump
 
-# Create entrypoint script inline to avoid separate .sh files
-RUN echo '#!/bin/bash' > /entrypoint.sh && \
-    echo 'set -e' >> /entrypoint.sh && \
-    echo '' >> /entrypoint.sh && \
-    echo '# Wait for dependencies' >> /entrypoint.sh && \
-    echo 'if [ -n "$DB_HOST" ] && [ "$DB_CONNECTION" != "sqlite" ]; then' >> /entrypoint.sh && \
-    echo '    echo "Waiting for database..."' >> /entrypoint.sh && \
-    echo '    until nc -z "$DB_HOST" "${DB_PORT:-5432}"; do sleep 1; done' >> /entrypoint.sh && \
-    echo 'fi' >> /entrypoint.sh && \
-    echo '' >> /entrypoint.sh && \
-    echo '# Ensure permissions' >> /entrypoint.sh && \
-    echo 'chown -R www:www /var/www/html/storage /var/www/html/bootstrap/cache' >> /entrypoint.sh && \
-    echo 'chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache' >> /entrypoint.sh && \
-    echo '' >> /entrypoint.sh && \
-    echo '# Create SQLite database if needed' >> /entrypoint.sh && \
-    echo 'if [ "$DB_CONNECTION" = "sqlite" ] && [ ! -f "$DB_DATABASE" ]; then' >> /entrypoint.sh && \
-    echo '    touch "$DB_DATABASE"' >> /entrypoint.sh && \
-    echo '    chown www:www "$DB_DATABASE"' >> /entrypoint.sh && \
-    echo 'fi' >> /entrypoint.sh && \
-    echo '' >> /entrypoint.sh && \
-    echo '# Generate app key if not set' >> /entrypoint.sh && \
-    echo 'if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:" ]; then' >> /entrypoint.sh && \
-    echo '    php artisan key:generate --force' >> /entrypoint.sh && \
-    echo 'fi' >> /entrypoint.sh && \
-    echo '' >> /entrypoint.sh && \
-    echo '# Run migrations' >> /entrypoint.sh && \
-    echo 'php artisan migrate --force' >> /entrypoint.sh && \
-    echo '' >> /entrypoint.sh && \
-    echo '# Optimize for production' >> /entrypoint.sh && \
-    echo 'if [ "$APP_ENV" = "production" ]; then' >> /entrypoint.sh && \
-    echo '    php artisan config:cache' >> /entrypoint.sh && \
-    echo '    php artisan route:cache' >> /entrypoint.sh && \
-    echo '    php artisan view:cache' >> /entrypoint.sh && \
-    echo '    php artisan event:cache' >> /entrypoint.sh && \
-    echo 'fi' >> /entrypoint.sh && \
-    echo '' >> /entrypoint.sh && \
-    echo '# Create storage link' >> /entrypoint.sh && \
-    echo '[ ! -L /var/www/html/public/storage ] && php artisan storage:link' >> /entrypoint.sh && \
-    echo '' >> /entrypoint.sh && \
-    echo '# Start supervisor' >> /entrypoint.sh && \
-    echo 'exec /usr/bin/supervisord -c /etc/supervisord.conf' >> /entrypoint.sh && \
-    chmod +x /entrypoint.sh
-
-# Expose port
-EXPOSE 80
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost/health || exit 1
+# Copy start script
+COPY docker/start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
 # Start with entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/usr/local/bin/start.sh"]

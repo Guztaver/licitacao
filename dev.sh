@@ -50,30 +50,37 @@ if [ ! -f .env ]; then
     fi
 fi
 
-# Check if public/database.db exists
-if [ ! -f public/database.db ]; then
-    print_warning "Database file not found at public/database.db"
+# Check database configuration
+DB_CONNECTION=$(grep DB_CONNECTION .env | cut -d '=' -f2)
 
-    # Check if we can copy from database/database.sqlite
-    if [ -f database/database.sqlite ]; then
-        print_info "Copying from database/database.sqlite..."
-        cp database/database.sqlite public/database.db
-        print_success "Database copied successfully"
-    else
-        print_info "Creating new database..."
-        touch public/database.db
-        chmod 664 public/database.db
+if [ "$DB_CONNECTION" = "sqlite" ]; then
+    # Check if public/database.db exists
+    if [ ! -f public/database.db ]; then
+        print_warning "Database file not found at public/database.db"
 
-        print_info "Running migrations..."
-        php artisan migrate --force
+        # Check if we can copy from database/database.sqlite
+        if [ -f database/database.sqlite ]; then
+            print_info "Copying from database/database.sqlite..."
+            cp database/database.sqlite public/database.db
+            print_success "Database copied successfully"
+        else
+            print_info "Creating new database..."
+            touch public/database.db
+            chmod 664 public/database.db
 
-        read -p "Would you like to seed the database? (y/N) " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            php artisan db:seed
-            print_success "Database seeded"
+            print_info "Running migrations..."
+            php artisan migrate --force
+
+            read -p "Would you like to seed the database? (y/N) " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                php artisan db:seed
+                print_success "Database seeded"
+            fi
         fi
     fi
+else
+    print_info "Using database connection: $DB_CONNECTION"
 fi
 
 # Ensure storage directories exist
