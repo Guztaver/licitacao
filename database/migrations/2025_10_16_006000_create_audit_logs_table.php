@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -141,7 +142,9 @@ return new class extends Migration
             $table->index('deleted_at');
 
             // Full-text search
-            $table->fullText(['description', 'error_message']);
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->fullText(['description', 'error_message']);
+            }
         });
     }
 
